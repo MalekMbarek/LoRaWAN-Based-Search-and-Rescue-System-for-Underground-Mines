@@ -1,0 +1,3 @@
+C:/Users/malek/Desktop/PFE2/Build/CMakeFiles/LoRaWAN_AT_Slave.dir
+C:/Users/malek/Desktop/PFE2/Build/CMakeFiles/edit_cache.dir
+C:/Users/malek/Desktop/PFE2/Build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,10 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/malek/Desktop/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/LoRaWAN_End_Node/STM32CubeIDE/startup_stm32l072xx.s
+
