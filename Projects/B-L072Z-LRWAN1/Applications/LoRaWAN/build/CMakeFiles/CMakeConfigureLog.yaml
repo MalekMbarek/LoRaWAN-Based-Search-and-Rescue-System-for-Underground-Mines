@@ -2344,6 +2344,744 @@ events:
         - "c:\\Users\\malek\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\scripts\\noConfigScripts"
       CMAKE_FIND_ROOT_PATH: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/"
   -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:1296 (message)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineASMCompiler.cmake:170 (CMAKE_DETERMINE_COMPILER_ID_VENDOR)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      Checking whether the ASM compiler is GNU using "--version" matched "(GNU assembler)|(GCC)|(Free Software Foundation)":
+      arm-none-eabi-gcc.exe (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 15.2.1 20251203
+      Copyright (C) 2025 Free Software Foundation, Inc.
+      This is free software; see the source for copying conditions.  There is NO
+      warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineASMCompiler.cmake:268 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_ASM_COMPILER_AR"
+    description: "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "arm-none-eabi-gcc-ar-"
+      - "arm-none-eabi-gcc-ar-"
+      - "arm-none-eabi-gcc-ar"
+      - "arm-none-eabi-gcc-ar"
+    candidate_directories:
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/"
+      - "C:/Python314/Scripts/"
+      - "C:/Python314/"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/PuTTY/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Program Files/msys64/mingw64/bin/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/msys64/usr/bin/"
+      - "C:/msys64/mingw64/bin/"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/"
+      - "C:/Program Files/nodejs/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/"
+      - "C:/Users/malek/AppData/Local/Python/bin/"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/"
+      - "C:/Users/malek/.local/bin/"
+      - "C:/Users/malek/AppData/Roaming/npm/"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ar-"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ar-.com"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ar-"
+      - "C:/Python314/arm-none-eabi-gcc-ar-.com"
+      - "C:/Python314/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Python314/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ar-"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ar-"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ar-"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ar-"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ar-"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ar-.com"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ar-"
+      - "C:/Python314/arm-none-eabi-gcc-ar-.com"
+      - "C:/Python314/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Python314/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ar-"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ar-.com"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ar-"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ar-"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ar-"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ar-.com"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ar-"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ar-"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-.com"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-.exe"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar.com"
+    found: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Users\\malek\\AppData\\Local\\Programs\\Microsoft VS Code"
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v13.2\\bin\\x64"
+        - "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v13.2\\bin"
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\PuTTY\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files (x86)\\Arm\\GNU Toolchain mingw-w64-i686-arm-none-eabi\\bin"
+        - "C:\\Program Files\\msys64\\mingw64\\bin"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\msys64\\usr\\bin"
+        - "C:\\msys64\\mingw64\\bin"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA App\\NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Program Files\\NVIDIA Corporation\\Nsight Compute 2026.1.0\\"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\malek\\AppData\\Local\\Programs\\Microsoft VS Code\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\Microsoft\\GitHubDesktop\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\Python\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\GitHubDesktop\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\Programs\\Ollama"
+        - "C:\\Users\\malek\\.local\\bin"
+        - "C:\\Users\\malek\\AppData\\Roaming\\npm"
+        - "c:\\Users\\malek\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\scripts\\noConfigScripts"
+      CMAKE_FIND_ROOT_PATH: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineASMCompiler.cmake:268 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_ASM_COMPILER_RANLIB"
+    description: "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "arm-none-eabi-gcc-ranlib-"
+      - "arm-none-eabi-gcc-ranlib-"
+      - "arm-none-eabi-gcc-ranlib"
+      - "arm-none-eabi-gcc-ranlib"
+    candidate_directories:
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/"
+      - "C:/Python314/Scripts/"
+      - "C:/Python314/"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/PuTTY/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Program Files/msys64/mingw64/bin/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/msys64/usr/bin/"
+      - "C:/msys64/mingw64/bin/"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/"
+      - "C:/Program Files/nodejs/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/"
+      - "C:/Users/malek/AppData/Local/Python/bin/"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/"
+      - "C:/Users/malek/.local/bin/"
+      - "C:/Users/malek/AppData/Roaming/npm/"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ranlib-"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ranlib-"
+      - "C:/Python314/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Python314/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Python314/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ranlib-"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/arm-none-eabi-gcc-ranlib-"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Python314/Scripts/arm-none-eabi-gcc-ranlib-"
+      - "C:/Python314/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Python314/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Python314/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/x64/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.2/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/System32/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/System32/wbem/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/arm-none-eabi-gcc-ranlib-"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Windows/System32/OpenSSH/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/PuTTY/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/Git/cmd/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/CMake/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/msys64/ucrt64/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/msys64/usr/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/msys64/mingw64/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/NVIDIA Corporation/Nsight Compute 2026.1.0/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Program Files/nodejs/arm-none-eabi-gcc-ranlib-"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/ProgramData/chocolatey/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Microsoft/WindowsApps/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Microsoft VS Code/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Microsoft/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Python/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/GitHubDesktop/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Local/Programs/Ollama/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/.local/bin/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/AppData/Roaming/npm/arm-none-eabi-gcc-ranlib-"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-.com"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-.exe"
+      - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-"
+      - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib.com"
+    found: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Users\\malek\\AppData\\Local\\Programs\\Microsoft VS Code"
+        - "C:\\Python314\\Scripts\\"
+        - "C:\\Python314\\"
+        - "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v13.2\\bin\\x64"
+        - "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v13.2\\bin"
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\PuTTY\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Program Files (x86)\\Arm\\GNU Toolchain mingw-w64-i686-arm-none-eabi\\bin"
+        - "C:\\Program Files\\msys64\\mingw64\\bin"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\msys64\\usr\\bin"
+        - "C:\\msys64\\mingw64\\bin"
+        - "C:\\Program Files\\NVIDIA Corporation\\NVIDIA App\\NvDLISR"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "C:\\Program Files\\NVIDIA Corporation\\Nsight Compute 2026.1.0\\"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\malek\\AppData\\Local\\Programs\\Microsoft VS Code\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\Microsoft\\GitHubDesktop\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\Python\\bin"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\GitHubDesktop\\bin"
+        - "C:\\Users\\malek\\AppData\\Local\\Programs\\Ollama"
+        - "C:\\Users\\malek\\.local\\bin"
+        - "C:\\Users\\malek\\AppData\\Roaming\\npm"
+        - "c:\\Users\\malek\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\scripts\\noConfigScripts"
+      CMAKE_FIND_ROOT_PATH: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:7 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-er6e9w"
+      binary: "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-er6e9w"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-Og -g -DDEBUG"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "C:/Users/malek/Documents/GitHub/PFE2/cmake;C:/Users/malek/Documents/GitHub/PFE2/cmake"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-er6e9w'
+        
+        Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/mingw64/bin/mingw32-make.exe -f Makefile cmTC_0bcd0/fast
+        C:/msys64/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_0bcd0.dir\\build.make CMakeFiles/cmTC_0bcd0.dir/build
+        mingw32-make[1]: Entering directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-er6e9w'
+        Building C object CMakeFiles/cmTC_0bcd0.dir/CMakeCCompilerABI.c.obj
+        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR19DD~1.EXE   -v -o CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj -c "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCCompilerABI.c"
+        Using built-in specs.
+        COLLECT_GCC=C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR19DD~1.EXE
+        Target: arm-none-eabi
+        Configured with: /data/jenkins/workspace/GNU-toolchain/arm-15/src/gcc/configure --target=arm-none-eabi --prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install --with-gmp=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-mpfr=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-mpc=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-isl=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --disable-shared --disable-nls --disable-threads --enable-checking=release --enable-languages=c,c++,fortran --with-newlib --with-gnu-as --with-headers=yes --with-gnu-ld --with-native-system-header-dir=/include --with-sysroot=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install/arm-none-eabi --with-bugurl=https://gitlab.arm.com/tooling/gnu-devtools-for-arm/-/issues/ --with-multilib-list=aprofile,rmprofile --with-libiconv-prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-libiconv-prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --enable-mingw-wildcard --host=i686-w64-mingw32 --with-pkgversion='Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)'
+        Thread model: single
+        Supported LTO compression algorithms: zlib
+        gcc version 15.2.1 20251203 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_0bcd0.dir\\'
+         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/cc1.exe -quiet -v -iprefix C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/ -isysroot C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi -D__USES_INITFINI__ C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles\\cmTC_0bcd0.dir\\ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mcpu=arm7tdmi -mfloat-abi=soft -marm -mlibarch=armv4t -march=armv4t -version -o C:\\Users\\malek\\AppData\\Local\\Temp\\cc1Pglye.s
+        GNU C23 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) version 15.2.1 20251203 (arm-none-eabi)
+        	compiled by GNU C version 13-win32, GMP version 6.2.1, MPFR version 3.1.6, MPC version 1.0.3, isl version isl-0.15-1-g835ea3a-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/include"
+        ignoring nonexistent directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install/lib/gcc/arm-none-eabi/15.2.1/../../../../include"
+        ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/include-fixed"
+        ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include"
+        ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include
+         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include-fixed
+         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include
+        End of search list.
+        Compiler executable checksum: 06ab445c59ba8f89bbf09b9a069e4cf7
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_0bcd0.dir\\'
+         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv4t -mfloat-abi=soft -meabi=5 -o CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj C:\\Users\\malek\\AppData\\Local\\Temp\\cc1Pglye.s
+        GNU assembler version 2.45.1 (arm-none-eabi) using BFD version (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 2.45.1.20251203
+        COMPILER_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/
+        LIBRARY_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/lib/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.'
+        Linking C static library libcmTC_0bcd0.a
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -P CMakeFiles\\cmTC_0bcd0.dir\\cmake_clean_target.cmake
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_0bcd0.dir\\link.txt --verbose=1
+        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\ARM-NO~2.EXE qc libcmTC_0bcd0.a CMakeFiles/cmTC_0bcd0.dir/CMakeCCompilerABI.c.obj
+        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR17F9~1.EXE libcmTC_0bcd0.a
+        mingw32-make[1]: Leaving directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-er6e9w'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include]
+          add: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include-fixed]
+          add: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include]
+        end of search list found
+        collapse include dir [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include] ==> [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/arm-none-eabi/15.2.1/include]
+        collapse include dir [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include-fixed] ==> [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/arm-none-eabi/15.2.1/include-fixed]
+        collapse include dir [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include] ==> [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/arm-none-eabi/include]
+        implicit include dirs: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/arm-none-eabi/15.2.1/include;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/arm-none-eabi/15.2.1/include-fixed;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/arm-none-eabi/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
+        ignore line: [Change Dir: 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-er6e9w']
+        ignore line: []
+        ignore line: [Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/mingw64/bin/mingw32-make.exe -f Makefile cmTC_0bcd0/fast]
+        ignore line: [C:/msys64/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_0bcd0.dir\\build.make CMakeFiles/cmTC_0bcd0.dir/build]
+        ignore line: [mingw32-make[1]: Entering directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-er6e9w']
+        ignore line: [Building C object CMakeFiles/cmTC_0bcd0.dir/CMakeCCompilerABI.c.obj]
+        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR19DD~1.EXE   -v -o CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj -c "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCCompilerABI.c"]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR19DD~1.EXE]
+        ignore line: [Target: arm-none-eabi]
+        ignore line: [Configured with: /data/jenkins/workspace/GNU-toolchain/arm-15/src/gcc/configure --target=arm-none-eabi --prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install --with-gmp=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-mpfr=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-mpc=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-isl=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --disable-shared --disable-nls --disable-threads --enable-checking=release --enable-languages=c,c++,fortran --with-newlib --with-gnu-as --with-headers=yes --with-gnu-ld --with-native-system-header-dir=/include --with-sysroot=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install/arm-none-eabi --with-bugurl=https://gitlab.arm.com/tooling/gnu-devtools-for-arm/-/issues/ --with-multilib-list=aprofile,rmprofile --with-libiconv-prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-libiconv-prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --enable-mingw-wildcard --host=i686-w64-mingw32 --with-pkgversion='Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)']
+        ignore line: [Thread model: single]
+        ignore line: [Supported LTO compression algorithms: zlib]
+        ignore line: [gcc version 15.2.1 20251203 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_0bcd0.dir\\']
+        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/cc1.exe -quiet -v -iprefix C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/ -isysroot C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi -D__USES_INITFINI__ C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles\\cmTC_0bcd0.dir\\ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mcpu=arm7tdmi -mfloat-abi=soft -marm -mlibarch=armv4t -march=armv4t -version -o C:\\Users\\malek\\AppData\\Local\\Temp\\cc1Pglye.s]
+        ignore line: [GNU C23 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) version 15.2.1 20251203 (arm-none-eabi)]
+        ignore line: [	compiled by GNU C version 13-win32  GMP version 6.2.1  MPFR version 3.1.6  MPC version 1.0.3  isl version isl-0.15-1-g835ea3a-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/include"]
+        ignore line: [ignoring nonexistent directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install/lib/gcc/arm-none-eabi/15.2.1/../../../../include"]
+        ignore line: [ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/include-fixed"]
+        ignore line: [ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include"]
+        ignore line: [ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include]
+        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include-fixed]
+        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include]
+        ignore line: [End of search list.]
+        ignore line: [Compiler executable checksum: 06ab445c59ba8f89bbf09b9a069e4cf7]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_0bcd0.dir\\']
+        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv4t -mfloat-abi=soft -meabi=5 -o CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj C:\\Users\\malek\\AppData\\Local\\Temp\\cc1Pglye.s]
+        ignore line: [GNU assembler version 2.45.1 (arm-none-eabi) using BFD version (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 2.45.1.20251203]
+        ignore line: [COMPILER_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/]
+        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/]
+        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/]
+        ignore line: [LIBRARY_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/]
+        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/]
+        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/lib/]
+        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_0bcd0.dir\\CMakeCCompilerABI.c.']
+        ignore line: [Linking C static library libcmTC_0bcd0.a]
+        ignore line: ["C:\\Program Files\\CMake\\bin\\cmake.exe" -P CMakeFiles\\cmTC_0bcd0.dir\\cmake_clean_target.cmake]
+        ignore line: ["C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_0bcd0.dir\\link.txt --verbose=1]
+        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\ARM-NO~2.EXE qc libcmTC_0bcd0.a CMakeFiles/cmTC_0bcd0.dir/CMakeCCompilerABI.c.obj]
+        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR17F9~1.EXE libcmTC_0bcd0.a]
+        ignore line: [mingw32-make[1]: Leaving directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-er6e9w']
+        ignore line: []
+        ignore line: []
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
     kind: "find-v1"
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:468 (find_file)"
@@ -2351,7 +3089,7 @@ events:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:7 (project)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:7 (project)"
     mode: "file"
     variable: "src_in"
     description: "Path to a file."
@@ -2404,6 +3142,9 @@ events:
         - "C:\\Users\\malek\\.local\\bin"
         - "C:\\Users\\malek\\AppData\\Roaming\\npm"
         - "c:\\Users\\malek\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\scripts\\noConfigScripts"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/PFE2"
+      CMAKE_SYSTEM_INCLUDE_PATH:
+        - "/include"
       CMAKE_FIND_ROOT_PATH: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/"
   -
     kind: "message-v1"
@@ -2411,7 +3152,7 @@ events:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:7 (project)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:7 (project)"
     message: |
       Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
       Compiler: C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-g++.exe 
@@ -2443,7 +3184,7 @@ events:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:7 (project)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:7 (project)"
     mode: "file"
     variable: "src_in"
     description: "Path to a file."
@@ -2496,6 +3237,9 @@ events:
         - "C:\\Users\\malek\\.local\\bin"
         - "C:\\Users\\malek\\AppData\\Roaming\\npm"
         - "c:\\Users\\malek\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\scripts\\noConfigScripts"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/PFE2"
+      CMAKE_SYSTEM_INCLUDE_PATH:
+        - "/include"
       CMAKE_FIND_ROOT_PATH: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/"
   -
     kind: "message-v1"
@@ -2503,7 +3247,7 @@ events:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:7 (project)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:7 (project)"
     message: |
       Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
       Compiler: C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-g++.exe 
@@ -2524,7 +3268,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
-      - "CMakeLists.txt:7 (project)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:7 (project)"
     mode: "program"
     variable: "CMAKE_CXX_COMPILER_AR"
     description: "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
@@ -2574,6 +3318,7 @@ events:
       - "C:/Users/malek/.local/bin/"
       - "C:/Users/malek/AppData/Roaming/npm/"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/"
+      - "/bin/"
     searched_directories:
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-15.2.com"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-15.2.exe"
@@ -2671,6 +3416,9 @@ events:
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-15.2.com"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-15.2.exe"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-15.2"
+      - "/bin/arm-none-eabi-gcc-ar-15.2.com"
+      - "/bin/arm-none-eabi-gcc-ar-15.2.exe"
+      - "/bin/arm-none-eabi-gcc-ar-15.2"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-15.com"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-15.exe"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar-15"
@@ -2767,6 +3515,9 @@ events:
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-15.com"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-15.exe"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar-15"
+      - "/bin/arm-none-eabi-gcc-ar-15.com"
+      - "/bin/arm-none-eabi-gcc-ar-15.exe"
+      - "/bin/arm-none-eabi-gcc-ar-15"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar15.com"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar15.exe"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar15"
@@ -2863,6 +3614,9 @@ events:
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar15.com"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar15.exe"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ar15"
+      - "/bin/arm-none-eabi-gcc-ar15.com"
+      - "/bin/arm-none-eabi-gcc-ar15.exe"
+      - "/bin/arm-none-eabi-gcc-ar15"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar.com"
     found: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ar.exe"
     search_context:
@@ -2900,13 +3654,16 @@ events:
         - "C:\\Users\\malek\\.local\\bin"
         - "C:\\Users\\malek\\AppData\\Roaming\\npm"
         - "c:\\Users\\malek\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\scripts\\noConfigScripts"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/PFE2"
+      CMAKE_SYSTEM_PROGRAM_PATH:
+        - "/bin"
       CMAKE_FIND_ROOT_PATH: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/"
   -
     kind: "find-v1"
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
-      - "CMakeLists.txt:7 (project)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:7 (project)"
     mode: "program"
     variable: "CMAKE_CXX_COMPILER_RANLIB"
     description: "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
@@ -2956,6 +3713,7 @@ events:
       - "C:/Users/malek/.local/bin/"
       - "C:/Users/malek/AppData/Roaming/npm/"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/"
+      - "/bin/"
     searched_directories:
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-15.2.com"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-15.2.exe"
@@ -3053,6 +3811,9 @@ events:
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-15.2.com"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-15.2.exe"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-15.2"
+      - "/bin/arm-none-eabi-gcc-ranlib-15.2.com"
+      - "/bin/arm-none-eabi-gcc-ranlib-15.2.exe"
+      - "/bin/arm-none-eabi-gcc-ranlib-15.2"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-15.com"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-15.exe"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib-15"
@@ -3149,6 +3910,9 @@ events:
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-15.com"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-15.exe"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib-15"
+      - "/bin/arm-none-eabi-gcc-ranlib-15.com"
+      - "/bin/arm-none-eabi-gcc-ranlib-15.exe"
+      - "/bin/arm-none-eabi-gcc-ranlib-15"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib15.com"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib15.exe"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib15"
@@ -3245,6 +4009,9 @@ events:
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib15.com"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib15.exe"
       - "C:/Users/malek/.vscode/extensions/ms-python.debugpy-2025.18.0-win32-x64/bundled/scripts/noConfigScripts/arm-none-eabi-gcc-ranlib15"
+      - "/bin/arm-none-eabi-gcc-ranlib15.com"
+      - "/bin/arm-none-eabi-gcc-ranlib15.exe"
+      - "/bin/arm-none-eabi-gcc-ranlib15"
       - "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib.com"
     found: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/arm-none-eabi-gcc-ranlib.exe"
     search_context:
@@ -3282,172 +4049,21 @@ events:
         - "C:\\Users\\malek\\.local\\bin"
         - "C:\\Users\\malek\\AppData\\Roaming\\npm"
         - "c:\\Users\\malek\\.vscode\\extensions\\ms-python.debugpy-2025.18.0-win32-x64\\bundled\\scripts\\noConfigScripts"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/PFE2"
+      CMAKE_SYSTEM_PROGRAM_PATH:
+        - "/bin"
       CMAKE_FIND_ROOT_PATH: "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/"
   -
     kind: "try_compile-v1"
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
-      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:7 (project)"
-    checks:
-      - "Detecting C compiler ABI info"
-    directories:
-      source: "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hwkwad"
-      binary: "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hwkwad"
-    cmakeVariables:
-      CMAKE_CXX_STDLIB_MODULES_JSON: ""
-      CMAKE_C_FLAGS: ""
-      CMAKE_C_FLAGS_DEBUG: "-Og -g -DDEBUG"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_MODULE_PATH: "C:/Users/malek/Documents/GitHub/PFE2/cmake;C:/Users/malek/Documents/GitHub/PFE2/cmake"
-    buildResult:
-      variable: "CMAKE_C_ABI_COMPILED"
-      cached: true
-      stdout: |
-        Change Dir: 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hwkwad'
-        
-        Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/mingw64/bin/mingw32-make.exe -f Makefile cmTC_9f3d5/fast
-        C:/msys64/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_9f3d5.dir\\build.make CMakeFiles/cmTC_9f3d5.dir/build
-        mingw32-make[1]: Entering directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hwkwad'
-        Building C object CMakeFiles/cmTC_9f3d5.dir/CMakeCCompilerABI.c.obj
-        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR19DD~1.EXE   -v -o CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj -c "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCCompilerABI.c"
-        Using built-in specs.
-        COLLECT_GCC=C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR19DD~1.EXE
-        Target: arm-none-eabi
-        Configured with: /data/jenkins/workspace/GNU-toolchain/arm-15/src/gcc/configure --target=arm-none-eabi --prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install --with-gmp=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-mpfr=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-mpc=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-isl=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --disable-shared --disable-nls --disable-threads --enable-checking=release --enable-languages=c,c++,fortran --with-newlib --with-gnu-as --with-headers=yes --with-gnu-ld --with-native-system-header-dir=/include --with-sysroot=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install/arm-none-eabi --with-bugurl=https://gitlab.arm.com/tooling/gnu-devtools-for-arm/-/issues/ --with-multilib-list=aprofile,rmprofile --with-libiconv-prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-libiconv-prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --enable-mingw-wildcard --host=i686-w64-mingw32 --with-pkgversion='Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)'
-        Thread model: single
-        Supported LTO compression algorithms: zlib
-        gcc version 15.2.1 20251203 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_9f3d5.dir\\'
-         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/cc1.exe -quiet -v -iprefix C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/ -isysroot C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi -D__USES_INITFINI__ C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles\\cmTC_9f3d5.dir\\ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mcpu=arm7tdmi -mfloat-abi=soft -marm -mlibarch=armv4t -march=armv4t -version -o C:\\Users\\malek\\AppData\\Local\\Temp\\ccsuIwwf.s
-        GNU C23 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) version 15.2.1 20251203 (arm-none-eabi)
-        	compiled by GNU C version 13-win32, GMP version 6.2.1, MPFR version 3.1.6, MPC version 1.0.3, isl version isl-0.15-1-g835ea3a-GMP
-        
-        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-        ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/include"
-        ignoring nonexistent directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install/lib/gcc/arm-none-eabi/15.2.1/../../../../include"
-        ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/include-fixed"
-        ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include"
-        ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/include"
-        #include "..." search starts here:
-        #include <...> search starts here:
-         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include
-         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include-fixed
-         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include
-        End of search list.
-        Compiler executable checksum: 06ab445c59ba8f89bbf09b9a069e4cf7
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_9f3d5.dir\\'
-         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv4t -mfloat-abi=soft -meabi=5 -o CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj C:\\Users\\malek\\AppData\\Local\\Temp\\ccsuIwwf.s
-        GNU assembler version 2.45.1 (arm-none-eabi) using BFD version (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 2.45.1.20251203
-        COMPILER_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/
-        LIBRARY_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/lib/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.'
-        Linking C static library libcmTC_9f3d5.a
-        "C:\\Program Files\\CMake\\bin\\cmake.exe" -P CMakeFiles\\cmTC_9f3d5.dir\\cmake_clean_target.cmake
-        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_9f3d5.dir\\link.txt --verbose=1
-        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\ARM-NO~2.EXE qc libcmTC_9f3d5.a CMakeFiles/cmTC_9f3d5.dir/CMakeCCompilerABI.c.obj
-        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR17F9~1.EXE libcmTC_9f3d5.a
-        mingw32-make[1]: Leaving directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hwkwad'
-        
-      exitCode: 0
-  -
-    kind: "message-v1"
-    backtrace:
-      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
-      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:7 (project)"
-    message: |
-      Parsed C implicit include dir info: rv=done
-        found start of include info
-        found start of implicit include info
-          add: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include]
-          add: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include-fixed]
-          add: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include]
-        end of search list found
-        collapse include dir [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include] ==> [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/arm-none-eabi/15.2.1/include]
-        collapse include dir [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include-fixed] ==> [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/arm-none-eabi/15.2.1/include-fixed]
-        collapse include dir [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include] ==> [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/arm-none-eabi/include]
-        implicit include dirs: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/arm-none-eabi/15.2.1/include;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/arm-none-eabi/15.2.1/include-fixed;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/arm-none-eabi/include]
-      
-      
-  -
-    kind: "message-v1"
-    backtrace:
-      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
-      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:7 (project)"
-    message: |
-      Parsed C implicit link information:
-        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
-        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hwkwad']
-        ignore line: []
-        ignore line: [Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/mingw64/bin/mingw32-make.exe -f Makefile cmTC_9f3d5/fast]
-        ignore line: [C:/msys64/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_9f3d5.dir\\build.make CMakeFiles/cmTC_9f3d5.dir/build]
-        ignore line: [mingw32-make[1]: Entering directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hwkwad']
-        ignore line: [Building C object CMakeFiles/cmTC_9f3d5.dir/CMakeCCompilerABI.c.obj]
-        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR19DD~1.EXE   -v -o CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj -c "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCCompilerABI.c"]
-        ignore line: [Using built-in specs.]
-        ignore line: [COLLECT_GCC=C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR19DD~1.EXE]
-        ignore line: [Target: arm-none-eabi]
-        ignore line: [Configured with: /data/jenkins/workspace/GNU-toolchain/arm-15/src/gcc/configure --target=arm-none-eabi --prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install --with-gmp=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-mpfr=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-mpc=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-isl=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --disable-shared --disable-nls --disable-threads --enable-checking=release --enable-languages=c,c++,fortran --with-newlib --with-gnu-as --with-headers=yes --with-gnu-ld --with-native-system-header-dir=/include --with-sysroot=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install/arm-none-eabi --with-bugurl=https://gitlab.arm.com/tooling/gnu-devtools-for-arm/-/issues/ --with-multilib-list=aprofile,rmprofile --with-libiconv-prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --with-libiconv-prefix=/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/host-tools --enable-mingw-wildcard --host=i686-w64-mingw32 --with-pkgversion='Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)']
-        ignore line: [Thread model: single]
-        ignore line: [Supported LTO compression algorithms: zlib]
-        ignore line: [gcc version 15.2.1 20251203 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_9f3d5.dir\\']
-        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/cc1.exe -quiet -v -iprefix C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/ -isysroot C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi -D__USES_INITFINI__ C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles\\cmTC_9f3d5.dir\\ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mcpu=arm7tdmi -mfloat-abi=soft -marm -mlibarch=armv4t -march=armv4t -version -o C:\\Users\\malek\\AppData\\Local\\Temp\\ccsuIwwf.s]
-        ignore line: [GNU C23 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) version 15.2.1 20251203 (arm-none-eabi)]
-        ignore line: [	compiled by GNU C version 13-win32  GMP version 6.2.1  MPFR version 3.1.6  MPC version 1.0.3  isl version isl-0.15-1-g835ea3a-GMP]
-        ignore line: []
-        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
-        ignore line: [ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/include"]
-        ignore line: [ignoring nonexistent directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/data/jenkins/workspace/GNU-toolchain/arm-15/build-mingw-arm-none-eabi/install/lib/gcc/arm-none-eabi/15.2.1/../../../../include"]
-        ignore line: [ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/include-fixed"]
-        ignore line: [ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/lib/gcc/../../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include"]
-        ignore line: [ignoring duplicate directory "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/include"]
-        ignore line: [#include "..." search starts here:]
-        ignore line: [#include <...> search starts here:]
-        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include]
-        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/include-fixed]
-        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include]
-        ignore line: [End of search list.]
-        ignore line: [Compiler executable checksum: 06ab445c59ba8f89bbf09b9a069e4cf7]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_9f3d5.dir\\']
-        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv4t -mfloat-abi=soft -meabi=5 -o CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj C:\\Users\\malek\\AppData\\Local\\Temp\\ccsuIwwf.s]
-        ignore line: [GNU assembler version 2.45.1 (arm-none-eabi) using BFD version (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 2.45.1.20251203]
-        ignore line: [COMPILER_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/]
-        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/]
-        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/]
-        ignore line: [LIBRARY_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/]
-        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/]
-        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/lib/]
-        ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_9f3d5.dir\\CMakeCCompilerABI.c.']
-        ignore line: [Linking C static library libcmTC_9f3d5.a]
-        ignore line: ["C:\\Program Files\\CMake\\bin\\cmake.exe" -P CMakeFiles\\cmTC_9f3d5.dir\\cmake_clean_target.cmake]
-        ignore line: ["C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_9f3d5.dir\\link.txt --verbose=1]
-        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\ARM-NO~2.EXE qc libcmTC_9f3d5.a CMakeFiles/cmTC_9f3d5.dir/CMakeCCompilerABI.c.obj]
-        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR17F9~1.EXE libcmTC_9f3d5.a]
-        ignore line: [mingw32-make[1]: Leaving directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hwkwad']
-        ignore line: []
-        ignore line: []
-        implicit libs: []
-        implicit objs: []
-        implicit dirs: []
-        implicit fwks: []
-      
-      
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:7 (project)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:7 (project)"
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-3y4ri1"
-      binary: "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-3y4ri1"
+      source: "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hg1kzo"
+      binary: "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hg1kzo"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-Og -g -DDEBUG"
@@ -3459,13 +4075,13 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-3y4ri1'
+        Change Dir: 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hg1kzo'
         
-        Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/mingw64/bin/mingw32-make.exe -f Makefile cmTC_6c2a9/fast
-        C:/msys64/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_6c2a9.dir\\build.make CMakeFiles/cmTC_6c2a9.dir/build
-        mingw32-make[1]: Entering directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-3y4ri1'
-        Building CXX object CMakeFiles/cmTC_6c2a9.dir/CMakeCXXCompilerABI.cpp.obj
-        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR10B2~1.EXE   -v -o CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj -c "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp"
+        Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/mingw64/bin/mingw32-make.exe -f Makefile cmTC_141b6/fast
+        C:/msys64/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_141b6.dir\\build.make CMakeFiles/cmTC_141b6.dir/build
+        mingw32-make[1]: Entering directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hg1kzo'
+        Building CXX object CMakeFiles/cmTC_141b6.dir/CMakeCXXCompilerABI.cpp.obj
+        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR10B2~1.EXE   -v -o CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj -c "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp"
         Using built-in specs.
         COLLECT_GCC=C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR10B2~1.EXE
         Target: arm-none-eabi
@@ -3473,8 +4089,8 @@ events:
         Thread model: single
         Supported LTO compression algorithms: zlib
         gcc version 15.2.1 20251203 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_6c2a9.dir\\'
-         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/cc1plus.exe -quiet -v -iprefix C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/ -isysroot C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi -D__USES_INITFINI__ C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles\\cmTC_6c2a9.dir\\ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mcpu=arm7tdmi -mfloat-abi=soft -marm -mlibarch=armv4t -march=armv4t -version -o C:\\Users\\malek\\AppData\\Local\\Temp\\ccUMS82x.s
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_141b6.dir\\'
+         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/cc1plus.exe -quiet -v -iprefix C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/ -isysroot C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi -D__USES_INITFINI__ C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles\\cmTC_141b6.dir\\ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mcpu=arm7tdmi -mfloat-abi=soft -marm -mlibarch=armv4t -march=armv4t -version -o C:\\Users\\malek\\AppData\\Local\\Temp\\cctQF0H6.s
         GNU C++17 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) version 15.2.1 20251203 (arm-none-eabi)
         	compiled by GNU C version 13-win32, GMP version 6.2.1, MPFR version 3.1.6, MPC version 1.0.3, isl version isl-0.15-1-g835ea3a-GMP
         
@@ -3497,18 +4113,18 @@ events:
          C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include
         End of search list.
         Compiler executable checksum: aac432cb28554e085afe9b46d5a4b17f
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_6c2a9.dir\\'
-         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv4t -mfloat-abi=soft -meabi=5 -o CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj C:\\Users\\malek\\AppData\\Local\\Temp\\ccUMS82x.s
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_141b6.dir\\'
+         C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv4t -mfloat-abi=soft -meabi=5 -o CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj C:\\Users\\malek\\AppData\\Local\\Temp\\cctQF0H6.s
         GNU assembler version 2.45.1 (arm-none-eabi) using BFD version (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 2.45.1.20251203
         COMPILER_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/
         LIBRARY_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/lib/;C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.'
-        Linking CXX static library libcmTC_6c2a9.a
-        "C:\\Program Files\\CMake\\bin\\cmake.exe" -P CMakeFiles\\cmTC_6c2a9.dir\\cmake_clean_target.cmake
-        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_6c2a9.dir\\link.txt --verbose=1
-        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\ARM-NO~2.EXE qc libcmTC_6c2a9.a CMakeFiles/cmTC_6c2a9.dir/CMakeCXXCompilerABI.cpp.obj
-        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR17F9~1.EXE libcmTC_6c2a9.a
-        mingw32-make[1]: Leaving directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-3y4ri1'
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.'
+        Linking CXX static library libcmTC_141b6.a
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -P CMakeFiles\\cmTC_141b6.dir\\cmake_clean_target.cmake
+        "C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_141b6.dir\\link.txt --verbose=1
+        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\ARM-NO~2.EXE qc libcmTC_141b6.a CMakeFiles/cmTC_141b6.dir/CMakeCXXCompilerABI.cpp.obj
+        C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR17F9~1.EXE libcmTC_141b6.a
+        mingw32-make[1]: Leaving directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hg1kzo'
         
       exitCode: 0
   -
@@ -3516,7 +4132,7 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:7 (project)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:7 (project)"
     message: |
       Parsed CXX implicit include dir info: rv=done
         found start of include info
@@ -3542,18 +4158,18 @@ events:
     backtrace:
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
       - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:7 (project)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:7 (project)"
     message: |
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-3y4ri1']
+        ignore line: [Change Dir: 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hg1kzo']
         ignore line: []
-        ignore line: [Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/mingw64/bin/mingw32-make.exe -f Makefile cmTC_6c2a9/fast]
-        ignore line: [C:/msys64/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_6c2a9.dir\\build.make CMakeFiles/cmTC_6c2a9.dir/build]
-        ignore line: [mingw32-make[1]: Entering directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-3y4ri1']
-        ignore line: [Building CXX object CMakeFiles/cmTC_6c2a9.dir/CMakeCXXCompilerABI.cpp.obj]
-        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR10B2~1.EXE   -v -o CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj -c "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp"]
+        ignore line: [Run Build Command(s): "C:/Program Files/CMake/bin/cmake.exe" -E env VERBOSE=1 C:/msys64/mingw64/bin/mingw32-make.exe -f Makefile cmTC_141b6/fast]
+        ignore line: [C:/msys64/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_141b6.dir\\build.make CMakeFiles/cmTC_141b6.dir/build]
+        ignore line: [mingw32-make[1]: Entering directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hg1kzo']
+        ignore line: [Building CXX object CMakeFiles/cmTC_141b6.dir/CMakeCXXCompilerABI.cpp.obj]
+        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR10B2~1.EXE   -v -o CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj -c "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp"]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR10B2~1.EXE]
         ignore line: [Target: arm-none-eabi]
@@ -3561,8 +4177,8 @@ events:
         ignore line: [Thread model: single]
         ignore line: [Supported LTO compression algorithms: zlib]
         ignore line: [gcc version 15.2.1 20251203 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_6c2a9.dir\\']
-        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/cc1plus.exe -quiet -v -iprefix C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/ -isysroot C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi -D__USES_INITFINI__ C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles\\cmTC_6c2a9.dir\\ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mcpu=arm7tdmi -mfloat-abi=soft -marm -mlibarch=armv4t -march=armv4t -version -o C:\\Users\\malek\\AppData\\Local\\Temp\\ccUMS82x.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_141b6.dir\\']
+        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/cc1plus.exe -quiet -v -iprefix C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/ -isysroot C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi -D__USES_INITFINI__ C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles\\cmTC_141b6.dir\\ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mcpu=arm7tdmi -mfloat-abi=soft -marm -mlibarch=armv4t -march=armv4t -version -o C:\\Users\\malek\\AppData\\Local\\Temp\\cctQF0H6.s]
         ignore line: [GNU C++17 (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) version 15.2.1 20251203 (arm-none-eabi)]
         ignore line: [	compiled by GNU C version 13-win32  GMP version 6.2.1  MPFR version 3.1.6  MPC version 1.0.3  isl version isl-0.15-1-g835ea3a-GMP]
         ignore line: []
@@ -3585,8 +4201,8 @@ events:
         ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/include]
         ignore line: [End of search list.]
         ignore line: [Compiler executable checksum: aac432cb28554e085afe9b46d5a4b17f]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_6c2a9.dir\\']
-        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv4t -mfloat-abi=soft -meabi=5 -o CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj C:\\Users\\malek\\AppData\\Local\\Temp\\ccUMS82x.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_141b6.dir\\']
+        ignore line: [ C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv4t -mfloat-abi=soft -meabi=5 -o CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj C:\\Users\\malek\\AppData\\Local\\Temp\\cctQF0H6.s]
         ignore line: [GNU assembler version 2.45.1 (arm-none-eabi) using BFD version (Arm GNU Toolchain 15.2.Rel1 (Build arm-15.86)) 2.45.1.20251203]
         ignore line: [COMPILER_PATH=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/arm-none-eabi/15.2.1/]
         ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../libexec/gcc/]
@@ -3595,13 +4211,13 @@ events:
         ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/]
         ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/15.2.1/../../../../arm-none-eabi/lib/]
         ignore line: [C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi/bin/../arm-none-eabi/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_6c2a9.dir\\CMakeCXXCompilerABI.cpp.']
-        ignore line: [Linking CXX static library libcmTC_6c2a9.a]
-        ignore line: ["C:\\Program Files\\CMake\\bin\\cmake.exe" -P CMakeFiles\\cmTC_6c2a9.dir\\cmake_clean_target.cmake]
-        ignore line: ["C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_6c2a9.dir\\link.txt --verbose=1]
-        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\ARM-NO~2.EXE qc libcmTC_6c2a9.a CMakeFiles/cmTC_6c2a9.dir/CMakeCXXCompilerABI.cpp.obj]
-        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR17F9~1.EXE libcmTC_6c2a9.a]
-        ignore line: [mingw32-make[1]: Leaving directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-3y4ri1']
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-mcpu=arm7tdmi' '-mfloat-abi=soft' '-marm' '-mlibarch=armv4t' '-march=armv4t' '-dumpdir' 'CMakeFiles\\cmTC_141b6.dir\\CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX static library libcmTC_141b6.a]
+        ignore line: ["C:\\Program Files\\CMake\\bin\\cmake.exe" -P CMakeFiles\\cmTC_141b6.dir\\cmake_clean_target.cmake]
+        ignore line: ["C:\\Program Files\\CMake\\bin\\cmake.exe" -E cmake_link_script CMakeFiles\\cmTC_141b6.dir\\link.txt --verbose=1]
+        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\ARM-NO~2.EXE qc libcmTC_141b6.a CMakeFiles/cmTC_141b6.dir/CMakeCXXCompilerABI.cpp.obj]
+        ignore line: [C:\\PROGRA~2\\Arm\\GNUTOO~1\\bin\\AR17F9~1.EXE libcmTC_141b6.a]
+        ignore line: [mingw32-make[1]: Leaving directory 'C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/CMakeFiles/CMakeScratch/TryCompile-hg1kzo']
         ignore line: []
         ignore line: []
         implicit libs: []
@@ -3613,7 +4229,7 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:22 (find_program)"
+      - "Apps/LoRaWAN_End_Node/CMakeLists.txt:24 (find_program)"
     mode: "program"
     variable: "CMAKE_SIZE"
     description: "Path to a program."

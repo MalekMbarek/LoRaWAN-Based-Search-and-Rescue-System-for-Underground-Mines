@@ -249,6 +249,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/LoRaWAN_End_Node.elf.dir/__/__/common/Core/Src/usart_if.c.obj.d"
   "CMakeFiles/LoRaWAN_End_Node.elf.dir/__/__/common/LoRaWAN/Target/b_l072z_lrwan1_bus.c.obj"
   "CMakeFiles/LoRaWAN_End_Node.elf.dir/__/__/common/LoRaWAN/Target/b_l072z_lrwan1_bus.c.obj.d"
+  "CMakeFiles/LoRaWAN_End_Node.elf.dir/__/__/common/STM32CubeIDE/startup_stm32l072xx.s.obj"
   "CMakeFiles/LoRaWAN_End_Node.elf.dir/__/__/common/STM32CubeIDE/syscalls.c.obj"
   "CMakeFiles/LoRaWAN_End_Node.elf.dir/__/__/common/STM32CubeIDE/syscalls.c.obj.d"
   "CMakeFiles/LoRaWAN_End_Node.elf.dir/b78c4d08769010e9bd614842d9f18de4/Middlewares/Third_Party/LoRaWAN/LmHandler/Packages/LmhpClockSync.c.obj"
@@ -261,6 +262,6 @@ file(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang C)
+foreach(lang ASM C)
   include(CMakeFiles/LoRaWAN_End_Node.elf.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

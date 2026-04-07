@@ -4,6 +4,48 @@ set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
 
 # The set of languages for which implicit dependencies are needed:
 set(CMAKE_DEPENDS_LANGUAGES
+  "ASM"
+  )
+# The set of files for implicit dependencies of each language:
+set(CMAKE_DEPENDS_CHECK_ASM
+  "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/common/STM32CubeIDE/startup_stm32l072xx.s" "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/Apps/LoRaWAN_End_Node/CMakeFiles/LoRaWAN_End_Node.elf.dir/__/__/common/STM32CubeIDE/startup_stm32l072xx.s.obj"
+  )
+set(CMAKE_ASM_COMPILER_ID "GNU")
+
+# Preprocessor definitions for this target.
+set(CMAKE_TARGET_DEFINITIONS_ASM
+  "CMWX1ZZABZ0XX"
+  "LORAWAN_KMS=0"
+  "STM32L072xx"
+  "USE_B_L072Z_LRWAN1"
+  "USE_HAL_DRIVER"
+  )
+
+# The include file search paths:
+set(CMAKE_ASM_TARGET_INCLUDE_PATH
+  "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/Apps/LoRaWAN_End_Node/LoRaWAN/App"
+  "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/Apps/LoRaWAN_End_Node/../../common/Core/Inc"
+  "C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/Apps/LoRaWAN_End_Node/../../common/LoRaWAN/Target"
+  "C:/Users/malek/Documents/GitHub/PFE2/Drivers/STM32L0xx_HAL_Driver/Inc"
+  "C:/Users/malek/Documents/GitHub/PFE2/Drivers/STM32L0xx_HAL_Driver/Inc/Legacy"
+  "C:/Users/malek/Documents/GitHub/PFE2/Drivers/CMSIS/Device/ST/STM32L0xx/Include"
+  "C:/Users/malek/Documents/GitHub/PFE2/Drivers/CMSIS/Core/Include"
+  "C:/Users/malek/Documents/GitHub/PFE2/Drivers/BSP/B-L072Z-LRWAN1"
+  "C:/Users/malek/Documents/GitHub/PFE2/Drivers/BSP/CMWX1ZZABZ_0xx"
+  "C:/Users/malek/Documents/GitHub/PFE2/Middlewares/Third_Party/LoRaWAN/Conf"
+  "C:/Users/malek/Documents/GitHub/PFE2/Middlewares/Third_Party/LoRaWAN/Crypto"
+  "C:/Users/malek/Documents/GitHub/PFE2/Middlewares/Third_Party/LoRaWAN/LmHandler"
+  "C:/Users/malek/Documents/GitHub/PFE2/Middlewares/Third_Party/LoRaWAN/LmHandler/Packages"
+  "C:/Users/malek/Documents/GitHub/PFE2/Middlewares/Third_Party/LoRaWAN/Mac"
+  "C:/Users/malek/Documents/GitHub/PFE2/Middlewares/Third_Party/LoRaWAN/Mac/Region"
+  "C:/Users/malek/Documents/GitHub/PFE2/Middlewares/Third_Party/LoRaWAN/Utilities"
+  "C:/Users/malek/Documents/GitHub/PFE2/Middlewares/Third_Party/SubGHz_Phy"
+  "C:/Users/malek/Documents/GitHub/PFE2/Middlewares/Third_Party/SubGHz_Phy/sx1276"
+  "C:/Users/malek/Documents/GitHub/PFE2/Utilities/lpm/tiny_lpm"
+  "C:/Users/malek/Documents/GitHub/PFE2/Utilities/sequencer"
+  "C:/Users/malek/Documents/GitHub/PFE2/Utilities/timer"
+  "C:/Users/malek/Documents/GitHub/PFE2/Utilities/misc"
+  "C:/Users/malek/Documents/GitHub/PFE2/Utilities/trace/adv_trace"
   )
 
 # The set of dependency files which are needed:

@@ -3129,6 +3129,14 @@ __/__/common/LoRaWAN/Target/b_l072z_lrwan1_bus.c.s:
 	cd /d C:\Users\malek\Documents\GitHub\PFE2\Projects\B-L072Z-LRWAN1\Applications\LoRaWAN\build && $(MAKE) $(MAKESILENT) -f Apps\LoRaWAN_End_Node\CMakeFiles\LoRaWAN_End_Node.elf.dir\build.make Apps/LoRaWAN_End_Node/CMakeFiles/LoRaWAN_End_Node.elf.dir/__/__/common/LoRaWAN/Target/b_l072z_lrwan1_bus.c.s
 .PHONY : __/__/common/LoRaWAN/Target/b_l072z_lrwan1_bus.c.s
 
+__/__/common/STM32CubeIDE/startup_stm32l072xx.obj: __/__/common/STM32CubeIDE/startup_stm32l072xx.s.obj
+.PHONY : __/__/common/STM32CubeIDE/startup_stm32l072xx.obj
+
+# target to build an object file
+__/__/common/STM32CubeIDE/startup_stm32l072xx.s.obj:
+	cd /d C:\Users\malek\Documents\GitHub\PFE2\Projects\B-L072Z-LRWAN1\Applications\LoRaWAN\build && $(MAKE) $(MAKESILENT) -f Apps\LoRaWAN_End_Node\CMakeFiles\LoRaWAN_End_Node.elf.dir\build.make Apps/LoRaWAN_End_Node/CMakeFiles/LoRaWAN_End_Node.elf.dir/__/__/common/STM32CubeIDE/startup_stm32l072xx.s.obj
+.PHONY : __/__/common/STM32CubeIDE/startup_stm32l072xx.s.obj
+
 __/__/common/STM32CubeIDE/syscalls.obj: __/__/common/STM32CubeIDE/syscalls.c.obj
 .PHONY : __/__/common/STM32CubeIDE/syscalls.obj
 
@@ -3585,6 +3593,7 @@ help:
 	@echo ... __/__/common/LoRaWAN/Target/b_l072z_lrwan1_bus.obj
 	@echo ... __/__/common/LoRaWAN/Target/b_l072z_lrwan1_bus.i
 	@echo ... __/__/common/LoRaWAN/Target/b_l072z_lrwan1_bus.s
+	@echo ... __/__/common/STM32CubeIDE/startup_stm32l072xx.obj
 	@echo ... __/__/common/STM32CubeIDE/syscalls.obj
 	@echo ... __/__/common/STM32CubeIDE/syscalls.i
 	@echo ... __/__/common/STM32CubeIDE/syscalls.s

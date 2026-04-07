@@ -4,7 +4,7 @@
 # Example: -DAPPLICATION=personal
 # ============================================================
 cmake_minimum_required(VERSION 3.20)
-project(PFE2)
+project(PFE2 C ASM)
 
 # List of valid applications
 set(AVAILABLE_APPLICATIONS
