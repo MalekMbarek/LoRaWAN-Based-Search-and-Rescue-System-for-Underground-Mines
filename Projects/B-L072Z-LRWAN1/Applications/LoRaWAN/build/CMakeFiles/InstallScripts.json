@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/cmake_install.cmake",
-		"C:/Users/malek/Documents/GitHub/PFE2/Projects/B-L072Z-LRWAN1/Applications/LoRaWAN/build/Apps/LoRaWAN_End_Node/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
