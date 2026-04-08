@@ -41,10 +41,9 @@ add_compile_definitions(
 include_directories(
     # App-specific
     LoRaWAN/App
-
-    # Common (shared across all apps)
-    ${COMMON}/Core/Inc
-    ${COMMON}/LoRaWAN/Target
+    LoRaWAN/Target
+    Core/Inc
+  
     # HAL
     ${DRIVERS}/STM32L0xx_HAL_Driver/Inc
     ${DRIVERS}/STM32L0xx_HAL_Driver/Inc/Legacy
@@ -82,12 +81,10 @@ include_directories(
 file(GLOB_RECURSE SOURCES
     # App-specific code (unique to this app)
     "LoRaWAN/App/*.c"
-
-    # Common shared code
-    "${COMMON}/Core/Src/*.c"
-    "${COMMON}/LoRaWAN/Target/*.c"
-    "${COMMON}/STM32CubeIDE/syscalls.c"
-    "${COMMON}/STM32CubeIDE/startup_stm32l072xx.s"
+    "Core/Src/*.c"
+    "LoRaWAN/Target/*.c"
+    "STM32CubeIDE/syscalls.c"
+    "STM32CubeIDE/startup_stm32l072xx.s"
 
     # HAL
     "${DRIVERS}/STM32L0xx_HAL_Driver/Src/*.c"
@@ -122,7 +119,7 @@ list(APPEND SOURCES
 list(FILTER SOURCES EXCLUDE REGEX ".*_template\\.c$")
 
 # ── Linker script ─────────────────────────────────────────────────────────────
-set(LINKER_SCRIPT ${COMMON}/STM32CubeIDE/cmwx1zzabz_0xx/STM32L072CZTx_FLASH.ld)
+set(LINKER_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/STM32CubeIDE/cmwx1zzabz_0xx/STM32L072CZTx_FLASH.ld)
 
 # ── ELF target ────────────────────────────────────────────────────────────────
 add_executable(${PROJECT_NAME}.elf ${SOURCES})
