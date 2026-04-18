@@ -12,6 +12,8 @@ set(AVAILABLE_APPLICATIONS
     LoRaWAN_AT_Slave
     personal
     static
+    static1
+    static2
     scanner
 )
 
