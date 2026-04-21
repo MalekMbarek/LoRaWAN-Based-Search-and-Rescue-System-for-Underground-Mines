@@ -22,7 +22,7 @@
 
 /* Raw LoRa Configuration (must match personal node) */
 #define RAW_RF_FREQUENCY                868000000
-#define RAW_LORA_BANDWIDTH              0         // 125 kHz
+#define RAW_LORA_BANDWIDTH              0
 #define RAW_LORA_SPREADING_FACTOR       7
 #define RAW_LORA_CODINGRATE             1
 #define RAW_LORA_PREAMBLE_LENGTH        8
@@ -30,9 +30,12 @@
 #define RAW_LORA_FIX_LENGTH_PAYLOAD_ON  false
 #define RAW_LORA_IQ_INVERSION_ON        false
 
-/* Mode timing - Independent of LoRaWAN state */
-#define LORAWAN_MODE_DURATION_MS        30000     // 60s in LoRaWAN mode
+/* Mode timing */
+#define LORAWAN_MODE_DURATION_MS        30000     // 30s in LoRaWAN mode
 #define RAW_LORA_MODE_DURATION_MS       30000     // 30s in Raw LoRa RX mode
+
+/* Node timeout - consider inactive after 60 seconds without update */
+#define NODE_TIMEOUT_MS                 60000
 
 /* Private variables */
 static OperatingMode_t currentMode = MODE_LORAWAN;
@@ -43,12 +46,16 @@ static PersonalNodePacket_t lastPersonalNodeData;
 static uint8_t loraWanSuspended = 0;
 static uint8_t loraWanJoined = 0;
 
+/* Storage for personal nodes data */
+static StoredPersonalNode_t storedNodes[MAX_PERSONAL_NODES];
+
 /* Forward declarations */
 static void RawLoRa_ConfigureRx(void);
 static void RawLoRa_StartRx(void);
 static void LoRaWAN_Resume(void);
 static void LoRaWAN_Suspend(void);
 static void OnModeSwitchTimer(void *context);
+static void StorePersonalNodeData(PersonalNodePacket_t* packet);
 
 /* Raw LoRa Radio Callbacks */
 static void OnRawRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr)
@@ -59,13 +66,16 @@ static void OnRawRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t sn
             size, rssi, snr);
     
     // Validate packet size
-    if (size >= 3){//= sizeof(PersonalNodePacket_t)) {
+    if (size >= 3) {
         memcpy(&lastPersonalNodeData, payload, sizeof(PersonalNodePacket_t));
         
         // Parse accelerometer data (bytes 4-9 are big-endian int16)
         lastPersonalNodeData.accX = (int16_t)((payload[4] << 8) | payload[5]);
         lastPersonalNodeData.accY = (int16_t)((payload[6] << 8) | payload[7]);
         lastPersonalNodeData.accZ = (int16_t)((payload[8] << 8) | payload[9]);
+        
+        // Store the data
+        StorePersonalNodeData(&lastPersonalNodeData);
         
         newPacketReceived = 1;
         
@@ -81,7 +91,8 @@ static void OnRawRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t sn
         
         // Handle alerts
         if (lastPersonalNodeData.status == 2) {  // STATUS_SOS
-            APP_LOG(TS_OFF, VLEVEL_M, "!!! PERSONAL NODE SOS ALERT !!!\r\n");
+            APP_LOG(TS_OFF, VLEVEL_M, "!!! PERSONAL NODE %d SOS ALERT !!!\r\n",
+                    lastPersonalNodeData.nodeId);
             for (int i = 0; i < 6; i++) {
                 LED_On(LED_RED1);
                 HAL_Delay(100);
@@ -90,7 +101,8 @@ static void OnRawRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t sn
             }
         }
         else if (lastPersonalNodeData.status == 1) {  // STATUS_FALL
-            APP_LOG(TS_OFF, VLEVEL_M, "!!! PERSONAL NODE FALL DETECTED !!!\r\n");
+            APP_LOG(TS_OFF, VLEVEL_M, "!!! PERSONAL NODE %d FALL DETECTED !!!\r\n",
+                    lastPersonalNodeData.nodeId);
             for (int i = 0; i < 10; i++) {
                 LED_On(LED_RED1);
                 HAL_Delay(80);
@@ -125,6 +137,33 @@ static void OnRawTxDone(void)
 static void OnRawTxTimeout(void)
 {
     Radio.Sleep();
+}
+
+/* Personal node storage functions */
+static void StorePersonalNodeData(PersonalNodePacket_t* packet)
+{
+    if (packet->nodeId < 1 || packet->nodeId > MAX_PERSONAL_NODES) {
+        APP_LOG(TS_OFF, VLEVEL_M, "[Storage] Invalid node ID: %d\r\n", packet->nodeId);
+        return;
+    }
+    
+    uint8_t index = packet->nodeId - 1;  // Convert to 0-based index
+    
+    storedNodes[index].nodeId = packet->nodeId;
+    storedNodes[index].status = packet->status;
+    storedNodes[index].heartRate = packet->heartRate;
+    storedNodes[index].accX = packet->accX;
+    storedNodes[index].accY = packet->accY;
+    storedNodes[index].accZ = packet->accZ;
+    storedNodes[index].lastUpdateTime = HAL_GetTick();
+    storedNodes[index].isActive = 1;
+    
+    // Set alert flag if status is FALL or SOS
+    if (packet->status == STATUS_FALL || packet->status == STATUS_SOS) {
+        storedNodes[index].hasAlert = 1;
+    }
+    
+    APP_LOG(TS_OFF, VLEVEL_L, "[Storage] Node %d updated\r\n", packet->nodeId);
 }
 
 /* Raw LoRa Functions */
@@ -187,13 +226,12 @@ static void LoRaWAN_Resume(void)
     Radio.Sleep();
     HAL_Delay(200);
     
-    // Instead of LmHandlerJoin, restart the whole stack
-    LoRaWAN_Restart();   // implemented in lora_app.c
+    // Restart the whole stack (calls your LoRaWAN_Restart from lora_app.c)
+    LoRaWAN_Restart();
     
     loraWanSuspended = 0;
-    APP_LOG(TS_OFF, VLEVEL_M, "[LoRaWAN] Resumed and rejoining\n");
+    APP_LOG(TS_OFF, VLEVEL_M, "[LoRaWAN] Resumed and rejoining\r\n");
 }
-
 
 /* Mode switching - Time-based, independent of network state */
 static void OnModeSwitchTimer(void *context)
@@ -211,6 +249,9 @@ void DualMode_Init(void)
     currentMode = MODE_LORAWAN;
     loraWanSuspended = 0;
     loraWanJoined = 0;
+    
+    // Initialize stored nodes
+    memset(storedNodes, 0, sizeof(storedNodes));
     
     // Create mode switch timer for automatic switching
     UTIL_TIMER_Create(&modeSwitchTimer, 
@@ -267,7 +308,7 @@ void DualMode_Switch(OperatingMode_t newMode)
         // Delay for clean radio state
         HAL_Delay(200);
         
-        // Resume LoRaWAN - this will trigger rejoin
+        // Resume LoRaWAN - this will trigger rejoin via your LoRaWAN_Restart()
         LoRaWAN_Resume();
         
         currentMode = MODE_LORAWAN;
@@ -282,6 +323,7 @@ void DualMode_Switch(OperatingMode_t newMode)
     APP_LOG(TS_OFF, VLEVEL_M, "[DualMode] Next switch in %ds\r\n", nextModeDuration/1000);
 }
 
+/* Public API functions */
 OperatingMode_t DualMode_GetCurrent(void)
 {
     return currentMode;
@@ -307,21 +349,16 @@ uint8_t DualMode_IsLoRaWANJoined(void)
 
 void DualMode_Process(void)
 {
-    // Process received personal node data
-    if (currentMode == MODE_RAW_LORA_RX && newPacketReceived) {
-        newPacketReceived = 0;
-        
-        // Optional: Switch to LoRaWAN immediately on critical alerts
-        // Uncomment if you want immediate LoRaWAN uplink on fall/SOS
-        /*
-        if (lastPersonalNodeData.status != 0) {  // FALL or SOS
-            APP_LOG(TS_OFF, VLEVEL_M, "[DualMode] Alert detected, switching to LoRaWAN\r\n");
-            DualMode_Switch(MODE_LORAWAN);
-            
-            // Wait for join before triggering uplink
-            // The uplink will happen automatically via the normal timer
+    // Check for node timeouts
+    uint32_t now = HAL_GetTick();
+    for (int i = 0; i < MAX_PERSONAL_NODES; i++) {
+        if (storedNodes[i].isActive) {
+            if ((now - storedNodes[i].lastUpdateTime) > NODE_TIMEOUT_MS) {
+                APP_LOG(TS_OFF, VLEVEL_M, "[Storage] Node %d timeout\r\n", 
+                        storedNodes[i].nodeId);
+                storedNodes[i].isActive = 0;
+            }
         }
-        */
     }
 }
 
@@ -329,4 +366,53 @@ void DualMode_Process(void)
 PersonalNodePacket_t* DualMode_GetLastPersonalNodeData(void)
 {
     return &lastPersonalNodeData;
+}
+
+/* Storage access functions */
+StoredPersonalNode_t* DualMode_GetStoredNode(uint8_t nodeId)
+{
+    if (nodeId < 1 || nodeId > MAX_PERSONAL_NODES) {
+        return NULL;
+    }
+    return &storedNodes[nodeId - 1];
+}
+
+uint8_t DualMode_GetActiveNodeCount(void)
+{
+    uint8_t count = 0;
+    for (int i = 0; i < MAX_PERSONAL_NODES; i++) {
+        if (storedNodes[i].isActive) {
+            count++;
+        }
+    }
+    return count;
+}
+
+void DualMode_GetAllActiveNodes(StoredPersonalNode_t* nodes, uint8_t* count)
+{
+    *count = 0;
+    for (int i = 0; i < MAX_PERSONAL_NODES; i++) {
+        if (storedNodes[i].isActive) {
+            memcpy(&nodes[*count], &storedNodes[i], sizeof(StoredPersonalNode_t));
+            (*count)++;
+        }
+    }
+}
+
+uint8_t DualMode_HasAnyAlerts(void)
+{
+    for (int i = 0; i < MAX_PERSONAL_NODES; i++) {
+        if (storedNodes[i].isActive && storedNodes[i].hasAlert) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void DualMode_ClearAlert(uint8_t nodeId)
+{
+    if (nodeId < 1 || nodeId > MAX_PERSONAL_NODES) {
+        return;
+    }
+    storedNodes[nodeId - 1].hasAlert = 0;
 }

@@ -424,7 +424,6 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
   }
   /* USER CODE END OnRxData_1 */
 }
-
 static void SendTxData(void)
 {
   /* USER CODE BEGIN SendTxData_1 */
@@ -441,35 +440,78 @@ static void SendTxData(void)
   int32_t latitude = 0;
   int32_t longitude = 0;
   uint16_t altitudeGps = 0;
-#endif /* CAYENNE_LPP */
+#endif
 
+  // Read local environmental sensors
   EnvSensors_Read(&sensor_data);
 #if defined (SENSOR_ENABLED) && (SENSOR_ENABLED == 1)
   temperature = (int16_t) sensor_data.temperature;
 #else
   temperature = (SYS_GetTemperatureLevel() >> 8);
-#endif  /* SENSOR_ENABLED */
-  pressure    = (uint16_t)(sensor_data.pressure * 100 / 10);      /* in hPa / 10 */
+#endif
+  pressure = (uint16_t)(sensor_data.pressure * 100 / 10);
 
   AppData.Port = LORAWAN_USER_APP_PORT;
 
 #ifdef CAYENNE_LPP
   CayenneLppReset();
+  
+  // Channel 0-9: Static node's own sensors
   CayenneLppAddBarometricPressure(channel++, pressure);
   CayenneLppAddTemperature(channel++, temperature);
   CayenneLppAddRelativeHumidity(channel++, (uint16_t)(sensor_data.humidity));
 
-  if ((LmHandlerParams.ActiveRegion != LORAMAC_REGION_US915) && (LmHandlerParams.ActiveRegion != LORAMAC_REGION_AU915)
-      && (LmHandlerParams.ActiveRegion != LORAMAC_REGION_AS923))
+  if ((LmHandlerParams.ActiveRegion != LORAMAC_REGION_US915) && 
+      (LmHandlerParams.ActiveRegion != LORAMAC_REGION_AU915) &&
+      (LmHandlerParams.ActiveRegion != LORAMAC_REGION_AS923))
   {
     CayenneLppAddDigitalInput(channel++, GetBatteryLevel());
     CayenneLppAddDigitalOutput(channel++, AppLedStateOn);
   }
 
+  // Channel 10+: Personal nodes data
+  // We'll use 10 channels per node: base_channel = 10 + (nodeId-1)*10
+  StoredPersonalNode_t activeNodes[MAX_PERSONAL_NODES];
+  uint8_t activeCount = 0;
+  
+  DualMode_GetAllActiveNodes(activeNodes, &activeCount);
+  
+  APP_LOG(TS_OFF, VLEVEL_L, "[TX] Active personal nodes: %d\r\n", activeCount);
+  
+  for (uint8_t i = 0; i < activeCount; i++) {
+    uint8_t nodeId = activeNodes[i].nodeId;
+    uint8_t baseChannel = 10 + (nodeId - 1) * 10;  // Node 1: ch10-19, Node 2: ch20-29, etc.
+    
+    APP_LOG(TS_OFF, VLEVEL_L, "[TX] Adding Node %d data (ch %d+)\r\n", nodeId, baseChannel);
+    
+    // Channel +0: Digital output for status (0=OK, 1=FALL, 2=SOS)
+    CayenneLppAddDigitalOutput(baseChannel + 0, activeNodes[i].status);
+    
+    // Channel +1: Heart rate as analog input (0-255 bpm)
+    CayenneLppAddAnalogInput(baseChannel + 1, (float)activeNodes[i].heartRate / 10.0f);
+    
+    // Channel +2,3,4: Accelerometer X, Y, Z as analog values (mg / 100)
+    CayenneLppAddAnalogInput(baseChannel + 2, (float)activeNodes[i].accX / 100.0f);
+    CayenneLppAddAnalogInput(baseChannel + 3, (float)activeNodes[i].accY / 100.0f);
+    CayenneLppAddAnalogInput(baseChannel + 4, (float)activeNodes[i].accZ / 100.0f);
+    
+    // Channel +5: Alert flag as digital output
+    CayenneLppAddDigitalOutput(baseChannel + 5, activeNodes[i].hasAlert);
+    
+    // Clear alert after sending
+    if (activeNodes[i].hasAlert) {
+      DualMode_ClearAlert(nodeId);
+    }
+  }
+
   CayenneLppCopy(AppData.Buffer);
   AppData.BufferSize = CayenneLppGetSize();
+  
+  APP_LOG(TS_OFF, VLEVEL_L, "[TX] Cayenne LPP size: %d bytes\r\n", AppData.BufferSize);
+  
 #else  /* not CAYENNE_LPP */
-  humidity    = (uint16_t)(sensor_data.humidity * 10);            /* in %*10     */
+  // Non-Cayenne format (keep existing code)
+  humidity = (uint16_t)(sensor_data.humidity * 10);
 
   AppData.Buffer[i++] = AppLedStateOn;
   AppData.Buffer[i++] = (uint8_t)((pressure >> 8) & 0xFF);
@@ -478,8 +520,9 @@ static void SendTxData(void)
   AppData.Buffer[i++] = (uint8_t)((humidity >> 8) & 0xFF);
   AppData.Buffer[i++] = (uint8_t)(humidity & 0xFF);
 
-  if ((LmHandlerParams.ActiveRegion == LORAMAC_REGION_US915) || (LmHandlerParams.ActiveRegion == LORAMAC_REGION_AU915)
-      || (LmHandlerParams.ActiveRegion == LORAMAC_REGION_AS923))
+  if ((LmHandlerParams.ActiveRegion == LORAMAC_REGION_US915) || 
+      (LmHandlerParams.ActiveRegion == LORAMAC_REGION_AU915) ||
+      (LmHandlerParams.ActiveRegion == LORAMAC_REGION_AS923))
   {
     AppData.Buffer[i++] = 0;
     AppData.Buffer[i++] = 0;
@@ -491,7 +534,7 @@ static void SendTxData(void)
     latitude = sensor_data.latitude;
     longitude = sensor_data.longitude;
 
-    AppData.Buffer[i++] = GetBatteryLevel();        /* 1 (very low) to 254 (fully charged) */
+    AppData.Buffer[i++] = GetBatteryLevel();
     AppData.Buffer[i++] = (uint8_t)((latitude >> 16) & 0xFF);
     AppData.Buffer[i++] = (uint8_t)((latitude >> 8) & 0xFF);
     AppData.Buffer[i++] = (uint8_t)(latitude & 0xFF);
@@ -507,17 +550,15 @@ static void SendTxData(void)
 
   if (LORAMAC_HANDLER_SUCCESS == LmHandlerSend(&AppData, LORAWAN_DEFAULT_CONFIRMED_MSG_STATE, &nextTxIn, false))
   {
-    APP_LOG(TS_ON, VLEVEL_L, "SEND REQUEST\r\n (temp:%d, pressure:%d, humidity: %d, latitude: %d, longitude:%d) \n"
-      ,temperature,pressure, (int16_t)sensor_data.humidity, (int16_t)sensor_data.latitude, (int16_t)sensor_data.longitude);
+    APP_LOG(TS_ON, VLEVEL_L, "SEND REQUEST\r\n");
   }
   else if (nextTxIn > 0)
   {
-    APP_LOG(TS_ON, VLEVEL_L, "Next Tx in  : ~%d second(s)\r\n", (nextTxIn / 1000));
+    APP_LOG(TS_ON, VLEVEL_L, "Next Tx in: ~%d second(s)\r\n", (nextTxIn / 1000));
   }
 
   /* USER CODE END SendTxData_1 */
 }
-
 static void OnTxTimerEvent(void *context)
 {
   /* USER CODE BEGIN OnTxTimerEvent_1 */
