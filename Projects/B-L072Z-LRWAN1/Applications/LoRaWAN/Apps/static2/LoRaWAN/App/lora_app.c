@@ -47,9 +47,7 @@
 /* External variables ---------------------------------------------------------*/
 /* USER CODE BEGIN EV */
 static UTIL_TIMER_Object_t ModeSwitchButtonTimer;
-
 /* USER CODE END EV */
-
 /* Private typedef -----------------------------------------------------------*/
 /**
   * @brief LoRa State Machine states
@@ -88,6 +86,7 @@ typedef enum TxEventType_e
   * @brief  LoRa End Node send request
   */
 static void SendTxData(void);
+void LoRaWAN_Restart(void);
 
 /**
   * @brief  TX timer callback function
@@ -299,6 +298,25 @@ UTIL_TIMER_Create(&ModeSwitchButtonTimer,
   /* USER CODE END LoRaWAN_Init_Last */
 }
 
+
+// In lora_app.c
+void LoRaWAN_Restart(void)
+{
+    // Stop any ongoing LoRaWAN process and timers
+    LmHandlerStop();  // If available; otherwise implement a custom reset flag
+    
+    // Force radio de-initialization (clear internal initialized flag)
+    //Radio.Sleep();
+    // Call Radio.Init with NULL to reset the radio driver's state
+    // (may require modifying radio driver, but often works)
+    
+    // Re-initialize the LoRaWAN stack
+    LmHandlerInit(&LmHandlerCallbacks);
+    LmHandlerConfigure(&LmHandlerParams);
+    
+    // Restart join procedure
+    LmHandlerJoin(ActivationType);
+}
 /* USER CODE BEGIN PB_Callbacks */
 /*void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -489,7 +507,8 @@ static void SendTxData(void)
 
   if (LORAMAC_HANDLER_SUCCESS == LmHandlerSend(&AppData, LORAWAN_DEFAULT_CONFIRMED_MSG_STATE, &nextTxIn, false))
   {
-    APP_LOG(TS_ON, VLEVEL_L, "SEND REQUEST\r\n");
+    APP_LOG(TS_ON, VLEVEL_L, "SEND REQUEST\r\n (temp:%d, pressure:%d, humidity: %d, latitude: %d, longitude:%d) \n"
+      ,temperature,pressure, (int16_t)sensor_data.humidity, (int16_t)sensor_data.latitude, (int16_t)sensor_data.longitude);
   }
   else if (nextTxIn > 0)
   {
@@ -580,10 +599,14 @@ static void OnJoinRequest(LmHandlerJoinParams_t *joinParams)
       {
         APP_LOG(TS_OFF, VLEVEL_M, "OTAA =====================\r\n");
       }
+      
+      // Notify dual mode that join succeeded
+      DualMode_SetJoinStatus(1);
     }
     else
     {
       APP_LOG(TS_OFF, VLEVEL_M, "\r\n###### = JOIN FAILED\r\n");
+      DualMode_SetJoinStatus(0);
     }
   }
   /* USER CODE END OnJoinRequest_1 */

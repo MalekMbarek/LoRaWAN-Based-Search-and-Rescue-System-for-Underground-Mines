@@ -34,6 +34,8 @@ void DualMode_Init(void);
 void DualMode_Switch(OperatingMode_t newMode);
 OperatingMode_t DualMode_GetCurrent(void);
 uint8_t DualMode_IsLoRaWANSuspended(void);
+uint8_t DualMode_IsLoRaWANJoined(void);
+void DualMode_SetJoinStatus(uint8_t joined);
 void DualMode_Process(void);
 PersonalNodePacket_t* DualMode_GetLastPersonalNodeData(void);
 

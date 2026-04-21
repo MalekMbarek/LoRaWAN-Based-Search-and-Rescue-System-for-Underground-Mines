@@ -34,7 +34,6 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -120,6 +119,7 @@ extern "C" {
   * @brief  Init Lora Application
   */
 void LoRaWAN_Init(void);
+void LoRaWAN_Restart(void);
 
 /* USER CODE BEGIN EFP */
 

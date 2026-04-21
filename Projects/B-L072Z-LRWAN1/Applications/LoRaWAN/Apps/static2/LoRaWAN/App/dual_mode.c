@@ -9,10 +9,9 @@
 
 #include "dual_mode.h"
 #include "platform.h"
-#include "stm32l0xx_hal.h"  // Include HAL BEFORE utilities.h to avoid macro conflicts
+#include "stm32l0xx_hal.h"
 #include <string.h>
 
-// Now include LoRaWAN headers (which include utilities.h with SUCCESS macro)
 #include "radio.h"
 #include "lora_app.h"
 #include "LmHandler.h"
@@ -32,7 +31,7 @@
 #define RAW_LORA_IQ_INVERSION_ON        false
 
 /* Mode timing - Independent of LoRaWAN state */
-#define LORAWAN_MODE_DURATION_MS        60000     // 60s in LoRaWAN mode
+#define LORAWAN_MODE_DURATION_MS        30000     // 60s in LoRaWAN mode
 #define RAW_LORA_MODE_DURATION_MS       30000     // 30s in Raw LoRa RX mode
 
 /* Private variables */
@@ -41,10 +40,11 @@ static RadioEvents_t rawRadioEvents;
 static UTIL_TIMER_Object_t modeSwitchTimer;
 static volatile uint8_t newPacketReceived = 0;
 static PersonalNodePacket_t lastPersonalNodeData;
-static uint8_t loraWanSuspended = 0;  // Track LoRaWAN state
+static uint8_t loraWanSuspended = 0;
+static uint8_t loraWanJoined = 0;
 
 /* Forward declarations */
-static void RawLoRa_Init(void);
+static void RawLoRa_ConfigureRx(void);
 static void RawLoRa_StartRx(void);
 static void LoRaWAN_Resume(void);
 static void LoRaWAN_Suspend(void);
@@ -59,7 +59,7 @@ static void OnRawRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t sn
             size, rssi, snr);
     
     // Validate packet size
-    if (size == sizeof(PersonalNodePacket_t)) {
+    if (size >= 3){//= sizeof(PersonalNodePacket_t)) {
         memcpy(&lastPersonalNodeData, payload, sizeof(PersonalNodePacket_t));
         
         // Parse accelerometer data (bytes 4-9 are big-endian int16)
@@ -128,15 +128,16 @@ static void OnRawTxTimeout(void)
 }
 
 /* Raw LoRa Functions */
-static void RawLoRa_Init(void)
+static void RawLoRa_ConfigureRx(void)
 {
-    // Setup radio callbacks
+    // Setup raw radio callbacks
     rawRadioEvents.TxDone = OnRawTxDone;
     rawRadioEvents.TxTimeout = OnRawTxTimeout;
     rawRadioEvents.RxDone = OnRawRxDone;
     rawRadioEvents.RxTimeout = OnRawRxTimeout;
     rawRadioEvents.RxError = OnRawRxError;
     
+    // Reinit radio with raw callbacks
     Radio.Init(&rawRadioEvents);
     Radio.SetChannel(RAW_RF_FREQUENCY);
     
@@ -145,18 +146,18 @@ static void RawLoRa_Init(void)
                       RAW_LORA_BANDWIDTH,
                       RAW_LORA_SPREADING_FACTOR,
                       RAW_LORA_CODINGRATE,
-                      0,  // AFC bandwidth (not used in LoRa)
+                      0,
                       RAW_LORA_PREAMBLE_LENGTH,
                       RAW_LORA_SYMBOL_TIMEOUT,
                       RAW_LORA_FIX_LENGTH_PAYLOAD_ON,
-                      0,  // Fixed payload length (0 = variable)
+                      0,
                       true,  // CRC enabled
                       0,
                       0,
                       RAW_LORA_IQ_INVERSION_ON,
                       true);  // Continuous RX
     
-    APP_LOG(TS_OFF, VLEVEL_M, "[RawLoRa] Init complete\r\n");
+    APP_LOG(TS_OFF, VLEVEL_M, "[RawLoRa] RX configured\r\n");
 }
 
 static void RawLoRa_StartRx(void)
@@ -169,23 +170,30 @@ static void LoRaWAN_Suspend(void)
 {
     if (loraWanSuspended) return;
     
-    // Put radio to sleep - stops all LoRaWAN operations
+    // Stop LoRaWAN - this will leave the network
+    LmHandlerStop();
     Radio.Sleep();
-    loraWanSuspended = 1;
     
-    APP_LOG(TS_OFF, VLEVEL_M, "[LoRaWAN] Suspended (join state preserved)\r\n");
+    loraWanSuspended = 1;
+    loraWanJoined = 0;
+    
+    APP_LOG(TS_OFF, VLEVEL_M, "[LoRaWAN] Stopped and left network\r\n");
 }
 
 static void LoRaWAN_Resume(void)
 {
     if (!loraWanSuspended) return;
     
-    // LoRaWAN stack will reconfigure radio on next process
-    // Join state is preserved in LmHandler
-    loraWanSuspended = 0;
+    Radio.Sleep();
+    HAL_Delay(200);
     
-    APP_LOG(TS_OFF, VLEVEL_M, "[LoRaWAN] Resumed (will continue from previous state)\r\n");
+    // Instead of LmHandlerJoin, restart the whole stack
+    LoRaWAN_Restart();   // implemented in lora_app.c
+    
+    loraWanSuspended = 0;
+    APP_LOG(TS_OFF, VLEVEL_M, "[LoRaWAN] Resumed and rejoining\n");
 }
+
 
 /* Mode switching - Time-based, independent of network state */
 static void OnModeSwitchTimer(void *context)
@@ -202,11 +210,12 @@ void DualMode_Init(void)
 {
     currentMode = MODE_LORAWAN;
     loraWanSuspended = 0;
+    loraWanJoined = 0;
     
     // Create mode switch timer for automatic switching
     UTIL_TIMER_Create(&modeSwitchTimer, 
                       0xFFFFFFFFU, 
-                      UTIL_TIMER_ONESHOT,  // One-shot, will restart with new period
+                      UTIL_TIMER_ONESHOT,
                       OnModeSwitchTimer, 
                       NULL);
     
@@ -230,14 +239,14 @@ void DualMode_Switch(OperatingMode_t newMode)
     if (newMode == MODE_RAW_LORA_RX) {
         APP_LOG(TS_OFF, VLEVEL_M, "[DualMode] LoRaWAN -> RawRX\r\n");
         
-        // Suspend LoRaWAN (doesn't reset join state)
+        // Stop and leave LoRaWAN network
         LoRaWAN_Suspend();
         
-        // Small delay for radio state machine
-        HAL_Delay(50);
+        // Delay for clean radio state
+        HAL_Delay(200);
         
-        // Initialize and start Raw LoRa RX
-        RawLoRa_Init();
+        // Configure radio for Raw LoRa RX
+        RawLoRa_ConfigureRx();
         RawLoRa_StartRx();
         
         currentMode = MODE_RAW_LORA_RX;
@@ -255,10 +264,10 @@ void DualMode_Switch(OperatingMode_t newMode)
         // Turn off RX mode LED
         LED_Off(LED_BLUE);
         
-        // Small delay for radio state machine
-        HAL_Delay(50);
+        // Delay for clean radio state
+        HAL_Delay(200);
         
-        // Resume LoRaWAN (continues from previous state - joined or joining)
+        // Resume LoRaWAN - this will trigger rejoin
         LoRaWAN_Resume();
         
         currentMode = MODE_LORAWAN;
@@ -283,6 +292,19 @@ uint8_t DualMode_IsLoRaWANSuspended(void)
     return loraWanSuspended;
 }
 
+void DualMode_SetJoinStatus(uint8_t joined)
+{
+    loraWanJoined = joined;
+    if (joined) {
+        APP_LOG(TS_OFF, VLEVEL_M, "[DualMode] LoRaWAN joined successfully\r\n");
+    }
+}
+
+uint8_t DualMode_IsLoRaWANJoined(void)
+{
+    return loraWanJoined;
+}
+
 void DualMode_Process(void)
 {
     // Process received personal node data
@@ -296,8 +318,8 @@ void DualMode_Process(void)
             APP_LOG(TS_OFF, VLEVEL_M, "[DualMode] Alert detected, switching to LoRaWAN\r\n");
             DualMode_Switch(MODE_LORAWAN);
             
-            // Trigger immediate uplink
-            UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
+            // Wait for join before triggering uplink
+            // The uplink will happen automatically via the normal timer
         }
         */
     }
