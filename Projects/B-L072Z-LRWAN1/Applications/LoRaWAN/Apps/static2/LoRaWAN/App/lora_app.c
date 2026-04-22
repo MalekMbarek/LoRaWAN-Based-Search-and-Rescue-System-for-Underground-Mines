@@ -38,7 +38,7 @@
 #include "CayenneLpp.h"
 #include "sys_sensors.h"
 #include "dual_mode.h"
-
+#include "app_config.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -47,24 +47,14 @@
 /* External variables ---------------------------------------------------------*/
 /* USER CODE BEGIN EV */
 static UTIL_TIMER_Object_t ModeSwitchButtonTimer;
+static UTIL_TIMER_Object_t AlertTimer;
 /* USER CODE END EV */
+
 /* Private typedef -----------------------------------------------------------*/
-/**
-  * @brief LoRa State Machine states
-  */
 typedef enum TxEventType_e
 {
-  /**
-    * @brief Appdata Transmission issue based on timer every TxDutyCycleTime
-    */
   TX_ON_TIMER,
-  /**
-    * @brief Appdata Transmission external event plugged on OnSendEvent( )
-    */
   TX_ON_EVENT
-  /* USER CODE BEGIN TxEventType_t */
-
-  /* USER CODE END TxEventType_t */
 } TxEventType_t;
 
 /* USER CODE BEGIN PTD */
@@ -82,71 +72,24 @@ typedef enum TxEventType_e
 /* USER CODE END PM */
 
 /* Private function prototypes -----------------------------------------------*/
-/**
-  * @brief  LoRa End Node send request
-  */
 static void SendTxData(void);
 void LoRaWAN_Restart(void);
-
-/**
-  * @brief  TX timer callback function
-  * @param  context ptr of timer context
-  */
 static void OnTxTimerEvent(void *context);
-
-/**
-  * @brief  join event callback function
-  * @param  joinParams status of join
-  */
 static void OnJoinRequest(LmHandlerJoinParams_t *joinParams);
-
-/**
-  * @brief  tx event callback function
-  * @param  params status of last Tx
-  */
 static void OnTxData(LmHandlerTxParams_t *params);
-
-/**
-  * @brief callback when LoRa application has received a frame
-  * @param appData data received in the last Rx
-  * @param params status of last Rx
-  */
 static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params);
-
-/*!
- * Will be called each time a Radio IRQ is handled by the MAC layer
- *
- */
 static void OnMacProcessNotify(void);
 
 /* USER CODE BEGIN PFP */
-
-/**
-  * @brief  LED Tx timer callback function
-  * @param  context ptr of LED context
-  */
 static void OnTxTimerLedEvent(void *context);
-
-/**
-  * @brief  LED Rx timer callback function
-  * @param  context ptr of LED context
-  */
 static void OnRxTimerLedEvent(void *context);
-
-/**
-  * @brief  LED Join timer callback function
-  * @param  context ptr of LED context
-  */
 static void OnJoinTimerLedEvent(void *context);
-
+static void OnAlertTimerEvent(void *context);
 /* USER CODE END PFP */
 
 /* Private variables ---------------------------------------------------------*/
 static ActivationType_t ActivationType = LORAWAN_DEFAULT_ACTIVATION_TYPE;
 
-/**
-  * @brief LoRaWAN handler Callbacks
-  */
 static LmHandlerCallbacks_t LmHandlerCallbacks =
 {
   .GetBatteryLevel =           GetBatteryLevel,
@@ -159,9 +102,6 @@ static LmHandlerCallbacks_t LmHandlerCallbacks =
   .OnRxData =                  OnRxData
 };
 
-/**
-  * @brief LoRaWAN handler parameters
-  */
 static LmHandlerParams_t LmHandlerParams =
 {
   .ActiveRegion =             ACTIVE_REGION,
@@ -171,47 +111,18 @@ static LmHandlerParams_t LmHandlerParams =
   .PingPeriodicity =          LORAWAN_DEFAULT_PING_SLOT_PERIODICITY
 };
 
-/**
-  * @brief Type of Event to generate application Tx
-  */
 static TxEventType_t EventType = TX_ON_TIMER;
 
-/**
-  * @brief Timer to handle the application Tx
-  */
 static UTIL_TIMER_Object_t TxTimer;
 
 /* USER CODE BEGIN PV */
-/**
-  * @brief User application buffer
-  */
 static uint8_t AppDataBuffer[LORAWAN_APP_DATA_BUFFER_MAX_SIZE];
-
-/**
-  * @brief User application data structure
-  */
 static LmHandlerAppData_t AppData = { 0, 0, AppDataBuffer };
-
-/**
-  * @brief Specifies the state of the application LED
-  */
 static uint8_t AppLedStateOn = RESET;
 
-/**
-  * @brief Timer to handle the application Tx Led to toggle
-  */
 static UTIL_TIMER_Object_t TxLedTimer;
-
-/**
-  * @brief Timer to handle the application Rx Led to toggle
-  */
 static UTIL_TIMER_Object_t RxLedTimer;
-
-/**
-  * @brief Timer to handle the application Join Led to toggle
-  */
 static UTIL_TIMER_Object_t JoinLedTimer;
-
 /* USER CODE END PV */
 
 /* Exported functions ---------------------------------------------------------*/
@@ -222,24 +133,20 @@ static UTIL_TIMER_Object_t JoinLedTimer;
 void LoRaWAN_Init(void)
 {
   /* USER CODE BEGIN LoRaWAN_Init_1 */
-
   LED_Init(LED_BLUE);
   LED_Init(LED_RED1);
   LED_Init(LED_RED2);
 
-  /* Get LoRa APP version*/
   APP_LOG(TS_OFF, VLEVEL_M, "APP_VERSION:        V%X.%X.%X\r\n",
           (uint8_t)(__LORA_APP_VERSION >> __APP_VERSION_MAIN_SHIFT),
           (uint8_t)(__LORA_APP_VERSION >> __APP_VERSION_SUB1_SHIFT),
           (uint8_t)(__LORA_APP_VERSION >> __APP_VERSION_SUB2_SHIFT));
 
-  /* Get MW LoraWAN info */
   APP_LOG(TS_OFF, VLEVEL_M, "MW_LORAWAN_VERSION: V%X.%X.%X\r\n",
           (uint8_t)(__LORAWAN_VERSION >> __APP_VERSION_MAIN_SHIFT),
           (uint8_t)(__LORAWAN_VERSION >> __APP_VERSION_SUB1_SHIFT),
           (uint8_t)(__LORAWAN_VERSION >> __APP_VERSION_SUB2_SHIFT));
 
-  /* Get MW SubGhz_Phy info */
   APP_LOG(TS_OFF, VLEVEL_M, "MW_RADIO_VERSION:   V%X.%X.%X\r\n",
           (uint8_t)(__SUBGHZ_PHY_VERSION >> __APP_VERSION_MAIN_SHIFT),
           (uint8_t)(__SUBGHZ_PHY_VERSION >> __APP_VERSION_SUB1_SHIFT),
@@ -251,46 +158,47 @@ void LoRaWAN_Init(void)
   UTIL_TIMER_SetPeriod(&TxLedTimer, 500);
   UTIL_TIMER_SetPeriod(&RxLedTimer, 500);
   UTIL_TIMER_SetPeriod(&JoinLedTimer, 500);
-UTIL_TIMER_Create(&ModeSwitchButtonTimer, 
-                  0xFFFFFFFFU, 
-                  UTIL_TIMER_ONESHOT, 
-                  NULL, 
-                  NULL);
+  UTIL_TIMER_Create(&ModeSwitchButtonTimer, 0xFFFFFFFFU, UTIL_TIMER_ONESHOT, NULL, NULL);
+
+  /* Timer pour mise à jour périodique des capteurs (1 Hz) */
+  UTIL_TIMER_Create(&AlertTimer, 0xFFFFFFFFU, UTIL_TIMER_PERIODIC, OnAlertTimerEvent, NULL);
+  UTIL_TIMER_SetPeriod(&AlertTimer, 1000);
+  UTIL_TIMER_Start(&AlertTimer);
+
   /* USER CODE END LoRaWAN_Init_1 */
 
   UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_LmHandlerProcess), UTIL_SEQ_RFU, LmHandlerProcess);
   UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), UTIL_SEQ_RFU, SendTxData);
-  /* Init Info table used by LmHandler*/
+
   LoraInfo_Init();
   DualMode_Init();
 
+  /* Initialisation des capteurs (buzzer, MQ2, LSM303AGR, IKS01A2) */
+  SensorsInit();
+  EnvRead();
+  MotionRead();
+  GasRead();
+  DisplaySensorData();
 
-  /* Init the Lora Stack*/
+  /* Init the Lora Stack */
   LmHandlerInit(&LmHandlerCallbacks);
-
   LmHandlerConfigure(&LmHandlerParams);
 
   /* USER CODE BEGIN LoRaWAN_Init_2 */
   UTIL_TIMER_Start(&JoinLedTimer);
-
   /* USER CODE END LoRaWAN_Init_2 */
 
   LmHandlerJoin(ActivationType);
 
   if (EventType == TX_ON_TIMER)
   {
-    /* send every time timer elapses */
-    UTIL_TIMER_Create(&TxTimer,  0xFFFFFFFFU, UTIL_TIMER_ONESHOT, OnTxTimerEvent, NULL);
-    UTIL_TIMER_SetPeriod(&TxTimer,  APP_TX_DUTYCYCLE);
+    UTIL_TIMER_Create(&TxTimer, 0xFFFFFFFFU, UTIL_TIMER_ONESHOT, OnTxTimerEvent, NULL);
+    UTIL_TIMER_SetPeriod(&TxTimer, APP_TX_DUTYCYCLE);
     UTIL_TIMER_Start(&TxTimer);
   }
   else
   {
-    /* USER CODE BEGIN LoRaWAN_Init_3 */
-
-    /* send every time button is pushed */
     BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
-    /* USER CODE END LoRaWAN_Init_3 */
   }
 
   /* USER CODE BEGIN LoRaWAN_Init_Last */
@@ -298,62 +206,43 @@ UTIL_TIMER_Create(&ModeSwitchButtonTimer,
   /* USER CODE END LoRaWAN_Init_Last */
 }
 
-
-// In lora_app.c
 void LoRaWAN_Restart(void)
 {
-    // Stop any ongoing LoRaWAN process and timers
-    LmHandlerStop();  // If available; otherwise implement a custom reset flag
-    
-    // Force radio de-initialization (clear internal initialized flag)
-    //Radio.Sleep();
-    // Call Radio.Init with NULL to reset the radio driver's state
-    // (may require modifying radio driver, but often works)
-    
-    // Re-initialize the LoRaWAN stack
+    LmHandlerStop();
     LmHandlerInit(&LmHandlerCallbacks);
     LmHandlerConfigure(&LmHandlerParams);
-    
-    // Restart join procedure
     LmHandlerJoin(ActivationType);
 }
+
 /* USER CODE BEGIN PB_Callbacks */
-/*void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  switch (GPIO_Pin)
-  {
-    case  USER_BUTTON_PIN:
-      UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
-      break;
-    default:
-      break;
-  }
-}*/
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   switch (GPIO_Pin)
   {
     case USER_BUTTON_PIN:
-      // Check if long press (hold for 2 seconds to switch mode)
-      // Or use a different button for mode switching
-      
-      // Simple toggle for now
-      if (DualMode_GetCurrent() == MODE_LORAWAN) {
-          DualMode_Switch(MODE_RAW_LORA_RX);
-      } else {
-          DualMode_Switch(MODE_LORAWAN);
-      }
+      if (DualMode_GetCurrent() == MODE_LORAWAN)
+        DualMode_Switch(MODE_RAW_LORA_RX);
+      else
+        DualMode_Switch(MODE_LORAWAN);
       break;
     default:
       break;
   }
 }
-
 /* USER CODE END PB_Callbacks */
 
 /* Private functions ---------------------------------------------------------*/
 /* USER CODE BEGIN PrFD */
-
+static void OnAlertTimerEvent(void *context)
+{
+  /* Mise à jour périodique des capteurs + alertes buzzer (1 Hz)
+   * DisplaySensorData est appelé toutes les DISPLAY_INTERVAL_MS/1000 secondes
+   * grâce au compteur interne de Sensors_UpdateAll.
+   * On appelle DisplaySensorData séparément ici pour conserver
+   * le comportement original du fichier.                                    */
+  Sensors_UpdateAll();   /* EnvRead + MotionRead + GasRead + ProcessAlertes  */
+  DisplaySensorData();   /* Affichage console (log série)                    */
+}
 /* USER CODE END PrFD */
 
 static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
@@ -362,7 +251,6 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
   if ((appData != NULL) || (params != NULL))
   {
     LED_On(LED_BLUE);
-
     UTIL_TIMER_Start(&RxLedTimer);
 
     static const char *slotStrings[] = { "1", "2", "C", "C Multicast", "B Ping-Slot", "B Multicast Ping-Slot" };
@@ -373,28 +261,14 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
     switch (appData->Port)
     {
       case LORAWAN_SWITCH_CLASS_PORT:
-        /*this port switches the class*/
         if (appData->BufferSize == 1)
         {
           switch (appData->Buffer[0])
           {
-            case 0:
-            {
-              LmHandlerRequestClass(CLASS_A);
-              break;
-            }
-            case 1:
-            {
-              LmHandlerRequestClass(CLASS_B);
-              break;
-            }
-            case 2:
-            {
-              LmHandlerRequestClass(CLASS_C);
-              break;
-            }
-            default:
-              break;
+            case 0: LmHandlerRequestClass(CLASS_A); break;
+            case 1: LmHandlerRequestClass(CLASS_B); break;
+            case 2: LmHandlerRequestClass(CLASS_C); break;
+            default: break;
           }
         }
         break;
@@ -404,101 +278,132 @@ static void OnRxData(LmHandlerAppData_t *appData, LmHandlerRxParams_t *params)
           AppLedStateOn = appData->Buffer[0] & 0x01;
           if (AppLedStateOn == RESET)
           {
-            APP_LOG(TS_OFF, VLEVEL_H,   "LED OFF\r\n");
-
+            APP_LOG(TS_OFF, VLEVEL_H, "LED OFF\r\n");
             LED_Off(LED_RED1);
           }
           else
           {
             APP_LOG(TS_OFF, VLEVEL_H, "LED ON\r\n");
-
             LED_On(LED_RED1);
           }
         }
         break;
-
       default:
-
         break;
     }
   }
   /* USER CODE END OnRxData_1 */
 }
+
 static void SendTxData(void)
 {
   /* USER CODE BEGIN SendTxData_1 */
-  uint16_t pressure = 0;
-  int16_t temperature = 0;
-  sensor_t sensor_data;
   UTIL_TIMER_Time_t nextTxIn = 0;
 
-#ifdef CAYENNE_LPP
-  uint8_t channel = 0;
-#else
-  uint16_t humidity = 0;
-  uint32_t i = 0;
-  int32_t latitude = 0;
-  int32_t longitude = 0;
-  uint16_t altitudeGps = 0;
-#endif
-
-  // Read local environmental sensors
-  EnvSensors_Read(&sensor_data);
-#if defined (SENSOR_ENABLED) && (SENSOR_ENABLED == 1)
-  temperature = (int16_t) sensor_data.temperature;
-#else
-  temperature = (SYS_GetTemperatureLevel() >> 8);
-#endif
-  pressure = (uint16_t)(sensor_data.pressure * 100 / 10);
+  /* Mise à jour des capteurs avant envoi */
+  EnvRead();
+  MotionRead();
+  GasRead();
+  ProcessAlertes();
 
   AppData.Port = LORAWAN_USER_APP_PORT;
 
 #ifdef CAYENNE_LPP
   CayenneLppReset();
-  
-  // Channel 0-9: Static node's own sensors
-  CayenneLppAddBarometricPressure(channel++, pressure);
-  CayenneLppAddTemperature(channel++, temperature);
-  CayenneLppAddRelativeHumidity(channel++, (uint16_t)(sensor_data.humidity));
 
-  if ((LmHandlerParams.ActiveRegion != LORAMAC_REGION_US915) && 
-      (LmHandlerParams.ActiveRegion != LORAMAC_REGION_AU915) &&
-      (LmHandlerParams.ActiveRegion != LORAMAC_REGION_AS923))
-  {
-    CayenneLppAddDigitalInput(channel++, GetBatteryLevel());
-    CayenneLppAddDigitalOutput(channel++, AppLedStateOn);
-  }
+  /* ── Canaux 0-2 : environnement ───────────────────────────────────────────
+   * envData stocke des entiers ×10 (ex: temperature=247 → 24.7°C)
+   * CayenneLPP attend des valeurs réelles → on divise par 10              */
+  CayenneLppAddBarometricPressure(0, (float)envData.pressure    / 10.0f);
+  CayenneLppAddTemperature       (1, (float)envData.temperature / 10.0f);
+  CayenneLppAddRelativeHumidity  (2, (float)envData.humidity    / 10.0f);
 
-  // Channel 10+: Personal nodes data
-  // We'll use 10 channels per node: base_channel = 10 + (nodeId-1)*10
+  /* ── Canaux 3-5 : mouvement ─────────────────────────────────────────────── */
+  CayenneLppAddAccelerometer(3,
+      (int16_t)(motionData.acc_x / 1000.0f),
+      (int16_t)(motionData.acc_y / 1000.0f),
+      (int16_t)(motionData.acc_z / 1000.0f));
+
+  /* Vibration : mg → CayenneLPP AnalogInput (×100 côté décodeur)
+   * On envoie vibration/100 pour rester dans la plage float 0-327.67      */
+  CayenneLppAddAnalogInput(4, motionData.vibration / 100.0f);
+
+  /* Inclinaison totale en degrés */
+  CayenneLppAddAnalogInput(5, motionData.angle_total > 0.0f
+                              ? motionData.angle_total / 100.0f : 0.0f);
+
+  /* ── Canal 6 : alertes mouvement (bitmask) ──────────────────────────────── */
+  uint8_t alert_motion =
+      (motionData.alert_vibration      ? 0x01 : 0) |
+      (motionData.alert_tilt           ? 0x02 : 0) |
+      (motionData.alert_vibration_crit ? 0x04 : 0) |
+      (motionData.alert_tilt_crit      ? 0x08 : 0);
+  CayenneLppAddDigitalInput(6, alert_motion);
+
+  /* ── Canal 7 : gaz (ADC brut / 100 pour AnalogInput) ───────────────────── */
+  CayenneLppAddAnalogInput(7, (float)gasData.adc_raw / 100.0f);
+
+  /* ── Canal 8 : alertes gaz (bitmask) ────────────────────────────────────── */
+  uint8_t alert_gas =
+      (gasData.alert_gas       ? 0x01 : 0) |
+      (gasData.alert_critical  ? 0x02 : 0) |
+      (gasData.alert_explosive ? 0x04 : 0);
+  CayenneLppAddDigitalInput(8, alert_gas);
+
+  /* ── Canal 9-10 : batterie + LED ────────────────────────────────────────── */
+  CayenneLppAddDigitalInput (9,  GetBatteryLevel());
+  CayenneLppAddDigitalOutput(10, AppLedStateOn);
+
+  /* ── Canaux 11+ : nœuds personnels ─────────────────────────────────────────
+   * Structure DualMode : 6 canaux par nœud
+   *   baseChannel+0  DigitalOutput  status
+   *   baseChannel+1  AnalogInput    heartRate / 10
+   *   baseChannel+2  AnalogInput    accX / 100
+   *   baseChannel+3  AnalogInput    accY / 100
+   *   baseChannel+4  AnalogInput    accZ / 100
+   *   baseChannel+5  DigitalOutput  hasAlert
+   *
+   * AJOUT SpO2 :
+   *   baseChannel+6  DigitalInput   spo2 (%)   ← NOUVEAU
+   *
+   * Note : si DualMode ne fournit pas encore spo2, mettre 0.
+   * Déclarer le champ spo2 dans StoredPersonalNode_t dans dual_mode.h     */
   StoredPersonalNode_t activeNodes[MAX_PERSONAL_NODES];
   uint8_t activeCount = 0;
-  
   DualMode_GetAllActiveNodes(activeNodes, &activeCount);
-  
+
   APP_LOG(TS_OFF, VLEVEL_L, "[TX] Active personal nodes: %d\r\n", activeCount);
-  
+
   for (uint8_t i = 0; i < activeCount; i++) {
-    uint8_t nodeId = activeNodes[i].nodeId;
-    uint8_t baseChannel = 10 + (nodeId - 1) * 10;  // Node 1: ch10-19, Node 2: ch20-29, etc.
-    
-    APP_LOG(TS_OFF, VLEVEL_L, "[TX] Adding Node %d data (ch %d+)\r\n", nodeId, baseChannel);
-    
-    // Channel +0: Digital output for status (0=OK, 1=FALL, 2=SOS)
+    uint8_t nodeId      = activeNodes[i].nodeId;
+    uint8_t baseChannel = 11 + (nodeId - 1) * 7;   /* 7 canaux par nœud (SpO2 ajouté) */
+
     CayenneLppAddDigitalOutput(baseChannel + 0, activeNodes[i].status);
-    
-    // Channel +1: Heart rate as analog input (0-255 bpm)
-    CayenneLppAddAnalogInput(baseChannel + 1, (float)activeNodes[i].heartRate / 10.0f);
-    
-    // Channel +2,3,4: Accelerometer X, Y, Z as analog values (mg / 100)
-    CayenneLppAddAnalogInput(baseChannel + 2, (float)activeNodes[i].accX / 100.0f);
-    CayenneLppAddAnalogInput(baseChannel + 3, (float)activeNodes[i].accY / 100.0f);
-    CayenneLppAddAnalogInput(baseChannel + 4, (float)activeNodes[i].accZ / 100.0f);
-    
-    // Channel +5: Alert flag as digital output
+    CayenneLppAddAnalogInput  (baseChannel + 1, (float)activeNodes[i].heartRate / 10.0f);
+    CayenneLppAddAnalogInput  (baseChannel + 2, (float)activeNodes[i].accX      / 100.0f);
+    CayenneLppAddAnalogInput  (baseChannel + 3, (float)activeNodes[i].accY      / 100.0f);
+    CayenneLppAddAnalogInput  (baseChannel + 4, (float)activeNodes[i].accZ      / 100.0f);
     CayenneLppAddDigitalOutput(baseChannel + 5, activeNodes[i].hasAlert);
-    
-    // Clear alert after sending
+
+    /* SpO2 : utiliser activeNodes[i].spo2 si le champ existe dans
+     * StoredPersonalNode_t, sinon mettre 0 en attendant la mise à jour
+     * de dual_mode.h                                                        */
+#ifdef STORED_PERSONAL_NODE_HAS_SPO2
+    uint8_t spo2_val = (activeNodes[i].spo2 >= 50 && activeNodes[i].spo2 <= 100)
+                       ? activeNodes[i].spo2 : 0;
+#else
+    uint8_t spo2_val = 0;   /* à remplacer quand dual_mode.h aura le champ  */
+#endif
+    CayenneLppAddDigitalInput(baseChannel + 6, spo2_val);
+
+    APP_LOG(TS_OFF, VLEVEL_L,
+            "[TX] Node%d ch%d | status=%d HR=%d SpO2=%d%% alert=%d\r\n",
+            nodeId, baseChannel,
+            activeNodes[i].status,
+            activeNodes[i].heartRate,
+            spo2_val,
+            activeNodes[i].hasAlert);
+
     if (activeNodes[i].hasAlert) {
       DualMode_ClearAlert(nodeId);
     }
@@ -506,46 +411,23 @@ static void SendTxData(void)
 
   CayenneLppCopy(AppData.Buffer);
   AppData.BufferSize = CayenneLppGetSize();
-  
+
   APP_LOG(TS_OFF, VLEVEL_L, "[TX] Cayenne LPP size: %d bytes\r\n", AppData.BufferSize);
-  
+
 #else  /* not CAYENNE_LPP */
-  // Non-Cayenne format (keep existing code)
-  humidity = (uint16_t)(sensor_data.humidity * 10);
+  /* Mode binaire — gardé pour compatibilité */
+  uint32_t idx = 0;
+  int16_t  temperature = (int16_t)(envData.temperature / 10);
+  uint16_t pressure    = (uint16_t)(envData.pressure   / 10);
+  uint16_t humidity    = envData.humidity;            /* déjà ×10          */
 
-  AppData.Buffer[i++] = AppLedStateOn;
-  AppData.Buffer[i++] = (uint8_t)((pressure >> 8) & 0xFF);
-  AppData.Buffer[i++] = (uint8_t)(pressure & 0xFF);
-  AppData.Buffer[i++] = (uint8_t)(temperature & 0xFF);
-  AppData.Buffer[i++] = (uint8_t)((humidity >> 8) & 0xFF);
-  AppData.Buffer[i++] = (uint8_t)(humidity & 0xFF);
-
-  if ((LmHandlerParams.ActiveRegion == LORAMAC_REGION_US915) || 
-      (LmHandlerParams.ActiveRegion == LORAMAC_REGION_AU915) ||
-      (LmHandlerParams.ActiveRegion == LORAMAC_REGION_AS923))
-  {
-    AppData.Buffer[i++] = 0;
-    AppData.Buffer[i++] = 0;
-    AppData.Buffer[i++] = 0;
-    AppData.Buffer[i++] = 0;
-  }
-  else
-  {
-    latitude = sensor_data.latitude;
-    longitude = sensor_data.longitude;
-
-    AppData.Buffer[i++] = GetBatteryLevel();
-    AppData.Buffer[i++] = (uint8_t)((latitude >> 16) & 0xFF);
-    AppData.Buffer[i++] = (uint8_t)((latitude >> 8) & 0xFF);
-    AppData.Buffer[i++] = (uint8_t)(latitude & 0xFF);
-    AppData.Buffer[i++] = (uint8_t)((longitude >> 16) & 0xFF);
-    AppData.Buffer[i++] = (uint8_t)((longitude >> 8) & 0xFF);
-    AppData.Buffer[i++] = (uint8_t)(longitude & 0xFF);
-    AppData.Buffer[i++] = (uint8_t)((altitudeGps >> 8) & 0xFF);
-    AppData.Buffer[i++] = (uint8_t)(altitudeGps & 0xFF);
-  }
-
-  AppData.BufferSize = i;
+  AppData.Buffer[idx++] = AppLedStateOn;
+  AppData.Buffer[idx++] = (uint8_t)((pressure >> 8) & 0xFF);
+  AppData.Buffer[idx++] = (uint8_t)(pressure        & 0xFF);
+  AppData.Buffer[idx++] = (uint8_t)(temperature     & 0xFF);
+  AppData.Buffer[idx++] = (uint8_t)((humidity >> 8) & 0xFF);
+  AppData.Buffer[idx++] = (uint8_t)(humidity        & 0xFF);
+  AppData.BufferSize = idx;
 #endif /* CAYENNE_LPP */
 
   if (LORAMAC_HANDLER_SUCCESS == LmHandlerSend(&AppData, LORAWAN_DEFAULT_CONFIRMED_MSG_STATE, &nextTxIn, false))
@@ -559,14 +441,13 @@ static void SendTxData(void)
 
   /* USER CODE END SendTxData_1 */
 }
+
 static void OnTxTimerEvent(void *context)
 {
   /* USER CODE BEGIN OnTxTimerEvent_1 */
 
   /* USER CODE END OnTxTimerEvent_1 */
   UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
-
-  /*Wait for next tx slot*/
   UTIL_TIMER_Start(&TxTimer);
   /* USER CODE BEGIN OnTxTimerEvent_2 */
 
@@ -581,25 +462,23 @@ static void OnTxTimerLedEvent(void *context)
 
 static void OnRxTimerLedEvent(void *context)
 {
-  LED_Off(LED_BLUE) ;
+  LED_Off(LED_BLUE);
 }
 
 static void OnJoinTimerLedEvent(void *context)
 {
-  LED_Toggle(LED_RED1) ;
+  LED_Toggle(LED_RED1);
 }
-
 /* USER CODE END PrFD_LedEvents */
 
 static void OnTxData(LmHandlerTxParams_t *params)
 {
   /* USER CODE BEGIN OnTxData_1 */
-  if ((params != NULL))
+  if (params != NULL)
   {
-    /* Process Tx event only if its a mcps response to prevent some internal events (mlme) */
     if (params->IsMcpsConfirm != 0)
     {
-      LED_On(LED_RED2) ;
+      LED_On(LED_RED2);
       UTIL_TIMER_Start(&TxLedTimer);
 
       APP_LOG(TS_OFF, VLEVEL_M, "\r\n###### ========== MCPS-Confirm =============\r\n");
@@ -628,9 +507,7 @@ static void OnJoinRequest(LmHandlerJoinParams_t *joinParams)
     if (joinParams->Status == LORAMAC_HANDLER_SUCCESS)
     {
       UTIL_TIMER_Stop(&JoinLedTimer);
-
-      LED_Off(LED_RED1) ;
-
+      LED_Off(LED_RED1);
       APP_LOG(TS_OFF, VLEVEL_M, "\r\n###### = JOINED = ");
       if (joinParams->Mode == ACTIVATION_TYPE_ABP)
       {
@@ -640,8 +517,6 @@ static void OnJoinRequest(LmHandlerJoinParams_t *joinParams)
       {
         APP_LOG(TS_OFF, VLEVEL_M, "OTAA =====================\r\n");
       }
-      
-      // Notify dual mode that join succeeded
       DualMode_SetJoinStatus(1);
     }
     else
@@ -659,7 +534,6 @@ static void OnMacProcessNotify(void)
 
   /* USER CODE END OnMacProcessNotify_1 */
   UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LmHandlerProcess), CFG_SEQ_Prio_0);
-
   /* USER CODE BEGIN OnMacProcessNotify_2 */
 
   /* USER CODE END OnMacProcessNotify_2 */
