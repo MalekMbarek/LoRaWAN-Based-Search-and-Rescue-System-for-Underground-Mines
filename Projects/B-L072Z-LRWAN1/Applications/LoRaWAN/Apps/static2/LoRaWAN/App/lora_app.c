@@ -162,7 +162,7 @@ void LoRaWAN_Init(void)
 
   /* Timer pour mise à jour périodique des capteurs (1 Hz) */
   UTIL_TIMER_Create(&AlertTimer, 0xFFFFFFFFU, UTIL_TIMER_PERIODIC, OnAlertTimerEvent, NULL);
-  UTIL_TIMER_SetPeriod(&AlertTimer, 1000);
+  UTIL_TIMER_SetPeriod(&AlertTimer, 3000);
   UTIL_TIMER_Start(&AlertTimer);
 
   /* USER CODE END LoRaWAN_Init_1 */
