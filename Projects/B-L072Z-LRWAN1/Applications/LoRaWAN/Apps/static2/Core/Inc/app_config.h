@@ -8,7 +8,7 @@
 
 /* ── I2C sensor addresses ─────────────────────────────────────────────────── */
 #ifndef HTS221_I2C_ADDRESS
-#define HTS221_I2C_ADDRESS          0x5FU   /* SDO pulled high on IKS01A2    */
+#define HTS221_I2C_ADDRESS          0x5FU     */
 #endif
 #ifndef LPS22HB_I2C_ADDRESS
 #define LPS22HB_I2C_ADDRESS         0xBBU
@@ -76,16 +76,16 @@
 #define BUZZER_LEVEL_SOS            3
 
 /* ── Time intervals ───────────────────────────────────────────────────────── */
-#define DISPLAY_INTERVAL_MS         60000U  /* serial log every 60 s         */
-#define SEND_INTERVAL_MS            120000U /* LoRaWAN uplink every 120 s    */
-#define JOIN_RETRY_DELAY_MS         10000U  /* delay between OTAA retries    */
+//#define DISPLAY_INTERVAL_MS         60000U  /* serial log every 60 s         */
+//#define SEND_INTERVAL_MS            120000U /* LoRaWAN uplink every 120 s    */
+//#define JOIN_RETRY_DELAY_MS         10000U  /* delay between OTAA retries    */
 
 /* ── Raw LoRa personal node packet ───────────────────────────────────────── */
-#define PN_FREQUENCY                868000000U
-#define PN_BANDWIDTH                0           /* 0 = 125 kHz               */
-#define PN_SF                       7
-#define PN_CODINGRATE               1           /* 4/5                       */
-#define PN_PREAMBLE                 8
+//#define PN_FREQUENCY                868000000U
+//#define PN_BANDWIDTH                0           /* 0 = 125 kHz               */
+//#define PN_SF                       7
+//#define PN_CODINGRATE               1           /* 4/5                       */
+//#define PN_PREAMBLE                 8
 /*
  * Packet format (12 bytes) including SpO2:
  *   [0]    packet type  (0x01)
@@ -98,9 +98,9 @@
  *   [9-10] acc_z
  *   [11]   reserved
  */
-#define PN_PKT_SIZE                 12U
-#define PN_PKT_TYPE                 0x01U
-#define PN_MAX_NODES                4
+//#define PN_PKT_SIZE                 12U
+//#define PN_PKT_TYPE                 0x01U
+//#define PN_MAX_NODES                4
 
 /* ── Float-to-integer display macros (avoids -u _printf_float linker flag) ─ */
 #include <math.h>

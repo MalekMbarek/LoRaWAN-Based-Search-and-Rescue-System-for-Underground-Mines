@@ -31,7 +31,7 @@
 #define RAW_LORA_IQ_INVERSION_ON        false
 
 /* Mode timing */
-#define LORAWAN_MODE_DURATION_MS        30000     // 30s in LoRaWAN mode
+#define LORAWAN_MODE_DURATION_MS        60000     // 30s in LoRaWAN mode
 #define RAW_LORA_MODE_DURATION_MS       30000     // 30s in Raw LoRa RX mode
 
 /* Node timeout - consider inactive after 60 seconds without update */

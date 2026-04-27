@@ -1,0 +1,153 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : main.c — PersonalNode
+  *
+  * FIX affichage série :
+  *   La boucle while(1) contient HAL_GetTick() pour les timings.
+  *   Or MX_LoRaWAN_Process() → UTIL_SEQ_Run() → stop mode LPM
+  *   → HAL_GetTick() ne s'incrémente plus → conditions jamais vraies
+  *   → plus d'affichage, plus de lecture capteurs.
+  *
+  *   Solution : AccRead / HrRead / DisplaySensorData / Fall_Update
+  *   sont maintenant gérés par des UTIL_TIMER_PERIODIC dans lora_app.c.
+  *   main.c gère uniquement : SOS + chute + TX périodique.
+  *   Ces 3 actions sont aussi pilotées par timer dans lora_app.c.
+  *   La boucle while(1) est VIDE côté USER CODE.
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "app_lorawan.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "sys_app.h"
+#include "lora_app.h"
+#include "app_config.h"
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN PV */
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+/* USER CODE BEGIN PFP */
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+/* USER CODE END 0 */
+
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
+  /* USER CODE END 1 */
+
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+  /* USER CODE END Init */
+
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+  /* USER CODE END SysInit */
+
+  /*
+   * MX_LoRaWAN_Init() :
+   *   → SystemApp_Init() (log UART, LPM, sequencer, RTC)
+   *   → GPIO_PersonalNode_Init() (PA0 SOS, PA5 LED, PB13 LED)
+   *   → LoRaWAN_Init() (Radio.Init, SensorsInit, PERIODIC timers)
+   */
+  MX_LoRaWAN_Init();
+
+  /* USER CODE BEGIN 2 */
+  /* USER CODE END 2 */
+
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /*
+     * MX_LoRaWAN_Process() → UTIL_SEQ_Run(~0U)
+     * Exécute les tâches enregistrées par les timers PERIODIC :
+     *   - AccTask     : AccRead + Fall_Update (50ms)
+     *   - HrTask      : HrRead (10ms)
+     *   - DisplayTask : DisplaySensorData (3s)
+     *   - TxTask      : LoRa_Send périodique (10s)
+     * Met le MCU en stop mode entre les tâches (LPM).
+     * Le RTC réveille le MCU à chaque expiration de timer.
+     */
+    MX_LoRaWAN_Process();
+
+    /* USER CODE BEGIN 3 */
+    /* USER CODE END 3 */
+  }
+}
+
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSEState            = RCC_HSE_OFF;
+  RCC_OscInitStruct.HSIState            = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState        = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource       = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLMUL          = RCC_PLLMUL_6;
+  RCC_OscInitStruct.PLL.PLLDIV          = RCC_PLLDIV_3;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) { Error_Handler(); }
+
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  while (__HAL_PWR_GET_FLAG(PWR_FLAG_VOS) != RESET) {}
+
+  RCC_ClkInitStruct.ClockType      = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK |
+                                     RCC_CLOCKTYPE_PCLK1  | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider  = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK) { Error_Handler(); }
+}
+
+/* USER CODE BEGIN 4 */
+
+/* Bouton SOS — EXTI callback */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == SOS_BUTTON_PIN) {
+    PN_SOS_Trigger();   /* appelé depuis lora_app.c */
+  }
+}
+
+/* USER CODE END 4 */
+
+void Error_Handler(void)
+{
+  __disable_irq();
+  while (1) {}
+}
+
+#ifdef USE_FULL_ASSERT
+void assert_failed(uint8_t *file, uint32_t line) { while (1) {} }
+#endif
