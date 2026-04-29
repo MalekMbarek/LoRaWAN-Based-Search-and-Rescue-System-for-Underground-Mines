@@ -162,7 +162,7 @@ void LoRaWAN_Init(void)
 
   /* Timer pour mise à jour périodique des capteurs (1 Hz) */
   UTIL_TIMER_Create(&AlertTimer, 0xFFFFFFFFU, UTIL_TIMER_PERIODIC, OnAlertTimerEvent, NULL);
-  UTIL_TIMER_SetPeriod(&AlertTimer, 1000);
+  UTIL_TIMER_SetPeriod(&AlertTimer, 5000);
   UTIL_TIMER_Start(&AlertTimer);
 
   /* USER CODE END LoRaWAN_Init_1 */
@@ -320,9 +320,9 @@ static void SendTxData(void)
 
   /* ── Canaux 3-5 : mouvement ─────────────────────────────────────────────── */
   CayenneLppAddAccelerometer(3,
-      (int16_t)(motionData.acc_x / 1000.0f),
-      (int16_t)(motionData.acc_y / 1000.0f),
-      (int16_t)(motionData.acc_z / 1000.0f));
+      (motionData.acc_x / 1.0f),
+     (motionData.acc_y / 1.0f),
+      (motionData.acc_z / 1.0f));
 
   /* Vibration : mg → CayenneLPP AnalogInput (×100 côté décodeur)
    * On envoie vibration/100 pour rester dans la plage float 0-327.67      */
@@ -341,7 +341,7 @@ static void SendTxData(void)
   CayenneLppAddDigitalInput(6, alert_motion);
 
   /* ── Canal 7 : gaz (ADC brut / 100 pour AnalogInput) ───────────────────── */
-  CayenneLppAddAnalogInput(7, (float)gasData.adc_raw / 100.0f);
+  CayenneLppAddAnalogInput(7, (float)gasData.adc_raw / 1.0f);
 
   /* ── Canal 8 : alertes gaz (bitmask) ────────────────────────────────────── */
   uint8_t alert_gas =
@@ -351,10 +351,10 @@ static void SendTxData(void)
   CayenneLppAddDigitalInput(8, alert_gas);
 
   /* ── Canal 9-10 : batterie + LED ────────────────────────────────────────── */
-  CayenneLppAddDigitalInput (9,  GetBatteryLevel());
-  CayenneLppAddDigitalOutput(10, AppLedStateOn);
+  //CayenneLppAddDigitalInput (9,  GetBatteryLevel());
+  //CayenneLppAddDigitalOutput(10, AppLedStateOn);
 
-  /* ── Canaux 11+ : nœuds personnels ─────────────────────────────────────────
+  /* ── Canaux 9+ : nœuds personnels ─────────────────────────────────────────
    * Structure DualMode : 6 canaux par nœud
    *   baseChannel+0  DigitalOutput  status
    *   baseChannel+1  AnalogInput    heartRate / 10
@@ -374,40 +374,46 @@ static void SendTxData(void)
 
   APP_LOG(TS_OFF, VLEVEL_L, "[TX] Active personal nodes: %d\r\n", activeCount);
 
-  for (uint8_t i = 0; i < activeCount; i++) {
+  for (uint8_t i = 0; i < activeCount; i++)
+{
     uint8_t nodeId      = activeNodes[i].nodeId;
-    uint8_t baseChannel = 11 + (nodeId - 1) * 7;   /* 7 canaux par nœud (SpO2 ajouté) */
+    uint8_t baseChannel = 9 + (nodeId - 1) * 5;
 
-    CayenneLppAddDigitalOutput(baseChannel + 0, activeNodes[i].status);
-    CayenneLppAddAnalogInput  (baseChannel + 1, (float)activeNodes[i].heartRate / 10.0f);
-    CayenneLppAddAnalogInput  (baseChannel + 2, (float)activeNodes[i].accX      / 100.0f);
-    CayenneLppAddAnalogInput  (baseChannel + 3, (float)activeNodes[i].accY      / 100.0f);
-    CayenneLppAddAnalogInput  (baseChannel + 4, (float)activeNodes[i].accZ      / 100.0f);
-    CayenneLppAddDigitalOutput(baseChannel + 5, activeNodes[i].hasAlert);
+ // Channel base → nodeId
+    CayenneLppAddDigitalInput(baseChannel, nodeId);
 
-    /* SpO2 : utiliser activeNodes[i].spo2 si le champ existe dans
-     * StoredPersonalNode_t, sinon mettre 0 en attendant la mise à jour
-     * de dual_mode.h                                                        */
-#ifdef STORED_PERSONAL_NODE_HAS_SPO2
-    uint8_t spo2_val = (activeNodes[i].spo2 >= 50 && activeNodes[i].spo2 <= 100)
-                       ? activeNodes[i].spo2 : 0;
-#else
-    uint8_t spo2_val = 0;   /* à remplacer quand dual_mode.h aura le champ  */
-#endif
-    CayenneLppAddDigitalInput(baseChannel + 6, spo2_val);
+    // Status
+    CayenneLppAddDigitalOutput(baseChannel + 1, activeNodes[i].status);
 
+    // Heart Rate
+    CayenneLppAddAnalogInput(baseChannel + 2, activeNodes[i].heartRate);
+
+    // Accelerometer (X,Y,Z ensemble)
+    //CayenneLppAddAccelerometer(baseChannel + 3,
+       // activeNodes[i].accX / 1.0f,
+       // activeNodes[i].accY / 1.0f,
+       // activeNodes[i].accZ / 1.0f);
+
+    // Alert
+    CayenneLppAddDigitalOutput(baseChannel + 3, activeNodes[i].hasAlert);
+
+    // SpO2
+    CayenneLppAddAnalogInput(baseChannel + 4, activeNodes[i].spo2);
+
+
+    // Log
     APP_LOG(TS_OFF, VLEVEL_L,
-            "[TX] Node%d ch%d | status=%d HR=%d SpO2=%d%% alert=%d\r\n",
-            nodeId, baseChannel,
-            activeNodes[i].status,
-            activeNodes[i].heartRate,
-            spo2_val,
-            activeNodes[i].hasAlert);
+        "[TX] Node%d | status=%d HR=%d SpO2=%d alert=%d\r\n",
+        nodeId, activeNodes[i].status,
+        activeNodes[i].heartRate, activeNodes[i].spo2,
+        activeNodes[i].hasAlert);
 
+    // On efface l'alerte après l'avoir remontée
     if (activeNodes[i].hasAlert) {
-      DualMode_ClearAlert(nodeId);
+        DualMode_ClearAlert(nodeId);
     }
-  }
+}
+  
 
   CayenneLppCopy(AppData.Buffer);
   AppData.BufferSize = CayenneLppGetSize();

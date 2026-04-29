@@ -136,7 +136,12 @@ void SystemClock_Config(void)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if (GPIO_Pin == SOS_BUTTON_PIN) {
-    PN_SOS_Trigger();   /* appelé depuis lora_app.c */
+    /* Clignotement rapide de la LED SOS : preuve que l’interruption a eu lieu */
+    HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_SET);
+    for (volatile int i = 0; i < 200000; i++);  // petit délai non bloquant (~50 ms à 32 MHz)
+    HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_RESET);
+    
+    PN_SOS_Trigger();
   }
 }
 

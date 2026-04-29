@@ -214,8 +214,9 @@ void SysTick_Handler(void)
 void EXTI0_1_IRQHandler(void)
 {
 #if (defined(CMWX1ZZABZ0XX))
+//HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   HAL_EXTI_IRQHandler(&H_EXTI_0);
-  HAL_EXTI_IRQHandler(&H_EXTI_1);
+  //HAL_EXTI_IRQHandler(&H_EXTI_1);
 #endif
 }
 

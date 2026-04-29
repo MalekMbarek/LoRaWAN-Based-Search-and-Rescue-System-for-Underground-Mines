@@ -88,7 +88,7 @@ static void TimestampNow(uint8_t *buff, uint16_t *size);
 static void tiny_snprintf_like(char *buf, uint32_t maxsize, const char *strFormat, ...);
 
 /* USER CODE BEGIN PFP */
-
+void GPIO_PersonalNode_Init(void);
 /* USER CODE END PFP */
 
 /* Exported functions ---------------------------------------------------------*/
@@ -100,9 +100,10 @@ void SystemApp_Init(void)
 
   /*Initialize timer and RTC*/
   UTIL_TIMER_Init();
-
+UTIL_LPM_SetStopMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
+UTIL_LPM_SetOffMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
   Gpio_PreInit();
-
+GPIO_PersonalNode_Init();
   /* Debug config : disable serial wires and DbgMcu pins settings */
   DBG_Disable();
 
@@ -368,10 +369,29 @@ void HAL_Delay(__IO uint32_t Delay)
 
   /* USER CODE END HAL_Delay_1 */
   RTC_IF_DelayMs(Delay);   /* based on RTC */
-  /* USER CODE BEGIN HAL_Delay_2 */
+  /* USER CODE BEGIN HAL_Delay_2 */}
+/* USER CODE BEGIN 2 */
 
+//void GPIO_PersonalNode_Init(void)
+//{
+  //GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+ // __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /* Bouton SOS en interruption */
+ // GPIO_InitStruct.Pin = GPIO_PIN_0;   // ou ton pin réel
+  //GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING; // ou RISING selon câblage
+  //GPIO_InitStruct.Pull = GPIO_PULLUP; // IMPORTANT
+
+  //HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* Activer interruption EXTI */
+  //HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+ // HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+//}
+/* USER CODE END 2 */
   /* USER CODE END HAL_Delay_2 */
-}
+
 
 /* USER CODE BEGIN Overload_HAL_weaks */
 

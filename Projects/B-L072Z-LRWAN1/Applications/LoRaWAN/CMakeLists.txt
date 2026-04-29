@@ -10,11 +10,10 @@ project(PFE2 C ASM)
 set(AVAILABLE_APPLICATIONS
     LoRaWAN_End_Node
     LoRaWAN_AT_Slave
-    personal
-    static
-    static1
+    PersonalNode
     static2
     scanner
+
 )
 
 # Default app

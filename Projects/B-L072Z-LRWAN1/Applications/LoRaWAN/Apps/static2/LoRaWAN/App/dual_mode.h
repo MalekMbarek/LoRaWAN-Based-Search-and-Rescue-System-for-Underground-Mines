@@ -33,7 +33,8 @@ typedef struct {
     uint8_t pktType;      // PKT_TYPE_FULL
     uint8_t nodeId;       // MY_NODE_ID
     uint8_t status;       // STATUS_OK, STATUS_FALL, STATUS_SOS
-    uint8_t heartRate;    // BPM or 0/255
+    uint8_t heartRate; 
+    uint8_t spo2;   // BPM or 0/255
     int16_t accX;
     int16_t accY;
     int16_t accZ;
@@ -44,6 +45,7 @@ typedef struct {
     uint8_t nodeId;           // Node ID (1-4)
     uint8_t status;           // Last known status
     uint8_t heartRate;        // Last heart rate
+     uint8_t spo2;
     int16_t accX;             // Last X acceleration
     int16_t accY;             // Last Y acceleration
     int16_t accZ;             // Last Z acceleration
