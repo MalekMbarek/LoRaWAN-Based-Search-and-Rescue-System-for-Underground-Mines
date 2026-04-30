@@ -19,7 +19,8 @@ set(DRIVERS       ${PFE2_ROOT}/Drivers)
 set(MIDDLEWARES   ${PFE2_ROOT}/Middlewares)
 set(UTILITIES     ${PFE2_ROOT}/Utilities)
 # ── Tools ─────────────────────────────────────────────────────────────────────
-set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi")
+#set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi")
+set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10")
 set(CMAKE_OBJCOPY "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-objcopy.exe")
 set(CMAKE_SIZE    "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-size.exe")
 #find_program(CMAKE_OBJCOPY arm-none-eabi-objcopy)
@@ -135,9 +136,10 @@ list(APPEND SOURCES
     "${MIDDLEWARES}/Third_Party/LoRaWAN/LmHandler/Packages/LmhpClockSync.c"
     "${MIDDLEWARES}/Third_Party/LoRaWAN/LmHandler/Packages/LmhpCompliance.c"
 )
-
+list(APPEND SOURCES
+    Scanner/App/joystick.c
+)
 list(FILTER SOURCES EXCLUDE REGEX ".*_template\\.c$")
-
 # ── Linker script ─────────────────────────────────────────────────────────────
 set(LINKER_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/STM32CubeIDE/cmwx1zzabz_0xx/STM32L072CZTx_FLASH.ld)
 

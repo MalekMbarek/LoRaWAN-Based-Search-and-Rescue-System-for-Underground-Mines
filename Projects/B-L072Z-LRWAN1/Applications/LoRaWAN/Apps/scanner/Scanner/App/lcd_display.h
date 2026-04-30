@@ -14,7 +14,7 @@
 
 /* LCD dimensions */
 #define LCD_ROWS    2
-#define LCD_COLS    20
+#define LCD_COLS    16
 
 /* Function prototypes */
 void LCD_Init(void);

@@ -10,14 +10,17 @@
 #include "main.h"
 #include "scanner_app.h"
 #include "sys_app.h"
-
+#include "adc.h"
+#include "joystick.h"
+extern ADC_HandleTypeDef hadc;
 /* Private variables */
 extern I2C_HandleTypeDef hi2c1;
 
 /* Function prototypes */
 void SystemClock_Config(void);
 static void I2C_Init(void);
-
+static void GPIO_Init(void);
+static void ADC_Init(void);
 int main(void)
 {
     /* Reset peripherals, initialize Flash and Systick */
@@ -31,10 +34,11 @@ int main(void)
     
     /* Initialize I2C for LCD */
     I2C_Init();
-    
+     GPIO_Init();
+     ADC_Init();
     /* Initialize scanner application */
     Scanner_Init();
-    
+    Joystick_SW_Init();
     /* Main loop */
     while (1)
     {
@@ -50,6 +54,7 @@ void Error_Handler(void)
         // Optional: blink LED here
     }
 }
+
 static void I2C_Init(void)
 {
     __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -78,4 +83,47 @@ static void I2C_Init(void)
 void SystemClock_Config(void)
 {
     // Use your existing SystemClock_Config from static2
+}
+static void GPIO_Init(void)
+{
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    // ================= JOYSTICK BUTTON (SW PA3) =================
+    GPIO_InitStruct.Pin = GPIO_PIN_3;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // ================= JOYSTICK ANALOG =================
+    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_2;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+}
+static void ADC_Init(void)
+{
+    __HAL_RCC_ADC1_CLK_ENABLE();
+
+    hadc.Instance = ADC1;
+
+    hadc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+    hadc.Init.Resolution = ADC_RESOLUTION_12B;
+    hadc.Init.ScanConvMode = ENABLE;
+    hadc.Init.ContinuousConvMode = DISABLE;
+    hadc.Init.DiscontinuousConvMode = DISABLE;
+    hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    //hadc.Init.NbrOfConversion = 2;
+
+    HAL_ADC_Init(&hadc);
+
+    ADC_ChannelConfTypeDef sConfig = {0};
+
+    sConfig.Channel = ADC_CHANNEL_0;
+    sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
+    HAL_ADC_ConfigChannel(&hadc, &sConfig);
+
+    sConfig.Channel = ADC_CHANNEL_2;
+    HAL_ADC_ConfigChannel(&hadc, &sConfig);
 }

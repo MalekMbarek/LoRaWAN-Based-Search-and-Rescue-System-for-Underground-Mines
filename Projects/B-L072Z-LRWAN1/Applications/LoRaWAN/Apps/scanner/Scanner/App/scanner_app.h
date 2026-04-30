@@ -70,7 +70,10 @@ typedef struct {
     uint8_t isActive;
     uint8_t packetCount;
 } TrackedNode_t;
-
+typedef enum {
+    UI_LIST_VIEW = 0,
+    UI_DETAIL_VIEW = 1
+} UI_State_t;
 /* Function prototypes */
 void Scanner_Init(void);
 void Scanner_Process(void);

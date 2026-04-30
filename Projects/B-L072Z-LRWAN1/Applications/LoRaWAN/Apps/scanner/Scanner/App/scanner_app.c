@@ -17,7 +17,7 @@
 #include "buzzer.h"
 #include <string.h>
 #include <stdio.h>
-
+#include "joystick.h"
 /* Raw LoRa Configuration (must match personal nodes) */
 #define RAW_RF_FREQUENCY                868000000
 #define RAW_LORA_BANDWIDTH              0         // 125 kHz
@@ -34,15 +34,21 @@
 /* Update intervals */
 #define LCD_UPDATE_INTERVAL_MS          500
 #define BUZZER_UPDATE_INTERVAL_MS       100
-
+extern ADC_HandleTypeDef hadc;
 /* Private variables */
+static uint8_t uiMode;
+//static void Read_Joystick(void);
+static uint8_t uiMode = 0;
+static uint8_t selectedNodeIndex = 0;
+
 static RadioEvents_t radioEvents;
 static TrackedNode_t trackedNodes[MAX_TRACKED_NODES];
 static UTIL_TIMER_Object_t lcdUpdateTimer;
 static UTIL_TIMER_Object_t buzzerTimer;
 static uint8_t buzzerActive = 0;
 static uint32_t nextBuzzerTime = 0;
-
+static uint8_t scrollIndex = 0;
+static UI_State_t uiState = UI_LIST_VIEW;
 /* Forward declarations */
 static void Radio_ConfigureRx(void);
 static void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
@@ -234,74 +240,70 @@ static void UpdateBuzzer(void)
 /* LCD display update */
 static void UpdateLcdDisplay(void)
 {
-    TrackedNode_t activeNodes[MAX_TRACKED_NODES];
-    uint8_t activeCount = 0;
-    
-    Scanner_GetAllActiveNodes(activeNodes, &activeCount);
-    
+    TrackedNode_t nodes[MAX_TRACKED_NODES];
+    uint8_t count = 0;
+
+    Scanner_GetAllActiveNodes(nodes, &count);
+
     LCD_Clear();
-    
-    if (activeCount == 0) {
-        LCD_SetCursor(0, 0);
+
+    if (count == 0)
+    {
+        LCD_SetCursor(0,0);
         LCD_Print("SCANNING...");
-        LCD_SetCursor(1, 0);
-        LCD_Print("No nodes found");
+        LCD_SetCursor(1,0);
+        LCD_Print("No nodes");
         return;
     }
-    
-    // Find most urgent and closest
-    uint8_t urgentId = Scanner_GetMostUrgentNode();
-    uint8_t closestId = Scanner_GetClosestNode();
-    
-    // Line 1: Most urgent node (if any)
-    LCD_SetCursor(0, 0);
-    if (urgentId > 0) {
-        TrackedNode_t* urgent = Scanner_GetNode(urgentId);
-        char line1[20];
-        snprintf(line1, sizeof(line1), "!N%d %s %ddBm", 
-                 urgentId,
-                 Scanner_StatusToString(urgent->status),
-                 urgent->rssi);
-        LCD_Print(line1);
-    } else {
-        LCD_Print("All OK");
-    }
-    
-    // Line 2: Closest node
-    LCD_SetCursor(1, 0);
-    if (closestId > 0) {
-        TrackedNode_t* closest = Scanner_GetNode(closestId);
-        char line2[20];
-        snprintf(line2, sizeof(line2), "N%d %s HR:%d", 
-                 closestId,
-                 Scanner_ProximityToString(closest->proximity),
-                 closest->heartRate);
-        LCD_Print(line2);
-    }
-    
-    // Line 3: Node count and summary
-    LCD_SetCursor(2, 0);
-    char line3[20];
-    snprintf(line3, sizeof(line3), "Nodes: %d/%d", activeCount, MAX_TRACKED_NODES);
-    LCD_Print(line3);
-    
-    // Line 4: All node IDs with status indicators
-    LCD_SetCursor(3, 0);
-    char line4[20] = "";
-    for (uint8_t i = 0; i < activeCount; i++) {
-        char nodeStr[5];
-        char statusChar = ' ';
-        if (activeNodes[i].status == NODE_STATUS_SOS) {
-            statusChar = '!';
-        } else if (activeNodes[i].status == NODE_STATUS_FALL) {
-            statusChar = 'F';
+
+    // ================= LIST MODE =================
+    if (uiMode == 0)
+    {
+        for (uint8_t i = 0; i < 2; i++)
+        {
+            uint8_t idx = scrollIndex + i;
+
+            if (idx >= count) break;
+
+            char line[17];
+            snprintf(line, 16, "N%d %s %ddB   AAA",
+                     nodes[idx].nodeId,
+                     Scanner_StatusToString(nodes[idx].status),
+                     nodes[idx].rssi);
+            snprintf(line, 16, "N%d %s %ddB",
+                     nodes[idx].nodeId,
+                     Scanner_StatusToString(nodes[idx].status),
+                     nodes[idx].rssi);
+
+            LCD_SetCursor(i,0);
+            LCD_Print(line);
         }
-        
-        snprintf(nodeStr, sizeof(nodeStr), "%d%c ", 
-                 activeNodes[i].nodeId, statusChar);
-        strcat(line4, nodeStr);
     }
-    LCD_Print(line4);
+
+    // ================= DETAIL MODE =================
+    else
+    {
+        uint8_t id = selectedNodeIndex;
+
+        TrackedNode_t* n = &nodes[id];
+
+        char l1[17];
+        char l2[17];
+
+        snprintf(l1,16,"N%d %s",
+                 n->nodeId,
+                 Scanner_StatusToString(n->status));
+
+        snprintf(l2,16,"HR:%d RSSI:%d",
+                 n->heartRate,
+                 n->rssi);
+
+        LCD_SetCursor(0,0);
+        LCD_Print(l1);
+
+        LCD_SetCursor(1,0);
+        LCD_Print(l2);
+    }
 }
 
 /* Public API */
@@ -355,15 +357,80 @@ void Scanner_Init(void)
 void Scanner_Process(void)
 {
     uint32_t now = HAL_GetTick();
-    
-    // Check for node timeouts
-    for (uint8_t i = 0; i < MAX_TRACKED_NODES; i++) {
-        if (trackedNodes[i].isActive) {
-            if ((now - trackedNodes[i].lastSeenTime) > NODE_TIMEOUT_MS) {
-                APP_LOG(TS_OFF, VLEVEL_M, "[Scanner] Node %d timeout\r\n", 
+
+    // =========================
+    // 1. TIMEOUT NODES
+    // =========================
+    for (uint8_t i = 0; i < MAX_TRACKED_NODES; i++)
+    {
+        if (trackedNodes[i].isActive)
+        {
+            if ((now - trackedNodes[i].lastSeenTime) > NODE_TIMEOUT_MS)
+            {
+                APP_LOG(TS_OFF, VLEVEL_M, "[Scanner] Node %d timeout\r\n",
                         trackedNodes[i].nodeId);
+
                 trackedNodes[i].isActive = 0;
             }
+        }
+    }
+
+    // =========================
+    // 2. JOYSTICK READ
+    // =========================
+    Read_Joystick();
+
+    static uint32_t lastMove = 0;
+
+    if (now - lastMove < 200) return; // anti-rebond UI
+
+    // get active nodes count
+    TrackedNode_t nodes[MAX_TRACKED_NODES];
+    uint8_t count = 0;
+    Scanner_GetAllActiveNodes(nodes, &count);
+
+    // =========================
+    // 3. LIST MODE (scroll)
+    // =========================
+    if (uiMode == 0)
+    {
+        // DOWN
+        if (joy_y > 3000)
+        {
+            if (scrollIndex + 1 < count - 1)
+                scrollIndex++;
+
+            lastMove = now;
+        }
+
+        // UP
+        if (joy_y < 1000)
+        {
+            if (scrollIndex > 0)
+                scrollIndex--;
+
+            lastMove = now;
+        }
+
+        // CLICK (joystick button)
+        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_RESET)
+        {
+            selectedNodeIndex = scrollIndex;
+            uiMode = 1; // switch to detail view
+            lastMove = now;
+        }
+    }
+
+    // =========================
+    // 4. DETAIL MODE
+    // =========================
+    else
+    {
+        // CLICK = return list
+        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_RESET)
+        {
+            uiMode = 0;
+            lastMove = now;
         }
     }
 }

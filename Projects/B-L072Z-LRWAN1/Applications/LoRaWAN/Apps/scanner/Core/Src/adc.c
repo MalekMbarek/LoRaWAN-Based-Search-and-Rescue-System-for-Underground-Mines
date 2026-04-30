@@ -60,15 +60,15 @@ void MX_ADC_Init(void)
   {
     Error_Handler();
   }
+ADC_ChannelConfTypeDef sConfig = {0};
 
-  if (HAL_ADCEx_Calibration_Start(&hadc, ADC_SINGLE_ENDED) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC_Init 2 */
+sConfig.Channel = ADC_CHANNEL_0;
+sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
+HAL_ADC_ConfigChannel(&hadc, &sConfig);
 
-  /* USER CODE END ADC_Init 2 */
-
+sConfig.Channel = ADC_CHANNEL_2;
+sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
+HAL_ADC_ConfigChannel(&hadc, &sConfig);
 }
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef *adcHandle)

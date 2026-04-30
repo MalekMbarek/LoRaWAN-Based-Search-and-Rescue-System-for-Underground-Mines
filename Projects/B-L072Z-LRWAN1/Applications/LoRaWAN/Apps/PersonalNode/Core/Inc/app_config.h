@@ -37,7 +37,7 @@ extern "C" {
 
 /* ── Identifiant du nœud ─────────────────────────────────────────────────── */
 #ifndef MY_NODE_ID
-#define MY_NODE_ID              1U
+#define MY_NODE_ID              2U
 #endif
 
 /* ── Format paquet LoRa 11 bytes ─────────────────────────────────────────── */
@@ -126,7 +126,7 @@ extern "C" {
 
 /* ── GPIO ────────────────────────────────────────────────────────────────── */
 #define SOS_BUTTON_PORT         GPIOA
-#define SOS_BUTTON_PIN          GPIO_PIN_0
+#define SOS_BUTTON_PIN          GPIO_PIN_13
 #define SOS_BUTTON_IRQn         EXTI0_1_IRQn
 #define LED_SOS_PORT            GPIOA
 #define LED_SOS_PIN             GPIO_PIN_5

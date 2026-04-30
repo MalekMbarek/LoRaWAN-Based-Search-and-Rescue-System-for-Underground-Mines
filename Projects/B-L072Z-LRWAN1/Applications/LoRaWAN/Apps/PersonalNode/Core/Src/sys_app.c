@@ -1,20 +1,27 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    sys_app.c
-  * @author  MCD Application Team
-  * @brief   Initializes HW and SW system entities (not related to the radio)
-  ******************************************************************************
-  * @attention
+  * @file    sys_app.c — PersonalNode
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * FIX BOUTON SOS :
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * PROBLÈME IDENTIFIÉ :
+  *   app_lorawan.c appelait GPIO_PersonalNode_Init() AVANT SystemApp_Init().
+  *   SystemApp_Init() → Gpio_PreInit() remettait PA0 en ANALOG après coup.
+  *   Résultat : bouton SOS inactif.
   *
+  * SOLUTION :
+  *   GPIO_PersonalNode_Init() est déclarée ici (sys_app.c) et appelée
+  *   DIRECTEMENT APRÈS Gpio_PreInit() dans SystemApp_Init().
+  *   app_lorawan.c ne configure PLUS les GPIO — il appelle seulement
+  *   SystemApp_Init() qui fait tout dans le bon ordre.
+  *
+  * ORDRE CORRECT dans SystemApp_Init() :
+  *   1. UTIL_TIMER_Init()         ← RTC + timers
+  *   2. Gpio_PreInit()            ← tous GPIO → ANALOG
+  *   3. GPIO_PersonalNode_Init()  ← PA0/PA5/PB13 reconfigurés APRÈS
+  *   4. DBG_Disable/ProbesInit()
+  *   5. UART, ADC, SX1276, LPM
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -34,233 +41,195 @@
 #include "sys_sensors.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "app_config.h"
+#include "stm32l0xx_hal.h"
 /* USER CODE END Includes */
 
-/* External variables ---------------------------------------------------------*/
-/* USER CODE BEGIN EV */
-
-/* USER CODE END EV */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
 /* Private define ------------------------------------------------------------*/
-#define MAX_TS_SIZE (int) 16
-
-/**
-  * Defines the maximum battery level
-  */
-#define LORAWAN_MAX_BAT   254
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
+#define MAX_TS_SIZE     (int)16
+#define LORAWAN_MAX_BAT 254
 
 /* Private function prototypes -----------------------------------------------*/
-/**
-  * @brief  Set all pins such to minimized consumption (necessary for some STM32 families)
-  * @param none
-  * @retval None
-  */
-static void Gpio_PreInit(void);
-/**
-  * @brief Returns sec and msec based on the systime in use
-  * @param buff to update with timestamp
-  * @param size of updated buffer
-  */
-static void TimestampNow(uint8_t *buff, uint16_t *size);
-
-/**
-  * @brief  it calls UTIL_ADV_TRACE_VSNPRINTF
-  */
-static void tiny_snprintf_like(char *buf, uint32_t maxsize, const char *strFormat, ...);
+static void Gpio_PreInit       (void);
+static void TimestampNow       (uint8_t *buff, uint16_t *size);
+static void tiny_snprintf_like (char *buf, uint32_t maxsize,
+                                 const char *strFormat, ...);
 
 /* USER CODE BEGIN PFP */
-void GPIO_PersonalNode_Init(void);
+/*
+ * GPIO_PersonalNode_Init : déclarée static ici, appelée dans SystemApp_Init()
+ * juste après Gpio_PreInit().
+ * NE PAS l'appeler depuis app_lorawan.c.
+ */
+static void GPIO_PersonalNode_Init(void);
 /* USER CODE END PFP */
 
-/* Exported functions ---------------------------------------------------------*/
+/* ════════════════════════════════════════════════════════════════════════════
+ * SystemApp_Init
+ * ════════════════════════════════════════════════════════════════════════════ */
 void SystemApp_Init(void)
 {
   /* USER CODE BEGIN SystemApp_Init_1 */
-
   /* USER CODE END SystemApp_Init_1 */
 
-  /*Initialize timer and RTC*/
+  /* 1. Init RTC + timers */
   UTIL_TIMER_Init();
-UTIL_LPM_SetStopMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
-UTIL_LPM_SetOffMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
-  Gpio_PreInit();
-GPIO_PersonalNode_Init();
-  /* Debug config : disable serial wires and DbgMcu pins settings */
-  DBG_Disable();
 
-  /* Initializes the SW probes pins and the monitor RF pins via Alternate Function */
+  /* 2. Gpio_PreInit : remet TOUS les GPIO en ANALOG (y compris PA0/PB8/PB9) */
+  Gpio_PreInit();
+
+  /* 3. GPIO_PersonalNode_Init : reconfigure PA0 (SOS), PA5 (LED), PB13 (LED)
+   *    IMMÉDIATEMENT APRÈS Gpio_PreInit() pour éviter l'écrasement.
+   *    PB8/PB9 (I2C) : laissés en ANALOG, reconfigurés par I2C_BusRecovery +
+   *    PN_I2C_Init() dans SensorsInit() (sys_sensors.c).
+   */
+  GPIO_PersonalNode_Init();
+
+  /* 4. Debug */
+  DBG_Disable();
   DBG_ProbesInit();
 
-  /*Initialize the terminal */
+  /* 5. UART logs */
   UTIL_ADV_TRACE_Init();
   UTIL_ADV_TRACE_RegisterTimeStampFunction(TimestampNow);
-
-  /*Set verbose LEVEL*/
   UTIL_ADV_TRACE_SetVerboseLevel(VERBOSE_LEVEL);
 
-  /*Initialize the temperature and Battery measurement services */
+  /* 6. ADC + SX1276 */
   SYS_InitMeasurement();
-
   Sx_Board_Bus_Init();
-
   Sx_Board_IoInit();
 
-  /*Initialize the Sensors */
-  //EnvSensors_Init();
-
-  /*Init low power manager*/
+  /* 7. LPM */
   UTIL_LPM_Init();
-  /* Disable Stand-by mode */
   UTIL_LPM_SetOffMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
 
 #if defined (LOW_POWER_DISABLE) && (LOW_POWER_DISABLE == 1)
-  /* Disable Stop Mode */
   UTIL_LPM_SetStopMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
 #elif !defined (LOW_POWER_DISABLE)
 #error LOW_POWER_DISABLE not defined
-#endif /* LOW_POWER_DISABLE */
+#endif
 
   /* USER CODE BEGIN SystemApp_Init_2 */
-
   /* USER CODE END SystemApp_Init_2 */
 }
 
-/**
-  * @brief redefines __weak function in stm32_seq.c such to enter low power
-  */
-void UTIL_SEQ_Idle(void)
+/* ════════════════════════════════════════════════════════════════════════════
+ * GPIO_PersonalNode_Init
+ *
+ * Appelée DANS SystemApp_Init(), juste après Gpio_PreInit().
+ * Reconfigure seulement les GPIO du nœud personnel :
+ *   PA0 : bouton SOS (EXTI falling, pull-up)
+ *   PA5 : LED SOS    (output PP)
+ *   PB13: LED heartbeat (output PP)
+ *
+ * PB8/PB9 (I2C) : NE PAS configurer ici.
+ *   sys_sensors.c les configure via I2C_BusRecovery() + PN_I2C_Init().
+ * ════════════════════════════════════════════════════════════════════════════ */
+static void GPIO_PersonalNode_Init(void)
 {
-  /* USER CODE BEGIN UTIL_SEQ_Idle_1 */
+  GPIO_InitTypeDef g = {0};
 
-  /* USER CODE END UTIL_SEQ_Idle_1 */
-  UTIL_LPM_EnterLowPower();
-  /* USER CODE BEGIN UTIL_SEQ_Idle_2 */
+  /* Réactiver les horloges GPIO (Gpio_PreInit les avait désactivées) */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /* USER CODE END UTIL_SEQ_Idle_2 */
+  /* ── PA0 — Bouton SOS ─────────────────────────────────────────────────
+   * Gpio_PreInit() avait remis PA0 en ANALOG → on le reconfigure ici.
+   * Mode : EXTI falling edge (bouton appuyé = GND = LOW).
+   * Pull : pull-up interne (relâché = PA0 = HIGH).
+   */
+  g.Pin  = SOS_BUTTON_PIN;           /* GPIO_PIN_0 */
+  g.Mode = GPIO_MODE_IT_FALLING;
+  g.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(SOS_BUTTON_PORT, &g); /* GPIOA */
+
+  /* Effacer le flag EXTI résiduel AVANT d'activer l'IRQ
+   * (évite une fausse interruption au démarrage) */
+  __HAL_GPIO_EXTI_CLEAR_IT(SOS_BUTTON_PIN);
+
+  /* Priorité 2 : en dessous de 0/1 réservés noyau, au-dessus de 3+ applicatifs */
+  HAL_NVIC_SetPriority(SOS_BUTTON_IRQn, 2, 0);  /* EXTI0_1_IRQn */
+  HAL_NVIC_EnableIRQ(SOS_BUTTON_IRQn);
+
+  /* ── PA5 — LED SOS ──────────────────────────────────────────────────── */
+  g.Pin   = LED_SOS_PIN;              /* GPIO_PIN_5 */
+  g.Mode  = GPIO_MODE_OUTPUT_PP;
+  g.Pull  = GPIO_NOPULL;
+  g.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED_SOS_PORT, &g);    /* GPIOA */
+  HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_RESET);
+
+  /* ── PB13 — LED Heartbeat ───────────────────────────────────────────── */
+  g.Pin = LED_HEARTBEAT_PIN;          /* GPIO_PIN_13 */
+  HAL_GPIO_Init(LED_HEARTBEAT_PORT, &g); /* GPIOB */
+  HAL_GPIO_WritePin(LED_HEARTBEAT_PORT, LED_HEARTBEAT_PIN, GPIO_PIN_RESET);
 }
 
+/* ════════════════════════════════════════════════════════════════════════════
+ * UTIL_SEQ_Idle — entre en low power quand aucune tâche n'est prête
+ * ════════════════════════════════════════════════════════════════════════════ */
+void UTIL_SEQ_Idle(void)
+{
+  UTIL_LPM_EnterLowPower();
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * GetBatteryLevel / GetTemperatureLevel / GetUniqueId / GetDevAddr
+ * ════════════════════════════════════════════════════════════════════════════ */
 uint8_t GetBatteryLevel(void)
 {
-  uint8_t batteryLevel = 0;
-  uint16_t batteryLevelmV;
+  uint8_t  batteryLevel   = 0;
+  uint16_t batteryLevelmV = (uint16_t)SYS_GetBatteryLevel();
 
-  /* USER CODE BEGIN GetBatteryLevel_0 */
-
-  /* USER CODE END GetBatteryLevel_0 */
-
-  batteryLevelmV = (uint16_t) SYS_GetBatteryLevel();
-
-  /* Convert battery level from mV to linear scale: 1 (very low) to 254 (fully charged) */
-  if (batteryLevelmV > VDD_BAT)
-  {
-    batteryLevel = LORAWAN_MAX_BAT;
-  }
-  else if (batteryLevelmV < VDD_MIN)
-  {
-    batteryLevel = 0;
-  }
+  if      (batteryLevelmV > VDD_BAT) batteryLevel = LORAWAN_MAX_BAT;
+  else if (batteryLevelmV < VDD_MIN) batteryLevel = 0;
   else
-  {
-    batteryLevel = (((uint32_t)(batteryLevelmV - VDD_MIN) * LORAWAN_MAX_BAT) / (VDD_BAT - VDD_MIN));
-  }
+    batteryLevel = (uint8_t)(((uint32_t)(batteryLevelmV - VDD_MIN) *
+                               LORAWAN_MAX_BAT) / (VDD_BAT - VDD_MIN));
 
   APP_LOG(TS_ON, VLEVEL_M, "VDDA= %d\r\n", batteryLevel);
-
-  /* USER CODE BEGIN GetBatteryLevel_2 */
-
-  /* USER CODE END GetBatteryLevel_2 */
-
-  return batteryLevel;  /* 1 (very low) to 254 (fully charged) */
+  return batteryLevel;
 }
 
 uint16_t GetTemperatureLevel(void)
 {
-  uint16_t temperatureLevel = 0;
-
-  temperatureLevel = (uint16_t)(SYS_GetTemperatureLevel() / 256);
-  /* USER CODE BEGIN GetTemperatureLevel */
-
-  /* USER CODE END GetTemperatureLevel */
-  return temperatureLevel;
+  return (uint16_t)(SYS_GetTemperatureLevel() / 256);
 }
 
 void GetUniqueId(uint8_t *id)
 {
-  /* USER CODE BEGIN GetUniqueId_1 */
-
-  /* USER CODE END GetUniqueId_1 */
   uint32_t ID_1_3_val = HAL_GetUIDw0() + HAL_GetUIDw2();
-  uint32_t ID_2_val = HAL_GetUIDw1();
-
-  id[7] = (ID_1_3_val) >> 24;
-  id[6] = (ID_1_3_val) >> 16;
-  id[5] = (ID_1_3_val) >> 8;
-  id[4] = (ID_1_3_val);
-  id[3] = (ID_2_val) >> 24;
-  id[2] = (ID_2_val) >> 16;
-  id[1] = (ID_2_val) >> 8;
-  id[0] = (ID_2_val);
-
-  /* USER CODE BEGIN GetUniqueId_2 */
-
-  /* USER CODE END GetUniqueId_2 */
+  uint32_t ID_2_val   = HAL_GetUIDw1();
+  id[7] = (uint8_t)(ID_1_3_val >> 24);
+  id[6] = (uint8_t)(ID_1_3_val >> 16);
+  id[5] = (uint8_t)(ID_1_3_val >> 8);
+  id[4] = (uint8_t)(ID_1_3_val);
+  id[3] = (uint8_t)(ID_2_val   >> 24);
+  id[2] = (uint8_t)(ID_2_val   >> 16);
+  id[1] = (uint8_t)(ID_2_val   >> 8);
+  id[0] = (uint8_t)(ID_2_val);
 }
 
 uint32_t GetDevAddr(void)
 {
-  return ((HAL_GetUIDw0()) ^ (HAL_GetUIDw1()) ^ (HAL_GetUIDw2()));
+  return HAL_GetUIDw0() ^ HAL_GetUIDw1() ^ HAL_GetUIDw2();
 }
 
-/* USER CODE BEGIN EF */
-
-/* USER CODE END EF */
-
-/* Private functions ---------------------------------------------------------*/
-
+/* ════════════════════════════════════════════════════════════════════════════
+ * Private functions
+ * ════════════════════════════════════════════════════════════════════════════ */
 static void TimestampNow(uint8_t *buff, uint16_t *size)
 {
-  /* USER CODE BEGIN TimestampNow_1 */
-
-  /* USER CODE END TimestampNow_1 */
   SysTime_t curtime = SysTimeGet();
-  tiny_snprintf_like((char *)buff, MAX_TS_SIZE, "%ds%03d:", curtime.Seconds, curtime.SubSeconds);
-  *size = strlen((char *)buff);
-  /* USER CODE BEGIN TimestampNow_2 */
-
-  /* USER CODE END TimestampNow_2 */
+  tiny_snprintf_like((char *)buff, MAX_TS_SIZE, "%ds%03d:",
+                     curtime.Seconds, curtime.SubSeconds);
+  *size = (uint16_t)strlen((char *)buff);
 }
 
 static void Gpio_PreInit(void)
 {
-  /* USER CODE BEGIN Gpio_PreInit_1 */
-
-  /* USER CODE END Gpio_PreInit_1 */
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  /* Configure all IOs in analog input              */
-  /* Except PA143 and PA14 (SWCLK and SWD) for debug*/
-  /* PA13 and PA14 are configured in debug_init     */
-  /* Configure all GPIO as analog to reduce current consumption on non used IOs */
-  /* Enable GPIOs clock */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -268,133 +237,56 @@ static void Gpio_PreInit(void)
 
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  /* All GPIOs except debug pins (SWCLK and SWD) */
+
+  /* GPIOA : tous sauf PA13/PA14 (SWD/SWCLK debug) */
   GPIO_InitStruct.Pin = GPIO_PIN_All & (~(GPIO_PIN_13 | GPIO_PIN_14));
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /* All GPIOs */
+  /* GPIOB/C/H : tous */
   GPIO_InitStruct.Pin = GPIO_PIN_All;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
   HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
 
-  /* Disable GPIOs clock */
   __HAL_RCC_GPIOA_CLK_DISABLE();
   __HAL_RCC_GPIOB_CLK_DISABLE();
   __HAL_RCC_GPIOC_CLK_DISABLE();
   __HAL_RCC_GPIOH_CLK_DISABLE();
-  /* USER CODE BEGIN Gpio_PreInit_2 */
-
-  /* USER CODE END Gpio_PreInit_2 */
 }
 
 /* Disable StopMode when traces need to be printed */
 void UTIL_ADV_TRACE_PreSendHook(void)
 {
-  /* USER CODE BEGIN UTIL_ADV_TRACE_PreSendHook_1 */
-
-  /* USER CODE END UTIL_ADV_TRACE_PreSendHook_1 */
   UTIL_LPM_SetStopMode((1 << CFG_LPM_UART_TX_Id), UTIL_LPM_DISABLE);
-  /* USER CODE BEGIN UTIL_ADV_TRACE_PreSendHook_2 */
-
-  /* USER CODE END UTIL_ADV_TRACE_PreSendHook_2 */
 }
-/* Re-enable StopMode when traces have been printed */
+
 void UTIL_ADV_TRACE_PostSendHook(void)
 {
-  /* USER CODE BEGIN UTIL_LPM_SetStopMode_1 */
-
-  /* USER CODE END UTIL_LPM_SetStopMode_1 */
   UTIL_LPM_SetStopMode((1 << CFG_LPM_UART_TX_Id), UTIL_LPM_ENABLE);
-  /* USER CODE BEGIN UTIL_LPM_SetStopMode_2 */
-
-  /* USER CODE END UTIL_LPM_SetStopMode_2 */
 }
 
-static void tiny_snprintf_like(char *buf, uint32_t maxsize, const char *strFormat, ...)
+static void tiny_snprintf_like(char *buf, uint32_t maxsize,
+                                const char *strFormat, ...)
 {
-  /* USER CODE BEGIN tiny_snprintf_like_1 */
-
-  /* USER CODE END tiny_snprintf_like_1 */
   va_list vaArgs;
   va_start(vaArgs, strFormat);
   UTIL_ADV_TRACE_VSNPRINTF(buf, maxsize, strFormat, vaArgs);
   va_end(vaArgs);
-  /* USER CODE BEGIN tiny_snprintf_like_2 */
-
-  /* USER CODE END tiny_snprintf_like_2 */
 }
 
-/* USER CODE BEGIN PrFD */
-
-/* USER CODE END PrFD */
-
-/* HAL overload functions ---------------------------------------------------------*/
-
-/**
-  * @note This function overwrites the __weak one from HAL
-  */
+/* HAL overload functions ----------------------------------------------------*/
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 {
-  /*Don't enable SysTick if TIMER_IF is based on other counters (e.g. RTC) */
-  /* USER CODE BEGIN HAL_InitTick_1 */
-
-  /* USER CODE END HAL_InitTick_1 */
+  /* SysTick désactivé — on utilise le RTC comme base de temps */
   return HAL_OK;
-  /* USER CODE BEGIN HAL_InitTick_2 */
-
-  /* USER CODE END HAL_InitTick_2 */
 }
 
-/**
-  * @note This function overwrites the __weak one from HAL
-  */
 uint32_t HAL_GetTick(void)
 {
-  /* USER CODE BEGIN HAL_GetTick_1 */
-
-  /* USER CODE END HAL_GetTick_1 */
   return RTC_IF_GetTimerValue();
-  /* USER CODE BEGIN HAL_GetTick_2 */
-
-  /* USER CODE END HAL_GetTick_2 */
 }
 
-/**
-  * @note This function overwrites the __weak one from HAL
-  */
 void HAL_Delay(__IO uint32_t Delay)
 {
-  /* USER CODE BEGIN HAL_Delay_1 */
-
-  /* USER CODE END HAL_Delay_1 */
-  RTC_IF_DelayMs(Delay);   /* based on RTC */
-  /* USER CODE BEGIN HAL_Delay_2 */}
-/* USER CODE BEGIN 2 */
-
-//void GPIO_PersonalNode_Init(void)
-//{
-  //GPIO_InitTypeDef GPIO_InitStruct = {0};
-
- // __HAL_RCC_GPIOA_CLK_ENABLE();
-
-  /* Bouton SOS en interruption */
- // GPIO_InitStruct.Pin = GPIO_PIN_0;   // ou ton pin réel
-  //GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING; // ou RISING selon câblage
-  //GPIO_InitStruct.Pull = GPIO_PULLUP; // IMPORTANT
-
-  //HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /* Activer interruption EXTI */
-  //HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
- // HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
-//}
-/* USER CODE END 2 */
-  /* USER CODE END HAL_Delay_2 */
-
-
-/* USER CODE BEGIN Overload_HAL_weaks */
-
-/* USER CODE END Overload_HAL_weaks */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+  RTC_IF_DelayMs(Delay);
+}
