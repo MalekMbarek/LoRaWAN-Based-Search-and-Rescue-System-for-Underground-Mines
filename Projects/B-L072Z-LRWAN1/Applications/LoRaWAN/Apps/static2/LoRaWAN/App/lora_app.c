@@ -524,6 +524,7 @@ static void OnJoinRequest(LmHandlerJoinParams_t *joinParams)
         APP_LOG(TS_OFF, VLEVEL_M, "OTAA =====================\r\n");
       }
       DualMode_SetJoinStatus(1);
+      
     }
     else
     {

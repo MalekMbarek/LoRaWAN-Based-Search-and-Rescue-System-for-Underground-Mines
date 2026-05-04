@@ -246,7 +246,6 @@ static void UpdateLcdDisplay(void)
     Scanner_GetAllActiveNodes(nodes, &count);
 
     LCD_Clear();
-
     if (count == 0)
     {
         LCD_SetCursor(0,0);
@@ -266,10 +265,7 @@ static void UpdateLcdDisplay(void)
             if (idx >= count) break;
 
             char line[17];
-            snprintf(line, 16, "N%d %s %ddB   AAA",
-                     nodes[idx].nodeId,
-                     Scanner_StatusToString(nodes[idx].status),
-                     nodes[idx].rssi);
+        
             snprintf(line, 16, "N%d %s %ddB",
                      nodes[idx].nodeId,
                      Scanner_StatusToString(nodes[idx].status),
@@ -289,6 +285,7 @@ static void UpdateLcdDisplay(void)
 
         char l1[17];
         char l2[17];
+        
 
         snprintf(l1,16,"N%d %s",
                  n->nodeId,
@@ -303,6 +300,7 @@ static void UpdateLcdDisplay(void)
 
         LCD_SetCursor(1,0);
         LCD_Print(l2);
+       
     }
 }
 
@@ -397,7 +395,7 @@ void Scanner_Process(void)
         // DOWN
         if (joy_y > 3000)
         {
-            if (scrollIndex + 1 < count - 1)
+            if (scrollIndex + 1 < count )
                 scrollIndex++;
 
             lastMove = now;
