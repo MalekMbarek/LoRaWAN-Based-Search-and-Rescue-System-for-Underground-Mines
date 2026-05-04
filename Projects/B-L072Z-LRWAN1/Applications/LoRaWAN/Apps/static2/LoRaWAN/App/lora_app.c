@@ -319,18 +319,18 @@ static void SendTxData(void)
   CayenneLppAddRelativeHumidity  (2, (float)envData.humidity    / 10.0f);
 
   /* ── Canaux 3-5 : mouvement ─────────────────────────────────────────────── */
-  CayenneLppAddAccelerometer(3,
-      (motionData.acc_x / 1.0f),
-     (motionData.acc_y / 1.0f),
-      (motionData.acc_z / 1.0f));
+  //CayenneLppAddAccelerometer(3,
+     // (motionData.acc_x / 1.0f),
+    // (motionData.acc_y / 1.0f),
+     // (motionData.acc_z / 1.0f));
 
   /* Vibration : mg → CayenneLPP AnalogInput (×100 côté décodeur)
    * On envoie vibration/100 pour rester dans la plage float 0-327.67      */
-  CayenneLppAddAnalogInput(4, motionData.vibration / 100.0f);
+  //CayenneLppAddAnalogInput(4, motionData.vibration / 100.0f);
 
   /* Inclinaison totale en degrés */
-  CayenneLppAddAnalogInput(5, motionData.angle_total > 0.0f
-                              ? motionData.angle_total / 100.0f : 0.0f);
+  //CayenneLppAddAnalogInput(5, motionData.angle_total > 0.0f
+                             // ? motionData.angle_total / 100.0f : 0.0f);
 
   /* ── Canal 6 : alertes mouvement (bitmask) ──────────────────────────────── */
   uint8_t alert_motion =
@@ -338,17 +338,17 @@ static void SendTxData(void)
       (motionData.alert_tilt           ? 0x02 : 0) |
       (motionData.alert_vibration_crit ? 0x04 : 0) |
       (motionData.alert_tilt_crit      ? 0x08 : 0);
-  CayenneLppAddDigitalInput(6, alert_motion);
+  CayenneLppAddDigitalInput(3, alert_motion);
 
   /* ── Canal 7 : gaz (ADC brut / 100 pour AnalogInput) ───────────────────── */
-  CayenneLppAddAnalogInput(7, (float)gasData.adc_raw / 1.0f);
+  //CayenneLppAddAnalogInput(7, (float)gasData.adc_raw / 1.0f);
 
   /* ── Canal 8 : alertes gaz (bitmask) ────────────────────────────────────── */
   uint8_t alert_gas =
       (gasData.alert_gas       ? 0x01 : 0) |
       (gasData.alert_critical  ? 0x02 : 0) |
       (gasData.alert_explosive ? 0x04 : 0);
-  CayenneLppAddDigitalInput(8, alert_gas);
+  CayenneLppAddDigitalInput(4, alert_gas);
 
   /* ── Canal 9-10 : batterie + LED ────────────────────────────────────────── */
   //CayenneLppAddDigitalInput (9,  GetBatteryLevel());
@@ -377,7 +377,7 @@ static void SendTxData(void)
   for (uint8_t i = 0; i < activeCount; i++)
 {
     uint8_t nodeId      = activeNodes[i].nodeId;
-    uint8_t baseChannel = 9 + (nodeId - 1) * 5;
+    uint8_t baseChannel = 5 + (nodeId - 1) * 4;
 
  // Channel base → nodeId
     CayenneLppAddDigitalInput(baseChannel, nodeId);
@@ -395,10 +395,10 @@ static void SendTxData(void)
        // activeNodes[i].accZ / 1.0f);
 
     // Alert
-    CayenneLppAddDigitalOutput(baseChannel + 3, activeNodes[i].hasAlert);
+    //CayenneLppAddDigitalOutput(baseChannel + 3, activeNodes[i].hasAlert);
 
     // SpO2
-    CayenneLppAddAnalogInput(baseChannel + 4, activeNodes[i].spo2);
+    CayenneLppAddAnalogInput(baseChannel + 3, activeNodes[i].spo2);
 
 
     // Log

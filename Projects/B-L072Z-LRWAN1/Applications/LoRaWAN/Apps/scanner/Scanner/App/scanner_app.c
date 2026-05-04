@@ -17,6 +17,7 @@
 #include "buzzer.h"
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 #include "joystick.h"
 /* Raw LoRa Configuration (must match personal nodes) */
 #define RAW_RF_FREQUENCY                868000000
@@ -30,7 +31,7 @@
 
 /* Node timeout - consider inactive after 10 seconds */
 #define NODE_TIMEOUT_MS                 10000
-
+#define URGENT_HOLD_TIME_MS   30000 
 /* Update intervals */
 #define LCD_UPDATE_INTERVAL_MS          500
 #define BUZZER_UPDATE_INTERVAL_MS       100
@@ -40,7 +41,8 @@ static uint8_t uiMode;
 //static void Read_Joystick(void);
 static uint8_t uiMode = 0;
 static uint8_t selectedNodeIndex = 0;
-
+static uint8_t detailPage = 0;
+static uint32_t lastPageChange = 0;
 static RadioEvents_t radioEvents;
 static TrackedNode_t trackedNodes[MAX_TRACKED_NODES];
 static UTIL_TIMER_Object_t lcdUpdateTimer;
@@ -49,6 +51,7 @@ static uint8_t buzzerActive = 0;
 static uint32_t nextBuzzerTime = 0;
 static uint8_t scrollIndex = 0;
 static UI_State_t uiState = UI_LIST_VIEW;
+static float RSSI_To_Distance(int16_t rssi);
 /* Forward declarations */
 static void Radio_ConfigureRx(void);
 static void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
@@ -107,7 +110,7 @@ static void OnTxTimeout(void)
 /* Process received packet */
 static void ProcessReceivedPacket(PersonalNodePacket_t* packet, int16_t rssi, int8_t snr)
 {
-    if (packet->nodeId < 1 || packet->nodeId > MAX_TRACKED_NODES) {
+    if (packet->nodeId == 0 || packet->nodeId > MAX_TRACKED_NODES) {
         APP_LOG(TS_OFF, VLEVEL_M, "[Scanner] Invalid node ID: %d\r\n", packet->nodeId);
         return;
     }
@@ -127,6 +130,7 @@ static void UpdateTrackedNode(PersonalNodePacket_t* packet, int16_t rssi, int8_t
     trackedNodes[index].nodeId = packet->nodeId;
     trackedNodes[index].status = (NodeStatus_t)packet->status;
     trackedNodes[index].heartRate = packet->heartRate;
+    trackedNodes[index].spo2      = packet->spo2;   
     trackedNodes[index].accX = packet->accX;
     trackedNodes[index].accY = packet->accY;
     trackedNodes[index].accZ = packet->accZ;
@@ -134,8 +138,19 @@ static void UpdateTrackedNode(PersonalNodePacket_t* packet, int16_t rssi, int8_t
     trackedNodes[index].snr = snr;
     trackedNodes[index].proximity = Scanner_RssiToProximity(rssi);
     trackedNodes[index].lastSeenTime = HAL_GetTick();
+
     trackedNodes[index].isActive = 1;
     trackedNodes[index].packetCount++;
+   if (packet->status == NODE_STATUS_SOS ||
+    packet->status == NODE_STATUS_FALL)
+{
+    trackedNodes[index].isUrgent = 1;
+    trackedNodes[index].urgentStartTime = HAL_GetTick();
+}
+    #define ALPHA 0.6f
+
+trackedNodes[index].rssi =
+    (int16_t)(ALPHA * rssi + (1 - ALPHA) * trackedNodes[index].rssi);
 }
 
 /* Radio configuration */
@@ -236,14 +251,34 @@ static void UpdateBuzzer(void)
         }
     }
 }
+static int compareNodes(const void *a, const void *b)
+{
+    TrackedNode_t *n1 = (TrackedNode_t *)a;
+    TrackedNode_t *n2 = (TrackedNode_t *)b;
 
+    int p1 = (n1->isUrgent) ? 3 :
+             (n1->status == NODE_STATUS_SOS) ? 3 :
+             (n1->status == NODE_STATUS_FALL) ? 2 : 1;
+
+    int p2 = (n2->isUrgent) ? 3 :
+             (n2->status == NODE_STATUS_SOS) ? 3 :
+             (n2->status == NODE_STATUS_FALL) ? 2 : 1;
+
+    if (p1 != p2)
+        return p2 - p1;
+
+    return n2->rssi - n1->rssi;
+}
 /* LCD display update */
 static void UpdateLcdDisplay(void)
 {
     TrackedNode_t nodes[MAX_TRACKED_NODES];
     uint8_t count = 0;
 
-    Scanner_GetAllActiveNodes(nodes, &count);
+   Scanner_GetAllActiveNodes(nodes, &count);
+
+// TRI PRIORITÉ SOS / FALL
+qsort(nodes, count, sizeof(TrackedNode_t), compareNodes);
 
     LCD_Clear();
     if (count == 0)
@@ -257,19 +292,24 @@ static void UpdateLcdDisplay(void)
 
     // ================= LIST MODE =================
     if (uiMode == 0)
-    {
+    {    
         for (uint8_t i = 0; i < 2; i++)
-        {
-            uint8_t idx = scrollIndex + i;
+        {            uint8_t idx = scrollIndex + i;
+
+            
+            float dist = RSSI_To_Distance(nodes[idx].rssi);
+int d_int = (int)dist;
+int d_dec = (int)((dist - d_int) * 10);
 
             if (idx >= count) break;
 
             char line[17];
         
-            snprintf(line, 16, "N%d %s %ddB",
+            snprintf(line, 16, "N%d %s %d.%dm",
                      nodes[idx].nodeId,
                      Scanner_StatusToString(nodes[idx].status),
-                     nodes[idx].rssi);
+                     d_int,
+                     d_dec);
 
             LCD_SetCursor(i,0);
             LCD_Print(line);
@@ -277,30 +317,47 @@ static void UpdateLcdDisplay(void)
     }
 
     // ================= DETAIL MODE =================
-    else
-    {
-        uint8_t id = selectedNodeIndex;
+   else
+{
+    uint8_t id = selectedNodeIndex;
 
-        TrackedNode_t* n = &nodes[id];
+    TrackedNode_t* n = &nodes[id];
 
-        char l1[17];
-        char l2[17];
-        
+    char l1[17];
+    char l2[17];
 
-        snprintf(l1,16,"N%d %s",
-                 n->nodeId,
-                 Scanner_StatusToString(n->status));
+    float dist = RSSI_To_Distance(n->rssi);
+int d_int = (int)dist;
+int d_dec = (int)((dist - d_int) * 10);
+    snprintf(l1,16,"N%d %s",
+             n->nodeId,
+             Scanner_StatusToString(n->status));
 
-        snprintf(l2,16,"HR:%d RSSI:%d",
-                 n->heartRate,
-                 n->rssi);
+    
+    //if (HAL_GetTick() - lastPageChange > 2000)
+   // {
+       // detailPage = (detailPage + 1) % 2;
+       // lastPageChange = HAL_GetTick();
+    //}
 
-        LCD_SetCursor(0,0);
-        LCD_Print(l1);
+       if (detailPage == 0)
+{
+    snprintf(l2, 20, "D:%d.%dm",
+         d_int,
+         d_dec);
+}
+else
+{
+    snprintf(l2,16,"HR:%d SpO2:%d",
+             n->heartRate,
+             n->spo2);
+}
 
-        LCD_SetCursor(1,0);
-        LCD_Print(l2);
-       
+    LCD_SetCursor(0,0);
+    LCD_Print(l1);
+
+    LCD_SetCursor(1,0);
+    LCD_Print(l2);
     }
 }
 
@@ -356,22 +413,38 @@ void Scanner_Process(void)
 {
     uint32_t now = HAL_GetTick();
 
-    // =========================
-    // 1. TIMEOUT NODES
-    // =========================
-    for (uint8_t i = 0; i < MAX_TRACKED_NODES; i++)
+   for (uint8_t i = 0; i < MAX_TRACKED_NODES; i++)
+{
+    if (trackedNodes[i].isActive)
     {
-        if (trackedNodes[i].isActive)
-        {
-            if ((now - trackedNodes[i].lastSeenTime) > NODE_TIMEOUT_MS)
-            {
-                APP_LOG(TS_OFF, VLEVEL_M, "[Scanner] Node %d timeout\r\n",
-                        trackedNodes[i].nodeId);
+        uint32_t timeout = NODE_TIMEOUT_MS;
 
-                trackedNodes[i].isActive = 0;
+        // =========================
+        // 1. GESTION URGENCE (FALL / SOS)
+        // =========================
+        if (trackedNodes[i].isUrgent)
+        {
+            // encore dans la période d'alarme
+            if (now - trackedNodes[i].urgentStartTime < URGENT_HOLD_TIME_MS)
+            {
+                timeout = NODE_TIMEOUT_MS + URGENT_HOLD_TIME_MS;
+            }
+            else
+            {
+                // fin de l'effet urgent
+                trackedNodes[i].isUrgent = 0;
             }
         }
+
+        // =========================
+        // 2. TIMEOUT NORMAL
+        // =========================
+        if ((now - trackedNodes[i].lastSeenTime) > timeout)
+        {
+            trackedNodes[i].isActive = 0;
+        }
     }
+}
 
     // =========================
     // 2. JOYSTICK READ
@@ -422,15 +495,35 @@ void Scanner_Process(void)
     // =========================
     // 4. DETAIL MODE
     // =========================
-    else
+// =========================
+// 4. DETAIL MODE
+// =========================
+else
+{
+    
+    if (joy_x > 3000)   // droite
     {
-        // CLICK = return list
-        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_RESET)
-        {
-            uiMode = 0;
-            lastMove = now;
-        }
+        detailPage = (detailPage + 1) % 2;
+        lastMove = now;
     }
+
+    if (joy_x < 1000)   // gauche
+    {
+        if (detailPage == 0)
+            detailPage = 1;
+        else
+            detailPage = 0;
+
+        lastMove = now;
+    }
+
+    // CLICK = retour LIST
+    if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_RESET)
+    {
+        uiMode = 0;
+        lastMove = now;
+    }
+}
 }
 
 TrackedNode_t* Scanner_GetNode(uint8_t nodeId)
@@ -537,4 +630,20 @@ const char* Scanner_StatusToString(NodeStatus_t status)
         case NODE_STATUS_SOS:  return "SOS";
         default:               return "???";
     }
+}
+static float RSSI_To_Distance(int16_t rssi)
+{
+    // Calibration (à mesurer chez toi idéalement)
+    float A = -50.0f;   // RSSI à 1m
+    float n = 2.3f;     // environnement (2.0 open, 3.0 indoor chargé)
+
+    float ratio = (A - rssi) / (10.0f * n);
+
+    float distance = powf(10.0f, ratio);
+
+    // limitation réaliste
+    if (distance < 0.2f) distance = 0.2f;
+    if (distance > 25.0f) distance = 25.0f;
+
+    return distance;
 }
