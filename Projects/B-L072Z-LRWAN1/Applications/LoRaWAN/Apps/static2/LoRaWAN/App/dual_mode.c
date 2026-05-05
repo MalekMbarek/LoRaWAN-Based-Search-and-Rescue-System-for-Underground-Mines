@@ -31,8 +31,8 @@
 #define RAW_LORA_IQ_INVERSION_ON        false
 
 /* Mode timing */
-#define LORAWAN_MODE_DURATION_MS        60000     // 30s in LoRaWAN mode
-#define RAW_LORA_MODE_DURATION_MS       120000     // 60s in Raw LoRa RX mode
+#define LORAWAN_MODE_DURATION_MS        30000     // 30s in LoRaWAN mode
+#define RAW_LORA_MODE_DURATION_MS       30000     // 60s in Raw LoRa RX mode
 
 /* Node timeout - consider inactive after 0 seconds without update */
 //#define NODE_TIMEOUT_MS                 3000000
@@ -45,6 +45,8 @@ static volatile uint8_t newPacketReceived = 0;
 static PersonalNodePacket_t lastPersonalNodeData;
 static uint8_t loraWanSuspended = 0;
 static uint8_t loraWanJoined = 0;
+static uint8_t alertPending = 0;
+
 
 /* Storage for personal nodes data */
 static StoredPersonalNode_t storedNodes[MAX_PERSONAL_NODES];
@@ -57,18 +59,82 @@ static void LoRaWAN_Suspend(void);
 static void OnModeSwitchTimer(void *context);
 static void StorePersonalNodeData(PersonalNodePacket_t* packet);
 
+
+void DualMode_SetAlertPending(uint8_t pending) {
+    alertPending = pending;
+}
+
+uint8_t DualMode_IsAlertPending(void) {
+    return alertPending;
+}
 /* Raw LoRa Radio Callbacks */
 static void OnRawRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr)
 {
     if (currentMode != MODE_RAW_LORA_RX) return;
 
-    APP_LOG(TS_OFF, VLEVEL_M, "[RawRX] size=%d RSSI=%d SNR=%d\r\n", size, rssi, snr);
-
-    // Taille minimale : 11 octets (format complet)
-    if (size < 11) {
-        RawLoRa_StartRx();
-        return;
-    }
+    APP_LOG(TS_OFF, VLEVEL_M, "[RawRX] Packet: size=%d RSSI=%d SNR=%d\r\n", 
+            size, rssi, snr);
+    
+    // Validate packet size
+    if (size >= 3) {
+        memcpy(&lastPersonalNodeData, payload, sizeof(PersonalNodePacket_t));
+        
+        // Parse accelerometer data (bytes 4-9 are big-endian int16)
+        lastPersonalNodeData.accX = (int16_t)((payload[4] << 8) | payload[5]);
+        lastPersonalNodeData.accY = (int16_t)((payload[6] << 8) | payload[7]);
+        lastPersonalNodeData.accZ = (int16_t)((payload[8] << 8) | payload[9]);
+        
+        // Store the data
+        StorePersonalNodeData(&lastPersonalNodeData);
+        
+        newPacketReceived = 1;
+        
+        // Log received data
+        const char* statusStr[] = {"OK", "FALL", "SOS"};
+        APP_LOG(TS_OFF, VLEVEL_M, "[RawRX] Node=%d Status=%s HR=%d Acc[%d,%d,%d]\r\n",
+                lastPersonalNodeData.nodeId,
+                statusStr[lastPersonalNodeData.status],
+                lastPersonalNodeData.heartRate,
+                lastPersonalNodeData.accX,
+                lastPersonalNodeData.accY,
+                lastPersonalNodeData.accZ);
+        
+        // Handle alerts
+        if (lastPersonalNodeData.status == 2) {  // STATUS_SOS
+            APP_LOG(TS_OFF, VLEVEL_M, "!!! PERSONAL NODE %d SOS ALERT !!!\r\n",
+                    lastPersonalNodeData.nodeId);
+            for (int i = 0; i < 6; i++) {
+                LED_On(LED_RED1);
+                HAL_Delay(100);
+                LED_Off(LED_RED1);
+                HAL_Delay(100);
+            }
+        }
+        else if (lastPersonalNodeData.status == 1) {  // STATUS_FALL
+            APP_LOG(TS_OFF, VLEVEL_M, "!!! PERSONAL NODE %d FALL DETECTED !!!\r\n",
+                    lastPersonalNodeData.nodeId);
+            for (int i = 0; i < 10; i++) {
+                LED_On(LED_RED1);
+                HAL_Delay(80);
+                LED_Off(LED_RED1);
+                HAL_Delay(80);
+            }
+        }
+    if (lastPersonalNodeData.status == STATUS_FALL || 
+    lastPersonalNodeData.status == STATUS_SOS) {
+    
+    APP_LOG(TS_OFF, VLEVEL_M, "!!! ALERT from node %d - switching to LoRaWAN !!!\r\n",
+            lastPersonalNodeData.nodeId);
+    
+    // Set flag so that after join we send immediately
+    DualMode_SetAlertPending(1);
+    
+    // Switch mode now (ignores the timer)
+    DualMode_Switch(MODE_LORAWAN);
+    
+    // No need to continue receiving – the switch will reconfigure the radio
+    return;  // Exit callback to avoid restarting RX in raw mode
+}}
 
     // ========== PARSING EXACT (selon votre mapping) ==========
     lastPersonalNodeData.pktType   = payload[0];

@@ -19,12 +19,14 @@ set(DRIVERS       ${PFE2_ROOT}/Drivers)
 set(MIDDLEWARES   ${PFE2_ROOT}/Middlewares)
 set(UTILITIES     ${PFE2_ROOT}/Utilities)
 # ── Tools ─────────────────────────────────────────────────────────────────────
-set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10")
-#set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi")
-set(CMAKE_OBJCOPY "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-objcopy.exe")
-set(CMAKE_SIZE    "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-size.exe")
-#find_program(CMAKE_OBJCOPY arm-none-eabi-objcopy)
-#find_program(CMAKE_SIZE    arm-none-eabi-size)
+#balkis
+# set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10")
+# set(CMAKE_OBJCOPY "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-objcopy.exe")
+# set(CMAKE_SIZE    "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-size.exe")
+#malek
+set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi")
+find_program(CMAKE_OBJCOPY arm-none-eabi-objcopy)
+find_program(CMAKE_SIZE    arm-none-eabi-size)
 # ── MCU flags ─────────────────────────────────────────────────────────────────
 set(MCU_FLAGS -mcpu=cortex-m0plus -mthumb -mfloat-abi=soft)
 add_compile_options(${MCU_FLAGS} -Wall -fdata-sections -ffunction-sections -Os)

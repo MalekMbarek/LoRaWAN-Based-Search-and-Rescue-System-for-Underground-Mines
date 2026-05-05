@@ -70,5 +70,6 @@ uint8_t DualMode_GetActiveNodeCount(void);
 void DualMode_GetAllActiveNodes(StoredPersonalNode_t* nodes, uint8_t* count);
 uint8_t DualMode_HasAnyAlerts(void);
 void DualMode_ClearAlert(uint8_t nodeId);
-
+void DualMode_SetAlertPending(uint8_t pending);
+uint8_t DualMode_IsAlertPending(void);
 #endif /* __DUAL_MODE_H__ */
