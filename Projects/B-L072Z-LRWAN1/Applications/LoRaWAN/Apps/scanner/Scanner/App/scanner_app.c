@@ -130,7 +130,14 @@ static void UpdateTrackedNode(PersonalNodePacket_t* packet, int16_t rssi, int8_t
     trackedNodes[index].nodeId = packet->nodeId;
     trackedNodes[index].status = (NodeStatus_t)packet->status;
     trackedNodes[index].heartRate = packet->heartRate;
-    trackedNodes[index].spo2      = packet->spo2;   
+    if (packet->spo2 == 0 || packet->spo2 > 100)
+{
+    trackedNodes[index].spo2 = 0;
+}
+else
+{
+    trackedNodes[index].spo2 = packet->spo2;
+} 
     trackedNodes[index].accX = packet->accX;
     trackedNodes[index].accY = packet->accY;
     trackedNodes[index].accZ = packet->accZ;

@@ -69,100 +69,50 @@ static void GPIO_PersonalNode_Init(void);
  * ════════════════════════════════════════════════════════════════════════════ */
 void SystemApp_Init(void)
 {
-  /* USER CODE BEGIN SystemApp_Init_1 */
-  /* USER CODE END SystemApp_Init_1 */
-
-  /* 1. Init RTC + timers */
   UTIL_TIMER_Init();
-
-  /* 2. Gpio_PreInit : remet TOUS les GPIO en ANALOG (y compris PA0/PB8/PB9) */
   Gpio_PreInit();
-
-  /* 3. GPIO_PersonalNode_Init : reconfigure PA0 (SOS), PA5 (LED), PB13 (LED)
-   *    IMMÉDIATEMENT APRÈS Gpio_PreInit() pour éviter l'écrasement.
-   *    PB8/PB9 (I2C) : laissés en ANALOG, reconfigurés par I2C_BusRecovery +
-   *    PN_I2C_Init() dans SensorsInit() (sys_sensors.c).
-   */
-  GPIO_PersonalNode_Init();
-
-  /* 4. Debug */
   DBG_Disable();
   DBG_ProbesInit();
-
-  /* 5. UART logs */
   UTIL_ADV_TRACE_Init();
   UTIL_ADV_TRACE_RegisterTimeStampFunction(TimestampNow);
   UTIL_ADV_TRACE_SetVerboseLevel(VERBOSE_LEVEL);
-
-  /* 6. ADC + SX1276 */
   SYS_InitMeasurement();
   Sx_Board_Bus_Init();
   Sx_Board_IoInit();
-
-  /* 7. LPM */
+  GPIO_PersonalNode_Init(); /* APRÈS Sx_Board_IoInit */
   UTIL_LPM_Init();
   UTIL_LPM_SetOffMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
-
 #if defined (LOW_POWER_DISABLE) && (LOW_POWER_DISABLE == 1)
   UTIL_LPM_SetStopMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
 #elif !defined (LOW_POWER_DISABLE)
 #error LOW_POWER_DISABLE not defined
 #endif
-
-  /* USER CODE BEGIN SystemApp_Init_2 */
-  /* USER CODE END SystemApp_Init_2 */
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
- * GPIO_PersonalNode_Init
- *
- * Appelée DANS SystemApp_Init(), juste après Gpio_PreInit().
- * Reconfigure seulement les GPIO du nœud personnel :
- *   PA0 : bouton SOS (EXTI falling, pull-up)
- *   PA5 : LED SOS    (output PP)
- *   PB13: LED heartbeat (output PP)
- *
- * PB8/PB9 (I2C) : NE PAS configurer ici.
- *   sys_sensors.c les configure via I2C_BusRecovery() + PN_I2C_Init().
- * ════════════════════════════════════════════════════════════════════════════ */
 static void GPIO_PersonalNode_Init(void)
 {
   GPIO_InitTypeDef g = {0};
-
-  /* Réactiver les horloges GPIO (Gpio_PreInit les avait désactivées) */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /* ── PA0 — Bouton SOS ─────────────────────────────────────────────────
-   * Gpio_PreInit() avait remis PA0 en ANALOG → on le reconfigure ici.
-   * Mode : EXTI falling edge (bouton appuyé = GND = LOW).
-   * Pull : pull-up interne (relâché = PA0 = HIGH).
-   */
-  g.Pin  = SOS_BUTTON_PIN;           /* GPIO_PIN_0 */
-  g.Mode = GPIO_MODE_IT_FALLING;
-  g.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(SOS_BUTTON_PORT, &g); /* GPIOA */
-
-  /* Effacer le flag EXTI résiduel AVANT d'activer l'IRQ
-   * (évite une fausse interruption au démarrage) */
-  __HAL_GPIO_EXTI_CLEAR_IT(SOS_BUTTON_PIN);
-
-  /* Priorité 2 : en dessous de 0/1 réservés noyau, au-dessus de 3+ applicatifs */
-  HAL_NVIC_SetPriority(SOS_BUTTON_IRQn, 2, 0);  /* EXTI0_1_IRQn */
-  HAL_NVIC_EnableIRQ(SOS_BUTTON_IRQn);
-
-  /* ── PA5 — LED SOS ──────────────────────────────────────────────────── */
-  g.Pin   = LED_SOS_PIN;              /* GPIO_PIN_5 */
+  /* PA5 — LED SOS */
+  g.Pin   = GPIO_PIN_5;
   g.Mode  = GPIO_MODE_OUTPUT_PP;
   g.Pull  = GPIO_NOPULL;
   g.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_SOS_PORT, &g);    /* GPIOA */
-  HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_Init(GPIOA, &g);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 
-  /* ── PB13 — LED Heartbeat ───────────────────────────────────────────── */
-  g.Pin = LED_HEARTBEAT_PIN;          /* GPIO_PIN_13 */
-  HAL_GPIO_Init(LED_HEARTBEAT_PORT, &g); /* GPIOB */
-  HAL_GPIO_WritePin(LED_HEARTBEAT_PORT, LED_HEARTBEAT_PIN, GPIO_PIN_RESET);
+  /* PB13 — LED Heartbeat */
+  g.Pin   = GPIO_PIN_13;
+  g.Mode  = GPIO_MODE_OUTPUT_PP;
+  g.Pull  = GPIO_NOPULL;
+  g.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &g);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET);
+
+  /* PB2 — Bouton SOS : NE PAS configurer ici
+   * La BSP Semtech GpioSetInterrupt() dans lora_app.c s'en charge */
 }
 
 /* ════════════════════════════════════════════════════════════════════════════

@@ -96,7 +96,7 @@ int main(void)
      * Le RTC réveille le MCU à chaque expiration de timer.
      */
     MX_LoRaWAN_Process();
-
+   
     /* USER CODE BEGIN 3 */
     /* USER CODE END 3 */
   }
@@ -132,18 +132,19 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+
 /* Bouton SOS — EXTI callback */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+/*void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if (GPIO_Pin == SOS_BUTTON_PIN) {
     /* Clignotement rapide de la LED SOS : preuve que l’interruption a eu lieu */
-    HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_SET);
+    /*HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_SET);
     for (volatile int i = 0; i < 200000; i++);  // petit délai non bloquant (~50 ms à 32 MHz)
     HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_RESET);
     
     PN_SOS_Trigger();
   }
-}
+}*/
 
 /* USER CODE END 4 */
 
