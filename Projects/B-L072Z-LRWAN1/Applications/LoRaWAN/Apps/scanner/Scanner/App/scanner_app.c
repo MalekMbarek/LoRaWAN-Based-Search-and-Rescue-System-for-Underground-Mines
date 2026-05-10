@@ -281,93 +281,144 @@ static void UpdateLcdDisplay(void)
 {
     TrackedNode_t nodes[MAX_TRACKED_NODES];
     uint8_t count = 0;
+    Scanner_GetAllActiveNodes(nodes, &count);
 
-   Scanner_GetAllActiveNodes(nodes, &count);
+    // Sort nodes: urgent (SOS/FALL) first, then by RSSI
+    qsort(nodes, count, sizeof(TrackedNode_t), compareNodes);
 
-// TRI PRIORITÉ SOS / FALL
-qsort(nodes, count, sizeof(TrackedNode_t), compareNodes);
-
-    LCD_Clear();
-    if (count == 0)
-    {
-        LCD_SetCursor(0,0);
-        LCD_Print("SCANNING...");
-        LCD_SetCursor(1,0);
-        LCD_Print("No nodes");
-        return;
-    }
+    // Static buffers for current and previous line content (20 columns max)
+    static char prevLine0[LCD_COLS + 1] = "";
+    static char prevLine1[LCD_COLS + 1] = "";
+    char line0[LCD_COLS + 1] = {0};
+    char line1[LCD_COLS + 1] = {0};
 
     // ================= LIST MODE =================
     if (uiMode == 0)
-    {    
-        for (uint8_t i = 0; i < 2; i++)
-        {            uint8_t idx = scrollIndex + i;
+    {
+        if (count == 0)
+        {
+            strcpy(line0, "SCANNING...");
+            strcpy(line1, "No nodes");
+        }
+        else
+        {
+            // Build line0 (first visible row)
+            uint8_t idx0 = scrollIndex;
+            if (idx0 < count)
+            {
+                float dist = RSSI_To_Distance(nodes[idx0].rssi);
+                int d_int = (int)dist;
+                int d_dec = (int)((dist - d_int) * 10);
 
-            
-            float dist = RSSI_To_Distance(nodes[idx].rssi);
-int d_int = (int)dist;
-int d_dec = (int)((dist - d_int) * 10);
+                // Prefix '>' if this is the selected node
+                char prefix = (idx0 == selectedNodeIndex) ? '>' : ' ';
+                snprintf(line0, LCD_COLS, "%cN%d %s %d.%dm",
+                         prefix,
+                         nodes[idx0].nodeId,
+                         Scanner_StatusToString(nodes[idx0].status),
+                         d_int, d_dec);
+            }
+            else
+            {
+                line0[0] = '\0';
+            }
 
-            if (idx >= count) break;
+            // Build line1 (second visible row)
+            uint8_t idx1 = scrollIndex + 1;
+            if (idx1 < count)
+            {
+                float dist = RSSI_To_Distance(nodes[idx1].rssi);
+                int d_int = (int)dist;
+                int d_dec = (int)((dist - d_int) * 10);
 
-            char line[17];
-        
-            snprintf(line, 16, "N%d %s %d.%dm",
-                     nodes[idx].nodeId,
-                     Scanner_StatusToString(nodes[idx].status),
-                     d_int,
-                     d_dec);
+                char prefix = (idx1 == selectedNodeIndex) ? '>' : ' ';
+                snprintf(line1, LCD_COLS, "%cN%d %s %d.%dm",
+                         prefix,
+                         nodes[idx1].nodeId,
+                         Scanner_StatusToString(nodes[idx1].status),
+                         d_int, d_dec);
+            }
+            else
+            {
+                line1[0] = '\0';
+            }
+        }
 
-            LCD_SetCursor(i,0);
-            LCD_Print(line);
+        // Only write to LCD if content changed (reduces flicker)
+        if (strcmp(line0, prevLine0) != 0)
+        {
+            LCD_SetCursor(0, 0);
+            LCD_Print(line0);
+            strcpy(prevLine0, line0);
+        }
+        if (strcmp(line1, prevLine1) != 0)
+        {
+            LCD_SetCursor(1, 0);
+            LCD_Print(line1);
+            // Pad with spaces to erase leftover characters from previous longer line
+            for (int i = strlen(line1); i < LCD_COLS; i++)
+                LCD_PrintChar(' ');
+            strcpy(prevLine1, line1);
         }
     }
-
     // ================= DETAIL MODE =================
-   else
-{
-    uint8_t id = selectedNodeIndex;
+    else
+    {
+        uint8_t id = selectedNodeIndex;
+        // Safety: ensure selectedNodeIndex is within active nodes
+        if (id >= count)
+        {
+            // Fallback: select first node
+            if (count > 0) id = 0;
+            else id = 0; // no nodes, will show empty
+        }
 
-    TrackedNode_t* n = &nodes[id];
+        char l1[LCD_COLS + 1];
+        char l2[LCD_COLS + 1];
 
-    char l1[17];
-    char l2[17];
+        if (count == 0)
+        {
+            strcpy(l1, "No nodes");
+            strcpy(l2, "");
+        }
+        else
+        {
+            TrackedNode_t* n = &nodes[id];
+            float dist = RSSI_To_Distance(n->rssi);
+            int d_int = (int)dist;
+            int d_dec = (int)((dist - d_int) * 10);
 
-    float dist = RSSI_To_Distance(n->rssi);
-int d_int = (int)dist;
-int d_dec = (int)((dist - d_int) * 10);
-    snprintf(l1,16,"N%d %s",
-             n->nodeId,
-             Scanner_StatusToString(n->status));
+            snprintf(l1, LCD_COLS, "N%d %s",
+                     n->nodeId,
+                     Scanner_StatusToString(n->status));
 
-    
-    //if (HAL_GetTick() - lastPageChange > 2000)
-   // {
-       // detailPage = (detailPage + 1) % 2;
-       // lastPageChange = HAL_GetTick();
-    //}
+            if (detailPage == 0)
+                snprintf(l2, LCD_COLS, "D:%d.%dm", d_int, d_dec);
+            else
+                snprintf(l2, LCD_COLS, "HR:%d SpO2:%d", n->heartRate, n->spo2);
+        }
 
-       if (detailPage == 0)
-{
-    snprintf(l2, 20, "D:%d.%dm",
-         d_int,
-         d_dec);
-}
-else
-{
-    snprintf(l2,16,"HR:%d SpO2:%d",
-             n->heartRate,
-             n->spo2);
-}
-
-    LCD_SetCursor(0,0);
-    LCD_Print(l1);
-
-    LCD_SetCursor(1,0);
-    LCD_Print(l2);
+        // Update line0 if changed
+        if (strcmp(l1, prevLine0) != 0)
+        {
+            LCD_SetCursor(0, 0);
+            LCD_Print(l1);
+            // Erase rest of line
+            for (int i = strlen(l1); i < LCD_COLS; i++)
+                LCD_PrintChar(' ');
+            strcpy(prevLine0, l1);
+        }
+        // Update line1 if changed
+        if (strcmp(l2, prevLine1) != 0)
+        {
+            LCD_SetCursor(1, 0);
+            LCD_Print(l2);
+            for (int i = strlen(l2); i < LCD_COLS; i++)
+                LCD_PrintChar(' ');
+            strcpy(prevLine1, l2);
+        }
     }
 }
-
 /* Public API */
 void Scanner_Init(void)
 {
@@ -406,13 +457,13 @@ void Scanner_Init(void)
     // Initial LCD display
     LCD_Clear();
     LCD_SetCursor(0, 0);
-    LCD_Print("PERSONAL NODE");
-    LCD_SetCursor(1, 0);
-    LCD_Print("SCANNER v1.0");
+    LCD_Print("SCANNER NODE");
+
     LCD_SetCursor(2, 0);
     LCD_Print("Initializing...");
     HAL_Delay(2000);
-    
+    LCD_Clear();
+
     APP_LOG(TS_OFF, VLEVEL_M, "[Scanner] Ready\r\n");
 }
 
@@ -420,117 +471,84 @@ void Scanner_Process(void)
 {
     uint32_t now = HAL_GetTick();
 
-   for (uint8_t i = 0; i < MAX_TRACKED_NODES; i++)
-{
-    if (trackedNodes[i].isActive)
+    // Node timeout and urgency management (unchanged)
+    for (uint8_t i = 0; i < MAX_TRACKED_NODES; i++)
     {
-        uint32_t timeout = NODE_TIMEOUT_MS;
-
-        // =========================
-        // 1. GESTION URGENCE (FALL / SOS)
-        // =========================
-        if (trackedNodes[i].isUrgent)
+        if (trackedNodes[i].isActive)
         {
-            // encore dans la période d'alarme
-            if (now - trackedNodes[i].urgentStartTime < URGENT_HOLD_TIME_MS)
+            uint32_t timeout = NODE_TIMEOUT_MS;
+            if (trackedNodes[i].isUrgent)
             {
-                timeout = NODE_TIMEOUT_MS + URGENT_HOLD_TIME_MS;
+                if (now - trackedNodes[i].urgentStartTime < URGENT_HOLD_TIME_MS)
+                    timeout = NODE_TIMEOUT_MS + URGENT_HOLD_TIME_MS;
+                else
+                    trackedNodes[i].isUrgent = 0;
             }
-            else
-            {
-                // fin de l'effet urgent
-                trackedNodes[i].isUrgent = 0;
-            }
-        }
-
-        // =========================
-        // 2. TIMEOUT NORMAL
-        // =========================
-        if ((now - trackedNodes[i].lastSeenTime) > timeout)
-        {
-            trackedNodes[i].isActive = 0;
+            if ((now - trackedNodes[i].lastSeenTime) > timeout)
+                trackedNodes[i].isActive = 0;
         }
     }
-}
 
-    // =========================
-    // 2. JOYSTICK READ
-    // =========================
+    // Joystick reading
     Read_Joystick();
 
     static uint32_t lastMove = 0;
+    if (now - lastMove < 200) return; // debounce
 
-    if (now - lastMove < 200) return; // anti-rebond UI
-
-    // get active nodes count
+    // Get active nodes
     TrackedNode_t nodes[MAX_TRACKED_NODES];
     uint8_t count = 0;
     Scanner_GetAllActiveNodes(nodes, &count);
 
-    // =========================
-    // 3. LIST MODE (scroll)
-    // =========================
+    // ================= LIST MODE =================
     if (uiMode == 0)
     {
         // DOWN
         if (joy_y > 3000)
         {
-            if (scrollIndex + 1 < count )
+            if (scrollIndex + 1 < count)
                 scrollIndex++;
-
+            // ⭐ Update selectedNodeIndex to follow scroll
+            selectedNodeIndex = scrollIndex;
             lastMove = now;
         }
-
         // UP
         if (joy_y < 1000)
         {
             if (scrollIndex > 0)
                 scrollIndex--;
-
+            // ⭐ Update selectedNodeIndex to follow scroll
+            selectedNodeIndex = scrollIndex;
             lastMove = now;
         }
-
-        // CLICK (joystick button)
+        // CLICK – enter detail view
         if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_RESET)
         {
-            selectedNodeIndex = scrollIndex;
-            uiMode = 1; // switch to detail view
+            // selectedNodeIndex already equals scrollIndex
+            uiMode = 1;
             lastMove = now;
         }
     }
-
-    // =========================
-    // 4. DETAIL MODE
-    // =========================
-// =========================
-// 4. DETAIL MODE
-// =========================
-else
-{
-    
-    if (joy_x > 3000)   // droite
+    // ================= DETAIL MODE =================
+    else
     {
-        detailPage = (detailPage + 1) % 2;
-        lastMove = now;
+        if (joy_x > 3000)   // right
+        {
+            detailPage = (detailPage + 1) % 2;
+            lastMove = now;
+        }
+        if (joy_x < 1000)   // left
+        {
+            detailPage = (detailPage == 0) ? 1 : 0;
+            lastMove = now;
+        }
+        // CLICK – return to list
+        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_RESET)
+        {
+            uiMode = 0;
+            lastMove = now;
+        }
     }
-
-    if (joy_x < 1000)   // gauche
-    {
-        if (detailPage == 0)
-            detailPage = 1;
-        else
-            detailPage = 0;
-
-        lastMove = now;
-    }
-
-    // CLICK = retour LIST
-    if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_RESET)
-    {
-        uiMode = 0;
-        lastMove = now;
-    }
-}
 }
 
 TrackedNode_t* Scanner_GetNode(uint8_t nodeId)
