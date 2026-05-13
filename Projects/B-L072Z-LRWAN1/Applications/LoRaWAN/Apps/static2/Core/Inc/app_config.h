@@ -56,7 +56,7 @@
 #define MQ2_PREHEAT_MS              30000U           /* 30 s minimum warmup   */
 
 /* Detection mode: 1 = raw ADC thresholds (simpler), 0 = ppm thresholds     */
-#define MQ2_USE_RAW_THRESHOLD       1
+#define MQ2_USE_RAW_THRESHOLD       0
 
 /* Raw ADC thresholds (0-4095). Tune these for your environment.             */
 #define MQ2_RAW_THRESHOLD_WARN      400

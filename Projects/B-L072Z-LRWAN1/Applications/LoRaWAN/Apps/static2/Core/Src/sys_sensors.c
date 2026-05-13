@@ -544,7 +544,7 @@ void DisplaySensorData(void)
     "[%lu] T=%d.%dC H=%d.%d%% P=%d.%dhPa "
     "ACC=[%ld.%ld,%ld.%ld,%ld.%ld]mg "
     "Vib=%ld.%ldmg Tilt=%ld.%lddeg "
-    "GasRaw=%d%s\r\n",
+   "Gas=%ldppm ",
     (unsigned long)now,
     t / 10, (t < 0 ? -t : t) % 10,
     h / 10, h % 10,
@@ -554,7 +554,8 @@ void DisplaySensorData(void)
     (long)az_i, (long)az_d,
     (long)vib_i,  (long)vib_d,
     (long)tilt_i, (long)tilt_d,
-    gasData.adc_raw,
+    (long)gasData.ppm,
+gasData.adc_raw,
     mq2_preheated ? "" : " (warmup)");
   APP_PPRINTF("%s", buffer);
 
@@ -601,11 +602,11 @@ void DisplayAlertes(void)
   }
 
   if (gasData.alert_explosive)
-    APP_PPRINTF("  *** SOS GAS raw=%d -- EVACUATE! ***\r\n", gasData.adc_raw);
+    APP_PPRINTF("  *** SOS GAS raw=%d -- EVACUATE! ***\r\n", (long)gasData.ppm);
   else if (gasData.alert_critical)
-    APP_PPRINTF("  *** CRITICAL GAS raw=%d ***\r\n", gasData.adc_raw);
+    APP_PPRINTF("  *** CRITICAL GAS raw=%d ***\r\n", (long)gasData.ppm);
   else if (gasData.alert_gas)
-    APP_PPRINTF("  [!] Gas warning raw=%d\r\n", gasData.adc_raw);
+    APP_PPRINTF("  [!] Gas warning raw=%d\r\n", (long)gasData.ppm);
 }
 
 /* ============================================================================

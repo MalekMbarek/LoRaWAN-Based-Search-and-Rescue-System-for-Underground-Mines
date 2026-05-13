@@ -19,7 +19,7 @@
 #include "utilities_def.h"
 #include "stm32_timer.h"
 #include "sys_app.h"
-
+#include <math.h>
 /* Raw LoRa Configuration (must match personal node) */
 #define RAW_RF_FREQUENCY                868000000
 #define RAW_LORA_BANDWIDTH              0
@@ -67,117 +67,90 @@ void DualMode_SetAlertPending(uint8_t pending) {
 uint8_t DualMode_IsAlertPending(void) {
     return alertPending;
 }
+static float CalculateDistanceFromRSSI(int16_t rssi)
+{
+    /*
+     * Formule log-distance :
+     * d = 10 ^ ((TxPower - RSSI) / (10 * n))
+     *
+     * TxPower ≈ -40 dBm à 1 m
+     * n = facteur environnement
+     *     2.0 espace libre
+     *     2.7-3.5 mine / indoor
+     */
+
+    const float txPower = -40.0f;
+    const float n = 3.0f;
+
+    float distance = powf(10.0f, (txPower - rssi) / (10.0f * n));
+
+    if (distance < 1.0f)
+        distance = 1.0f;
+
+    return distance;
+}
 /* Raw LoRa Radio Callbacks */
 static void OnRawRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr)
 {
     if (currentMode != MODE_RAW_LORA_RX) return;
 
-    APP_LOG(TS_OFF, VLEVEL_M, "[RawRX] Packet: size=%d RSSI=%d SNR=%d\r\n", 
+    APP_LOG(TS_OFF, VLEVEL_M,
+            "[RawRX] Packet: size=%d RSSI=%d SNR=%d\r\n",
             size, rssi, snr);
-    
-    // Validate packet size
-    if (size >= 3) {
-        memcpy(&lastPersonalNodeData, payload, sizeof(PersonalNodePacket_t));
-        
-        // Parse accelerometer data (bytes 4-9 are big-endian int16)
-        lastPersonalNodeData.accX = (int16_t)((payload[4] << 8) | payload[5]);
-        lastPersonalNodeData.accY = (int16_t)((payload[6] << 8) | payload[7]);
-        lastPersonalNodeData.accZ = (int16_t)((payload[8] << 8) | payload[9]);
-        
-        // Store the data
-        StorePersonalNodeData(&lastPersonalNodeData);
-        
-        newPacketReceived = 1;
-        
-        // Log received data
-        const char* statusStr[] = {"OK", "FALL", "SOS"};
-        APP_LOG(TS_OFF, VLEVEL_M, "[RawRX] Node=%d Status=%s HR=%d Acc[%d,%d,%d]\r\n",
-                lastPersonalNodeData.nodeId,
-                statusStr[lastPersonalNodeData.status],
-                lastPersonalNodeData.heartRate,
-                lastPersonalNodeData.accX,
-                lastPersonalNodeData.accY,
-                lastPersonalNodeData.accZ);
-        
-        // Handle alerts
-        if (lastPersonalNodeData.status == 2) {  // STATUS_SOS
-            APP_LOG(TS_OFF, VLEVEL_M, "!!! PERSONAL NODE %d SOS ALERT !!!\r\n",
-                    lastPersonalNodeData.nodeId);
-            for (int i = 0; i < 6; i++) {
-                LED_On(LED_RED1);
-                HAL_Delay(100);
-                LED_Off(LED_RED1);
-                HAL_Delay(100);
-            }
-        }
-        else if (lastPersonalNodeData.status == 1) {  // STATUS_FALL
-            APP_LOG(TS_OFF, VLEVEL_M, "!!! PERSONAL NODE %d FALL DETECTED !!!\r\n",
-                    lastPersonalNodeData.nodeId);
-            for (int i = 0; i < 10; i++) {
-                LED_On(LED_RED1);
-                HAL_Delay(80);
-                LED_Off(LED_RED1);
-                HAL_Delay(80);
-            }
-        }
-    if (lastPersonalNodeData.status == STATUS_FALL || 
-    lastPersonalNodeData.status == STATUS_SOS) {
-    
-    APP_LOG(TS_OFF, VLEVEL_M, "!!! ALERT from node %d - switching to LoRaWAN !!!\r\n",
-            lastPersonalNodeData.nodeId);
-    
-    // Set flag so that after join we send immediately
-    DualMode_SetAlertPending(1);
-    
-    // Switch mode now (ignores the timer)
-    DualMode_Switch(MODE_LORAWAN);
-    
-    // No need to continue receiving – the switch will reconfigure the radio
-    return;  // Exit callback to avoid restarting RX in raw mode
-}}
 
-    // ========== PARSING EXACT (selon votre mapping) ==========
-    lastPersonalNodeData.pktType   = payload[0];
-    lastPersonalNodeData.nodeId     = payload[1];
-    lastPersonalNodeData.status     = payload[2];
-    lastPersonalNodeData.heartRate  = payload[3];
-
-    // Accéléromètre : big‑endian (octet haut puis octet bas)
-    lastPersonalNodeData.accX = (int16_t)((payload[4] << 8) | payload[5]);
-    lastPersonalNodeData.accY = (int16_t)((payload[6] << 8) | payload[7]);
-    lastPersonalNodeData.accZ = (int16_t)((payload[8] << 8) | payload[9]);
-
-    // SpO₂ : octet 10, avec filtre de validité
-    uint8_t spo2_raw = payload[10];
-    if (spo2_raw >= 70 && spo2_raw <= 100)
-        lastPersonalNodeData.spo2 = spo2_raw;
-    else
-        lastPersonalNodeData.spo2 = 0;
-
-    // Stockage
-    StorePersonalNodeData(&lastPersonalNodeData);
-
-    // Gestion alertes
-    if (lastPersonalNodeData.status == STATUS_FALL ||
-        lastPersonalNodeData.status == STATUS_SOS) {
-        UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
+    if (size < 11) {
+        RawLoRa_StartRx();
+        return;
     }
 
-    // Log
-    const char* statusStr[] = {"OK", "FALL", "SOS"};
-    APP_LOG(TS_OFF, VLEVEL_M,
-        "[RawRX] Node=%d Status=%s HR=%d SpO₂=%d Acc[%d,%d,%d]\r\n",
-        lastPersonalNodeData.nodeId,
-        statusStr[lastPersonalNodeData.status],
-        lastPersonalNodeData.heartRate,
-        lastPersonalNodeData.spo2,
-        lastPersonalNodeData.accX,
-        lastPersonalNodeData.accY,
-        lastPersonalNodeData.accZ);
+    // ===== parsing =====
+    lastPersonalNodeData.pktType   = payload[0];
+    lastPersonalNodeData.nodeId    = payload[1];
+    lastPersonalNodeData.status    = payload[2];
+    lastPersonalNodeData.heartRate = payload[3];
 
-    // Continue en réception
+    lastPersonalNodeData.accX = (int16_t)((int16_t)payload[4] << 8 | payload[5]);
+lastPersonalNodeData.accY = (int16_t)((int16_t)payload[6] << 8 | payload[7]);
+lastPersonalNodeData.accZ = (int16_t)((int16_t)payload[8] << 8 | payload[9]);
+    lastPersonalNodeData.spo2 = payload[10];
+
+    lastPersonalNodeData.rssi = rssi;
+    lastPersonalNodeData.distance = CalculateDistanceFromRSSI(rssi);
+
+    StorePersonalNodeData(&lastPersonalNodeData);
+
+    newPacketReceived = 1;
+
+    const char* statusStr[] = {"OK", "FALL", "SOS"};
+
+int d_int = (int)lastPersonalNodeData.distance;
+int d_dec = (int)((lastPersonalNodeData.distance - d_int) * 100);
+
+if (d_dec < 0) d_dec = -d_dec;
+
+APP_LOG(TS_OFF, VLEVEL_M,
+"[RawRX] Node=%d Status=%s HR=%d SpO2=%d Dist=%d.%02d m Acc[%d,%d,%d]\r\n",
+lastPersonalNodeData.nodeId,
+statusStr[lastPersonalNodeData.status],
+lastPersonalNodeData.heartRate,
+lastPersonalNodeData.spo2,
+d_int, d_dec,
+lastPersonalNodeData.accX,
+lastPersonalNodeData.accY,
+lastPersonalNodeData.accZ
+);
+    if (lastPersonalNodeData.status == STATUS_FALL ||
+        lastPersonalNodeData.status == STATUS_SOS)
+    {
+        DualMode_SetAlertPending(1);
+        DualMode_Switch(MODE_LORAWAN);
+        return;
+    }
+
     RawLoRa_StartRx();
 }
+
+   
 static void OnRawRxTimeout(void)
 {
     if (currentMode != MODE_RAW_LORA_RX) return;
@@ -218,6 +191,8 @@ static void StorePersonalNodeData(PersonalNodePacket_t* packet)
     storedNodes[index].accX = packet->accX;
     storedNodes[index].accY = packet->accY;
     storedNodes[index].accZ = packet->accZ;
+    storedNodes[index].rssi = packet->rssi;
+storedNodes[index].distance = packet->distance;
     storedNodes[index].lastUpdateTime = HAL_GetTick();
     storedNodes[index].isActive = 1;
 

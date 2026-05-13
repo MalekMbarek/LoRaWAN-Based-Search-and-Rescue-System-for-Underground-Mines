@@ -38,6 +38,8 @@ typedef struct {
     int16_t accX;
     int16_t accY;
     int16_t accZ;
+      int16_t rssi;
+float distance;
 } PersonalNodePacket_t;
 
 /* Stored personal node data with metadata */
@@ -52,6 +54,8 @@ typedef struct {
     uint32_t lastUpdateTime;  // HAL_GetTick() timestamp of last update
     uint8_t isActive;         // 1 if node has been seen, 0 otherwise
     uint8_t hasAlert;         // 1 if FALL or SOS status
+    int16_t rssi;
+ float distance;
 } StoredPersonalNode_t;
 
 /* Function prototypes */

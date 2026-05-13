@@ -299,6 +299,7 @@ static void SendTxData(void)
 {
   /* USER CODE BEGIN SendTxData_1 */
   UTIL_TIMER_Time_t nextTxIn = 0;
+  
 
   /* Mise à jour des capteurs avant envoi */
   EnvRead();
@@ -341,7 +342,7 @@ static void SendTxData(void)
   CayenneLppAddDigitalInput(3, alert_motion);
 
   /* ── Canal 7 : gaz (ADC brut / 100 pour AnalogInput) ───────────────────── */
-  //CayenneLppAddAnalogInput(7, (float)gasData.adc_raw / 1.0f);
+  CayenneLppAddAnalogInput(1, gasData.ppm);
 
   /* ── Canal 8 : alertes gaz (bitmask) ────────────────────────────────────── */
   uint8_t alert_gas =
@@ -349,6 +350,7 @@ static void SendTxData(void)
       (gasData.alert_critical  ? 0x02 : 0) |
       (gasData.alert_explosive ? 0x04 : 0);
   CayenneLppAddDigitalInput(4, alert_gas);
+  
 
   /* ── Canal 9-10 : batterie + LED ────────────────────────────────────────── */
   //CayenneLppAddDigitalInput (9,  GetBatteryLevel());
@@ -371,49 +373,44 @@ static void SendTxData(void)
   StoredPersonalNode_t activeNodes[MAX_PERSONAL_NODES];
   uint8_t activeCount = 0;
   DualMode_GetAllActiveNodes(activeNodes, &activeCount);
-
+static const char* statusStr[] = {"OK", "FALL", "SOS"};
   APP_LOG(TS_OFF, VLEVEL_L, "[TX] Active personal nodes: %d\r\n", activeCount);
 
   for (uint8_t i = 0; i < activeCount; i++)
 {
-    uint8_t nodeId      = activeNodes[i].nodeId;
-    uint8_t baseChannel = 5 + (nodeId - 1) * 4;
+    StoredPersonalNode_t *n = &activeNodes[i];
 
- // Channel base → nodeId
+    uint8_t nodeId = n->nodeId;
+    uint8_t status = n->status;
+    uint8_t hr     = n->heartRate;
+    uint8_t spo2   = n->spo2;
+    uint8_t alert  = n->hasAlert;
+  //  float distance = n->distance;
+float distance = n->distance;
+  
+    uint8_t baseChannel = 5 + (nodeId - 1) * 5 ;
+
     CayenneLppAddDigitalInput(baseChannel, nodeId);
+    CayenneLppAddDigitalOutput(baseChannel + 1, status);
+    CayenneLppAddAnalogInput(baseChannel + 2, hr);
+    CayenneLppAddAnalogInput(baseChannel + 3, spo2);
+    CayenneLppAddAnalogInput(baseChannel + 4, distance );
+  
+APP_LOG(TS_OFF, VLEVEL_M,
+"[TX] Node%d | status=%d HR=%d SpO2=%d alert=%d Dist=%d.%02d m\r\n",
+nodeId,
+activeNodes[i].status,
+activeNodes[i].heartRate,
+activeNodes[i].spo2,
+activeNodes[i].hasAlert,
+(int)activeNodes[i].distance
 
-    // Status
-    CayenneLppAddDigitalOutput(baseChannel + 1, activeNodes[i].status);
-
-    // Heart Rate
-    CayenneLppAddAnalogInput(baseChannel + 2, activeNodes[i].heartRate);
-
-    // Accelerometer (X,Y,Z ensemble)
-    //CayenneLppAddAccelerometer(baseChannel + 3,
-       // activeNodes[i].accX / 1.0f,
-       // activeNodes[i].accY / 1.0f,
-       // activeNodes[i].accZ / 1.0f);
-
-    // Alert
-    //CayenneLppAddDigitalOutput(baseChannel + 3, activeNodes[i].hasAlert);
-
-    // SpO2
-    CayenneLppAddAnalogInput(baseChannel + 3, activeNodes[i].spo2);
-
-
-    // Log
-    APP_LOG(TS_OFF, VLEVEL_L,
-        "[TX] Node%d | status=%d HR=%d SpO2=%d alert=%d\r\n",
-        nodeId, activeNodes[i].status,
-        activeNodes[i].heartRate, activeNodes[i].spo2,
-        activeNodes[i].hasAlert);
-
-    // On efface l'alerte après l'avoir remontée
-    if (activeNodes[i].hasAlert) {
+);
+    if (n->hasAlert)
+    {
         DualMode_ClearAlert(nodeId);
     }
 }
-  
 
   CayenneLppCopy(AppData.Buffer);
   AppData.BufferSize = CayenneLppGetSize();
