@@ -9,7 +9,7 @@ extern "C" {
 
 /* ── Identifiant du nœud ─────────────────────────────────────────────────── */
 #ifndef MY_NODE_ID
-#define MY_NODE_ID              1U
+#define MY_NODE_ID              3U
 #endif
 
 /* ── Format paquet LoRa 11 bytes ─────────────────────────────────────────── */

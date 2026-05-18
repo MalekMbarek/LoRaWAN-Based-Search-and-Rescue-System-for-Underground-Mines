@@ -38,6 +38,7 @@
 #include "stm32l0xx_hal.h"
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/

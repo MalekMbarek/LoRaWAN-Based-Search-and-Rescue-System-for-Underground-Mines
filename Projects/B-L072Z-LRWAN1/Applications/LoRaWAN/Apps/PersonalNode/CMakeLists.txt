@@ -14,18 +14,24 @@ get_filename_component(PFE2_ROOT
     ABSOLUTE
 )
 
-# COMMON : dossier partagé entre les applications (Core/Inc commun)
-# Adapter si PersonalNode n'a pas de common/ partagé
+
 set(COMMON ${CMAKE_CURRENT_SOURCE_DIR}/../../common)
 
 set(DRIVERS     ${PFE2_ROOT}/Drivers)
 set(MIDDLEWARES ${PFE2_ROOT}/Middlewares)
 set(UTILITIES   ${PFE2_ROOT}/Utilities)
 
+
 # ── Tools ─────────────────────────────────────────────────────────────────────
-set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10")
-set(CMAKE_OBJCOPY "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-objcopy.exe")
-set(CMAKE_SIZE    "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-size.exe")
+
+#balkis
+# set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10")
+# set(CMAKE_OBJCOPY "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-objcopy.exe")
+# set(CMAKE_SIZE    "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-size.exe")
+#malek
+set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi")
+find_program(CMAKE_OBJCOPY arm-none-eabi-objcopy)
+find_program(CMAKE_SIZE    arm-none-eabi-size)
 
 # ── MCU flags ─────────────────────────────────────────────────────────────────
 set(MCU_FLAGS -mcpu=cortex-m0plus -mthumb -mfloat-abi=soft)
