@@ -816,7 +816,7 @@ uint8_t BSP_JOY_Init(void)
    
   /* Select Channel 8 to be converted */
   sConfig.Channel       = ADC_CHANNEL_8;    
-  sConfig.SamplingTime  = ADC_SAMPLETIME_16CYCLES;
+  //sConfig.SamplingTime  = ADC_SAMPLETIME_16CYCLES;
   sConfig.Rank          = ADC_REGULAR_RANK_1;
   
   /* Return Joystick initialization status */

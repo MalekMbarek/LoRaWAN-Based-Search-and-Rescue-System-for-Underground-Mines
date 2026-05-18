@@ -50,6 +50,7 @@ typedef struct {
     uint8_t nodeId;       // 1-4
     uint8_t status;       // NodeStatus_t
     uint8_t heartRate;    // BPM or 0/255
+     uint8_t spo2; 
     int16_t accX;         // mg
     int16_t accY;         // mg
     int16_t accZ;         // mg
@@ -60,6 +61,7 @@ typedef struct {
     uint8_t nodeId;
     NodeStatus_t status;
     uint8_t heartRate;
+     uint8_t spo2; 
     int16_t accX;
     int16_t accY;
     int16_t accZ;
@@ -69,8 +71,13 @@ typedef struct {
     uint32_t lastSeenTime;
     uint8_t isActive;
     uint8_t packetCount;
+    uint8_t isUrgent;
+uint32_t urgentStartTime;
 } TrackedNode_t;
-
+typedef enum {
+    UI_LIST_VIEW = 0,
+    UI_DETAIL_VIEW = 1
+} UI_State_t;
 /* Function prototypes */
 void Scanner_Init(void);
 void Scanner_Process(void);

@@ -1,31 +1,3 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file    app_config.h
-  * @brief   PersonalNode — Configuration centrale
-  *
-  * ── STRATÉGIE I2C ────────────────────────────────────────────────────────────
-  *
-  * La BSP ST (BSP_I2C1_xxx) est IGNORÉE pour les capteurs personnels.
-  * sys_sensors.c gère son propre handle I2C (hpn_i2c) initialisé sur
-  * PB8 (SCL) / PB9 (SDA), exactement comme la version Semtech qui fonctionnait.
-  *
-  * Raisons :
-  *   1. BSP_I2C1 peut utiliser un bus différent selon la BSP
-  *   2. hbus_i2c1 est static dans b_l072z_lrwan1_bus.c → inaccessible
-  *   3. Gpio_PreInit() dans sys_app.c met PB8/PB9 en analogique avant
-  *      que BSP_I2C1_Init() les reconfigure → bus bloqué au démarrage
-  *
-  * Solution : init I2C propre dans SensorsInit() après Gpio_PreInit(),
-  * avec récupération de bus (9 CLK bit-bang) si nécessaire.
-  *
-  * Adresses : 8 bits WRITE (HAL_I2C_Master_Transmit attend addr<<1 déjà fait)
-  *   LSM303AGR : 0x32 write / 0x33 read (SDO=GND)
-  *   MAX30102  : 0xAE write / 0xAF read (fixe)
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-
 #ifndef __APP_CONFIG_H__
 #define __APP_CONFIG_H__
 
@@ -37,7 +9,7 @@ extern "C" {
 
 /* ── Identifiant du nœud ─────────────────────────────────────────────────── */
 #ifndef MY_NODE_ID
-#define MY_NODE_ID              2U
+#define MY_NODE_ID              3U
 #endif
 
 /* ── Format paquet LoRa 11 bytes ─────────────────────────────────────────── */
@@ -79,10 +51,7 @@ extern "C" {
 #define PN_IMPACT_THRESHOLD_MG      1300.0f
 #define PN_FALL_WINDOW_MS           800U
 
-/* ── I2C hardware dédié capteurs ─────────────────────────────────────────────
- * Identique version Semtech : I2C1, PB8=SCL, PB9=SDA, open-drain + pull-up
- * Timing 0x00707CBB → 100 kHz @ 32 MHz HSI (STM32L072)
- * ────────────────────────────────────────────────────────────────────────── */
+/* ── I2C ─────────────────────────────────────────────────────────────────── */
 #define PN_I2C_INSTANCE         I2C1
 #define PN_I2C_SCL_PORT         GPIOB
 #define PN_I2C_SCL_PIN          GPIO_PIN_8
@@ -92,7 +61,7 @@ extern "C" {
 #define PN_I2C_TIMING           0x00707CBBU
 #define PN_I2C_TIMEOUT_MS       10U
 
-/* ── LSM303AGR — adresses 8 bits (SDO/SA1 = GND) ───────────────────────── */
+/* ── LSM303AGR ───────────────────────────────────────────────────────────── */
 #define ACC_ADDR_WRITE          0x32U
 #define ACC_REG_WHO_AM_I        0x0FU
 #define ACC_CTRL_REG1           0x20U
@@ -103,7 +72,7 @@ extern "C" {
 #define ACC_CTRL_REG4_VAL       0x88U
 #define ACC_SENSITIVITY_MG      0.98f
 
-/* ── MAX30102 — adresses 8 bits (fixe) ──────────────────────────────────── */
+/* ── MAX30102 ────────────────────────────────────────────────────────────── */
 #define MAX30102_ADDR_WRITE         0xAEU
 #define MAX30102_REG_FIFO_WR_PTR    0x04U
 #define MAX30102_REG_FIFO_RD_PTR    0x06U
@@ -125,6 +94,7 @@ extern "C" {
 #define PN_SPO2_MIN_SAMPLES     50U
 
 /* ── GPIO ────────────────────────────────────────────────────────────────── */
+/* Bouton SOS : PB2, géré par BSP Semtech GpioSetInterrupt */
 #define SOS_BUTTON_PORT         GPIOA
 #define SOS_BUTTON_PIN          GPIO_PIN_0
 #define SOS_BUTTON_IRQn         EXTI0_1_IRQn

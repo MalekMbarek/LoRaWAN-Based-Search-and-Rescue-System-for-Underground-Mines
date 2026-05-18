@@ -95,14 +95,14 @@ extern "C" {
 /*!
  * end-device IEEE EUI (big endian)
  */                                                       
-#define LORAWAN_DEVICE_EUI                                 { 0xD3, 0x10, 0x4F, 0xF3, 0xD0, 0x0D, 0xB8, 0x7F  }   //Malek
-//#define LORAWAN_DEVICE_EUI                                 { 0xCF, 0x72, 0x53, 0xA4, 0xDB, 0xFA, 0xE4, 0x8B  } //Balkis
+//#define LORAWAN_DEVICE_EUI                                 { 0xD3, 0x10, 0x4F, 0xF3, 0xD0, 0x0D, 0xB8, 0x7F  }   //Malek
+#define LORAWAN_DEVICE_EUI                                 { 0xCF, 0x72, 0x53, 0xA4, 0xDB, 0xFA, 0xE4, 0x8B  } //Balkis
 /*!
  * App/Join server IEEE EUI (big endian)
  */
 
-#define LORAWAN_JOIN_EUI                          { 0xD3, 0x10, 0x4F, 0xF3, 0xD0, 0x0D, 0xB8, 0x7F  }   //Malek
-//#define LORAWAN_JOIN_EUI                                   { 0xCF, 0x72, 0x53, 0xA4, 0xDB, 0xFA, 0xE4, 0x8B   } //Balkis
+//#define LORAWAN_JOIN_EUI                          { 0xD3, 0x10, 0x4F, 0xF3, 0xD0, 0x0D, 0xB8, 0x7F  }   //Malek
+#define LORAWAN_JOIN_EUI                                   { 0xCF, 0x72, 0x53, 0xA4, 0xDB, 0xFA, 0xE4, 0x8B   } //Balkis
 
 /*!
  * When set to 1 DevAddr is LORAWAN_DEVICE_ADDRESS
@@ -119,26 +119,26 @@ extern "C" {
 /*!
  * Application root key
  */
-#define LORAWAN_APP_KEY                                    09,E1,D2,81,15,2C,1D,AB,93,08,4E,96,40,A2,C0,4D //Malek
-//#define LORAWAN_APP_KEY                                    E7,31,BC,D1,68,07,4E,CE,16,09,D0,AF,02,3D,2A,87 //Balkis
+//#define LORAWAN_APP_KEY                                    09,E1,D2,81,15,2C,1D,AB,93,08,4E,96,40,A2,C0,4D //Malek
+#define LORAWAN_APP_KEY                                    E7,31,BC,D1,68,07,4E,CE,16,09,D0,AF,02,3D,2A,87 //Balkis
 
 /*!
  * Network root key
  */
-#define LORAWAN_NWK_KEY                                    09,E1,D2,81,15,2C,1D,AB,93,08,4E,96,40,A2,C0,4D //Malek
-//#define LORAWAN_NWK_KEY                                    E7,31,BC,D1,68,07,4E,CE,16,09,D0,AF,02,3D,2A,87 //Balkis
+//#define LORAWAN_NWK_KEY                                    09,E1,D2,81,15,2C,1D,AB,93,08,4E,96,40,A2,C0,4D //Malek
+#define LORAWAN_NWK_KEY                                    E7,31,BC,D1,68,07,4E,CE,16,09,D0,AF,02,3D,2A,87 //Balkis
 
 /*!
  * Forwarding Network session key
  */
-#define LORAWAN_NWK_S_KEY                                  09,E1,D2,81,15,2C,1D,AB,93,08,4E,96,40,A2,C0,4D //Malek
-//#define LORAWAN_NWK_S_KEY                                  E7,31,BC,D1,68,07,4E,CE,16,09,D0,AF,02,3D,2A,87  //Balkis
+//#define LORAWAN_NWK_S_KEY                                  09,E1,D2,81,15,2C,1D,AB,93,08,4E,96,40,A2,C0,4D //Malek
+#define LORAWAN_NWK_S_KEY                                  E7,31,BC,D1,68,07,4E,CE,16,09,D0,AF,02,3D,2A,87  //Balkis
 
 /*!
  * Application session key
  */
-#define LORAWAN_APP_S_KEY                                  09,E1,D2,81,15,2C,1D,AB,93,08,4E,96,40,A2,C0,4D //Malek
-//#define LORAWAN_APP_S_KEY                                  E7,31,BC,D1,68,07,4E,CE,16,09,D0,AF,02,3D,2A,87 //Balkis
+//#define LORAWAN_APP_S_KEY                                  09,E1,D2,81,15,2C,1D,AB,93,08,4E,96,40,A2,C0,4D //Malek
+#define LORAWAN_APP_S_KEY                                  E7,31,BC,D1,68,07,4E,CE,16,09,D0,AF,02,3D,2A,87 //Balkis
 
 /*!
  * Format commissioning keys

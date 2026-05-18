@@ -106,7 +106,7 @@ void LCD_Clear(void)
 
 void LCD_SetCursor(uint8_t row, uint8_t col)
 {
-    uint8_t row_offsets[] = {0x00, 0x40, 0x14, 0x54};  // 20x4 LCD
+    uint8_t row_offsets[] = {0x00, 0x40};  // 16*2 LCD
     
     if (row >= LCD_ROWS) row = LCD_ROWS - 1;
     if (col >= LCD_COLS) col = LCD_COLS - 1;

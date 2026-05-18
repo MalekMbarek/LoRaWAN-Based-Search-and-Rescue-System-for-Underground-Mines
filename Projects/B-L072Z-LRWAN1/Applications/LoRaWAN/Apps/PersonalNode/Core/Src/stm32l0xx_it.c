@@ -210,42 +210,38 @@ void SysTick_Handler(void)
 /*void PPP_IRQHandler(void)
 {
 }*/
-
 void EXTI0_1_IRQHandler(void)
 {
-#if (defined(CMWX1ZZABZ0XX))
-  HAL_EXTI_IRQHandler(&H_EXTI_0);
-  HAL_EXTI_IRQHandler(&H_EXTI_1);
-#endif
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
+/*void EXTI0_1_IRQHandler(void)
+{
+#if (defined(CMWX1ZZABZ0XX))
+//HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+  HAL_EXTI_IRQHandler(&H_EXTI_0);
+  //HAL_EXTI_IRQHandler(&H_EXTI_1);
+#endif
+}*/
 
 void EXTI2_3_IRQHandler(void)
 {
-#if (defined(CMWX1ZZABZ0XX))
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
-#endif
-#if (defined(SX1276MB1MAS) | defined(SX1276MB1LAS) | defined(SX1272MB2DAS))
-  HAL_EXTI_IRQHandler(&H_EXTI_3);
-#endif
+    if (GPIOA->ODR & GPIO_PIN_5)
+        GPIOA->BRR  = GPIO_PIN_5;
+    else
+        GPIOA->BSRR = GPIO_PIN_5;
+    EXTI->PR = GPIO_PIN_2;
 }
 
 void EXTI4_15_IRQHandler(void)
 {
+  /* Radio SX1276 DIO */
   HAL_EXTI_IRQHandler(&H_EXTI_4);
-
-#if (defined(SX1276MB1MAS) | defined(SX1276MB1LAS) | defined(SX1272MB2DAS))
-  HAL_EXTI_IRQHandler(&H_EXTI_5);
-#endif
-
-#if (defined(SX1276MB1MAS) | defined(SX1276MB1LAS) | defined(SX1272MB2DAS))
-  HAL_EXTI_IRQHandler(&H_EXTI_10);
-#endif
-
 #if (defined(CMWX1ZZABZ0XX))
   HAL_EXTI_IRQHandler(&H_EXTI_13);
-#else
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
 #endif
+
+  /* Bouton SOS PB13 */
+
 }
 
 void DMA1_Channel4_5_6_7_IRQHandler(void)

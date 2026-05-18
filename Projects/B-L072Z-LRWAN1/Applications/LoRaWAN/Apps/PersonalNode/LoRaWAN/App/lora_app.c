@@ -2,11 +2,6 @@
 /**
   ******************************************************************************
   * @file    lora_app.c — PersonalNode
-  *
-  * CORRECTIONS :
-  *   1. %lu → %u (UTIL_ADV_TRACE ne supporte pas %lu)
-  *   2. LPM stop désactivé pendant SensorsInit() pour éviter que le MCU
-  *      dorme pendant l'init I2C et bloque le bus
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -63,8 +58,8 @@ static UTIL_TIMER_Object_t TxTimer;
 static uint8_t          inFreefall   = 0;
 static uint32_t         freefallTick = 0;
 static uint8_t          fallPending  = 0;
-static volatile uint8_t sosPending   = 0;
-
+ volatile uint8_t sosPending   = 0;
+static uint8_t sosReady = 0;
 /* ════════════════════════════════════════════════════════════════════════════
  * LoRaWAN_Init
  * ════════════════════════════════════════════════════════════════════════════ */
@@ -74,7 +69,6 @@ void LoRaWAN_Init(void)
 
   APP_LOG(TS_OFF, VLEVEL_M, "\r\n=== BOOT OK ===\r\n");
 
-  /* FIX : %lu → %u  (UTIL_ADV_TRACE ne supporte pas %lu sur Cortex-M0+) */
   APP_LOG(TS_OFF, VLEVEL_M, "PersonalNode %d -- %uMHz SF%d BW125\r\n",
           (int)MY_NODE_ID,
           (unsigned int)(PN_RF_FREQUENCY / 1000000UL),
@@ -95,15 +89,38 @@ void LoRaWAN_Init(void)
                     PN_TX_TIMEOUT_MS);
   APP_LOG(TS_OFF, VLEVEL_M, "SX1276 ready\r\n");
 
-  /* FIX : désactiver stop mode LPM pendant SensorsInit
-   * Sans ça, le MCU peut entrer en stop mode pendant l'init I2C
-   * (~640ms de scan + 100ms reset MAX30102) et bloquer le bus. */
+  /* Désactiver stop mode LPM pendant SensorsInit */
   UTIL_LPM_SetStopMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
 
   SensorsInit();
 
   /* Réactiver le stop mode après init complète */
-  UTIL_LPM_SetStopMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_ENABLE);
+  //UTIL_LPM_SetStopMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_ENABLE);
+
+  /* ── Config bouton SOS PB2 — APRÈS tout le reste ─────────────────────
+   * Fait ici en dernier pour éviter que Gpio_PreInit / Sx_Board_IoInit
+   * n'écrasent la config EXTI.
+   * ──────────────────────────────────────────────────────────────────── */
+/* Config bouton SOS PB2 avec EXTI handle — comme BSP radio */
+/* Config bouton SOS PA0 */
+{
+  GPIO_InitTypeDef g = {0};
+
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  g.Pin  = SOS_BUTTON_PIN;
+  g.Mode = GPIO_MODE_IT_FALLING;
+  g.Pull = GPIO_PULLUP;
+
+  HAL_GPIO_Init(SOS_BUTTON_PORT, &g);
+
+  HAL_NVIC_DisableIRQ(SOS_BUTTON_IRQn);
+
+__HAL_GPIO_EXTI_CLEAR_IT(SOS_BUTTON_PIN);
+
+HAL_NVIC_SetPriority(SOS_BUTTON_IRQn, 2, 0);
+HAL_NVIC_EnableIRQ(SOS_BUTTON_IRQn);
+}
 
   /* Lecture + affichage immédiats */
   AccRead();
@@ -139,7 +156,8 @@ void LoRaWAN_Init(void)
 
   /* Premier TX immédiat */
   UTIL_SEQ_SetTask(1 << CFG_SEQ_Task_TX, CFG_SEQ_Prio_0);
-
+HAL_Delay(1000);
+sosReady = 1;
   /* USER CODE END LoRaWAN_Init_1 */
 }
 
@@ -174,7 +192,15 @@ static void OnHrTimer(void *context)
 static void OnDisplayTimer(void *context)
 {
   (void)context;
+
+ /*/* GPIO_PinState s =
+      HAL_GPIO_ReadPin(SOS_BUTTON_PORT, SOS_BUTTON_PIN);
+
+  APP_LOG(TS_OFF, VLEVEL_M,
+          "BTN=%d\r\n", s);*/
+
   HAL_GPIO_TogglePin(LED_HEARTBEAT_PORT, LED_HEARTBEAT_PIN);
+
   DisplaySensorData();
 }
 
@@ -186,15 +212,18 @@ static void OnTxTimer(void *context)
 
 static void SosTask(void)
 {
-  if (sosPending) {
+  if (sosPending)
+  {
     sosPending = 0;
-    HAL_Delay(50);
-    if (HAL_GPIO_ReadPin(SOS_BUTTON_PORT, SOS_BUTTON_PIN) == GPIO_PIN_RESET) {
-      APP_LOG(TS_OFF, VLEVEL_M, "!!! SOS ALERT !!!\r\n");
-      LED_Blink(LED_SOS_PORT, LED_SOS_PIN, 6, 100);
-      AccRead(); HrRead();
-      LoRa_Send(STATUS_SOS);
-    }
+
+    APP_LOG(TS_OFF, VLEVEL_M, "!!! SOS ALERT !!!\r\n");
+
+    LED_Blink(LED_SOS_PORT, LED_SOS_PIN, 6, 100);
+
+    AccRead();
+    HrRead();
+
+    LoRa_Send(STATUS_SOS);
   }
 }
 
@@ -277,10 +306,33 @@ void LoRa_Send(uint8_t status)
 
 uint8_t LoRa_LastTxOk(void) { return lastTxOk; }
 
-void PN_SOS_Trigger(void)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == SOS_BUTTON_PIN && sosReady)
+  {
+    //APP_LOG(TS_OFF, VLEVEL_M, "!!! SOS IRQ !!!\r\n");
+
+    sosPending = 1;
+
+    UTIL_SEQ_SetTask(1 << CFG_SEQ_Task_SOS, CFG_SEQ_Prio_0);
+  }
+}
+
+
+
+
+
+
+/*void PN_SOS_Trigger(void)
 {
   sosPending = 1;
   UTIL_SEQ_SetTask(1 << CFG_SEQ_Task_SOS, CFG_SEQ_Prio_0);
 }
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == SOS_BUTTON_PIN)
+  {
+    sosPending = 1;
+  }
+}
 /* USER CODE END PrFD */

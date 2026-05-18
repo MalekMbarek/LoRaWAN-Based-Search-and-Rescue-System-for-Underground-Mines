@@ -33,10 +33,13 @@ typedef struct {
     uint8_t pktType;      // PKT_TYPE_FULL
     uint8_t nodeId;       // MY_NODE_ID
     uint8_t status;       // STATUS_OK, STATUS_FALL, STATUS_SOS
-    uint8_t heartRate;    // BPM or 0/255
+    uint8_t heartRate; 
+    uint8_t spo2;   // BPM or 0/255
     int16_t accX;
     int16_t accY;
     int16_t accZ;
+      int16_t rssi;
+float distance;
 } PersonalNodePacket_t;
 
 /* Stored personal node data with metadata */
@@ -44,12 +47,15 @@ typedef struct {
     uint8_t nodeId;           // Node ID (1-4)
     uint8_t status;           // Last known status
     uint8_t heartRate;        // Last heart rate
+     uint8_t spo2;
     int16_t accX;             // Last X acceleration
     int16_t accY;             // Last Y acceleration
     int16_t accZ;             // Last Z acceleration
     uint32_t lastUpdateTime;  // HAL_GetTick() timestamp of last update
     uint8_t isActive;         // 1 if node has been seen, 0 otherwise
     uint8_t hasAlert;         // 1 if FALL or SOS status
+    int16_t rssi;
+ float distance;
 } StoredPersonalNode_t;
 
 /* Function prototypes */
@@ -68,5 +74,6 @@ uint8_t DualMode_GetActiveNodeCount(void);
 void DualMode_GetAllActiveNodes(StoredPersonalNode_t* nodes, uint8_t* count);
 uint8_t DualMode_HasAnyAlerts(void);
 void DualMode_ClearAlert(uint8_t nodeId);
-
+void DualMode_SetAlertPending(uint8_t pending);
+uint8_t DualMode_IsAlertPending(void);
 #endif /* __DUAL_MODE_H__ */
