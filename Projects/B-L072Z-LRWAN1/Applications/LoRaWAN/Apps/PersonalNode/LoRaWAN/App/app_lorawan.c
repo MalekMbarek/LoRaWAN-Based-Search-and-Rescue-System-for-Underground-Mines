@@ -2,6 +2,7 @@
 /**
   ******************************************************************************
   * @file    app_lorawan.c — PersonalNode
+  * @brief   LoRaWAN application initialization and processing
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -18,13 +19,16 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-//static void GPIO_PersonalNode_Init(void);
 /* USER CODE END PFP */
 
+/**
+  * @brief Initialize LoRaWAN application
+  * @note  Calls SystemApp_Init() for system peripherals, then LoRaWAN_Init()
+  *        for radio and sensor initialization
+  */
 void MX_LoRaWAN_Init(void)
 {
   /* USER CODE BEGIN MX_LoRaWAN_Init_1 */
-  //GPIO_PersonalNode_Init();
   /* USER CODE END MX_LoRaWAN_Init_1 */
 
   SystemApp_Init();
@@ -38,6 +42,10 @@ void MX_LoRaWAN_Init(void)
   /* USER CODE END MX_LoRaWAN_Init_3 */
 }
 
+/**
+  * @brief Run LoRaWAN application process
+  * @note  Executes all registered sequencer tasks (sensors, display, TX)
+  */
 void MX_LoRaWAN_Process(void)
 {
   /* USER CODE BEGIN MX_LoRaWAN_Process_1 */
@@ -48,31 +56,36 @@ void MX_LoRaWAN_Process(void)
 }
 
 /* USER CODE BEGIN PrFD */
-/*static void GPIO_PersonalNode_Init(void)
+
+/* GPIO initialization moved to sys_app.c */
+/*
+static void GPIO_PersonalNode_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /* PA0 — Bouton SOS (EXTI falling, pull-up) */
- /* GPIO_InitStruct.Pin  = SOS_BUTTON_PIN;
+  // PA0 — SOS Button (EXTI falling, pull-up)
+  GPIO_InitStruct.Pin  = SOS_BUTTON_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(SOS_BUTTON_PORT, &GPIO_InitStruct);
   HAL_NVIC_SetPriority(SOS_BUTTON_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(SOS_BUTTON_IRQn);
 
-  /* PA5 — LED SOS */
-  /*GPIO_InitStruct.Pin   = LED_SOS_PIN;
+  // PA5 — SOS LED
+  GPIO_InitStruct.Pin   = LED_SOS_PIN;
   GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull  = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_SOS_PORT, &GPIO_InitStruct);
   HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_RESET);
 
-  /* PB13 — LED Heartbeat */
- /* GPIO_InitStruct.Pin = LED_HEARTBEAT_PIN;
+  // PB13 — Heartbeat LED
+  GPIO_InitStruct.Pin = LED_HEARTBEAT_PIN;
   HAL_GPIO_Init(LED_HEARTBEAT_PORT, &GPIO_InitStruct);
   HAL_GPIO_WritePin(LED_HEARTBEAT_PORT, LED_HEARTBEAT_PIN, GPIO_PIN_RESET);
-}*/
+}
+*/
+
 /* USER CODE END PrFD */

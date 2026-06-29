@@ -53,17 +53,17 @@ typedef struct
 /* USER CODE BEGIN ET */
 
 /**
-  * @brief Données accéléromètre LSM303AGR
+  * @brief LSM303AGR accelerometer data
   */
 typedef struct {
   float   acc_x, acc_y, acc_z;      /* mg */
   float   vibration;
   float   angle_x, angle_y, angle_total;
-  int16_t raw_x, raw_y, raw_z;      /* mg entiers — pour paquet LoRa */
+  int16_t raw_x, raw_y, raw_z;      /* integer mg for LoRa packet */
 } AccData_t;
 
 /**
-  * @brief Données HR + SpO2 MAX30102
+  * @brief MAX30102 HR + SpO2 data
   */
 typedef struct {
   uint8_t bpm;
@@ -93,37 +93,37 @@ extern uint8_t   hr_present;
 
 /* Exported functions prototypes ---------------------------------------------*/
 /**
-  * @brief  initialize the environmental sensor (ST standard interface)
+  * @brief Initialize the environmental sensor (ST standard interface)
   */
 int32_t EnvSensors_Init(void);
 
 /**
-  * @brief  Environmental sensor read (ST standard interface)
+  * @brief Read environmental sensor data (ST standard interface)
   */
 int32_t EnvSensors_Read(sensor_t *sensor_data);
 
 /* USER CODE BEGIN EFP */
 
 /**
-  * @brief  Init I2C + LSM303AGR + MAX30102
+  * @brief Initialize I2C + LSM303AGR + MAX30102
   */
 void SensorsInit(void);
 
 /**
-  * @brief  Lecture accéléromètre LSM303AGR
-  *         À appeler toutes les PN_ACC_READ_PERIOD_MS ms
+  * @brief Read LSM303AGR accelerometer data
+  *        Call every PN_ACC_READ_PERIOD_MS ms
   */
 void AccRead(void);
 
 /**
-  * @brief  Lecture FIFO MAX30102 + algo HR/SpO2
-  *         À appeler toutes les PN_HR_READ_PERIOD_MS ms
+  * @brief Read MAX30102 FIFO + HR/SpO2 algorithm
+  *        Call every PN_HR_READ_PERIOD_MS ms
   */
 void HrRead(void);
 
 /**
-  * @brief  Affichage série (identique ancien Semtech)
-  *         ACC X:xxxx.x Y:xxxx.x Z:xxxx.x mg | HR: N bpm | SpO2: N%
+  * @brief Serial output (same as legacy Semtech)
+  *        Format: ACC X:xxxx.x Y:xxxx.x Z:xxxx.x mg | HR: N bpm | SpO2: N%
   */
 void DisplaySensorData(void);
 

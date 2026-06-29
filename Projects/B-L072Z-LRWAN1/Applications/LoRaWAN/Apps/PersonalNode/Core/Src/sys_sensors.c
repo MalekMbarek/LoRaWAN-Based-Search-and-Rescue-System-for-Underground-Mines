@@ -2,27 +2,11 @@
 /**
   ******************************************************************************
   * @file    sys_sensors.c — PersonalNode
-  * @brief   LSM303AGR (ACC/chute) + MAX30102 (HR+SpO2)
+  * @brief   LSM303AGR (accelerometer/fall detection) + MAX30102 (HR + SpO2)
   *
-  * ── ARCHITECTURE I2C ─────────────────────────────────────────────────────────
-  *
-  * Ce fichier N'UTILISE PAS BSP_I2C1_xxx.
-  * Il initialise son propre handle HAL I2C (hpn_i2c) sur PB8/PB9,
-  * exactement comme la version Semtech (main.c) qui fonctionnait.
-  *
-  * Pourquoi bypasser la BSP ?
-  *   - BSP_I2C1 peut pointer vers un bus interne différent
-  *   - hbus_i2c1 est static dans b_l072z_lrwan1_bus.c → inaccessible
-  *   - Gpio_PreInit() met PB8/PB9 en analogique avant BSP_I2C1_Init()
-  *     → le bus reste bloqué si un esclave maintenait SDA bas
-  *
-  * Séquence d'init dans SensorsInit() :
-  *   1. I2C_BusRecovery()  — 9 CLK bit-bang pour libérer bus bloqué
-  *   2. PN_I2C_Init()      — init PB8/PB9 en AF + HAL_I2C_Init
-  *   3. I2C_Scan()         — diagnostic toutes adresses (5ms/addr)
-  *   4. ACC_Init_Local()   — WHO_AM_I + config LSM303AGR
-  *   5. MAX30102_Init_Local() — PART_ID + config MAX30102
-  *
+  * @note    Uses custom I2C handle on PB8/PB9 instead of BSP_I2C1 to avoid
+  *          bus conflicts and ensure proper initialization order.
+  *          Includes bus recovery with 9 clock pulses before I2C init.
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -44,7 +28,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 
-/* Handle I2C dédié capteurs — indépendant de la BSP ST */
+/* Custom I2C handle for sensors — independent of ST BSP */
 static I2C_HandleTypeDef hpn_i2c;
 
 AccData_t accData;
@@ -52,7 +36,7 @@ HrData_t  hrData;
 uint8_t   acc_present = 0;
 uint8_t   hr_present  = 0;
 
-/* Buffers HR/SpO2 */
+/* HR/SpO2 buffers */
 static float    redBuffer[PN_MAX_SAMPLES];
 static float    irBuffer [PN_MAX_SAMPLES];
 static uint16_t sampleIndex  = 0;
@@ -90,45 +74,43 @@ int32_t EnvSensors_Read(sensor_t *s)
 
 /* USER CODE BEGIN PrFD */
 
-/* ════════════════════════════════════════════════════════════════════════════
- * I2C_BusRecovery
- * Envoie 9 impulsions CLK en bit-bang sur PB8 pour libérer un esclave
- * qui maintiendrait SDA bas (suite à un reset pendant un transfert).
- * Doit être appelé AVANT PN_I2C_Init().
- * ════════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief I2C bus recovery by sending 9 clock pulses
+  * @note  Called before PN_I2C_Init() to release a slave holding SDA low
+  */
 static void I2C_BusRecovery(void)
 {
   GPIO_InitTypeDef g = {0};
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /* SCL = PB8 en sortie push-pull */
+  /* SCL = PB8 as push-pull output */
   g.Pin   = PN_I2C_SCL_PIN;
   g.Mode  = GPIO_MODE_OUTPUT_PP;
   g.Pull  = GPIO_NOPULL;
   g.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(PN_I2C_SCL_PORT, &g);
 
-  /* SDA = PB9 en entrée pull-up pour surveiller */
+  /* SDA = PB9 as input with pull-up */
   g.Pin  = PN_I2C_SDA_PIN;
   g.Mode = GPIO_MODE_INPUT;
   g.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(PN_I2C_SDA_PORT, &g);
 
-  /* 9 impulsions CLK */
+  /* Generate 9 clock pulses */
   for (int i = 0; i < 9; i++) {
     HAL_GPIO_WritePin(PN_I2C_SCL_PORT, PN_I2C_SCL_PIN, GPIO_PIN_SET);
     HAL_Delay(1);
     HAL_GPIO_WritePin(PN_I2C_SCL_PORT, PN_I2C_SCL_PIN, GPIO_PIN_RESET);
     HAL_Delay(1);
-    /* Arrêter dès que SDA est libéré */
+    /* Stop if SDA is released */
     if (HAL_GPIO_ReadPin(PN_I2C_SDA_PORT, PN_I2C_SDA_PIN) == GPIO_PIN_SET)
       break;
   }
-  /* STOP : SCL haut puis SDA haut */
+  /* STOP condition: SCL high then SDA high */
   HAL_GPIO_WritePin(PN_I2C_SCL_PORT, PN_I2C_SCL_PIN, GPIO_PIN_SET);
   HAL_Delay(1);
 
-  /* Remettre en analogique — PN_I2C_Init() reconfigurera en AF */
+  /* Reset to analog mode — PN_I2C_Init() will reconfigure as AF */
   g.Pin  = PN_I2C_SCL_PIN | PN_I2C_SDA_PIN;
   g.Mode = GPIO_MODE_ANALOG;
   g.Pull = GPIO_NOPULL;
@@ -137,18 +119,17 @@ static void I2C_BusRecovery(void)
   APP_LOG(TS_OFF, VLEVEL_M, "I2C bus recovery done\r\n");
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
- * PN_I2C_Init
- * Initialise I2C1 sur PB8/PB9 — identique à I2C_Init() de la version Semtech.
- * Indépendant de la BSP ST.
- * ════════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief Initialize custom I2C1 on PB8/PB9
+  * @note  Independent of ST BSP. Same configuration as the legacy Semtech version.
+  */
 static void PN_I2C_Init(void)
 {
-  /* Horloges */
+  /* Enable clocks */
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_I2C1_CLK_ENABLE();
 
-  /* PB8 = SCL, PB9 = SDA — open-drain + pull-up interne */
+  /* PB8 = SCL, PB9 = SDA — open-drain with internal pull-up */
   GPIO_InitTypeDef g = {0};
   g.Pin       = PN_I2C_SCL_PIN | PN_I2C_SDA_PIN;
   g.Mode      = GPIO_MODE_AF_OD;
@@ -157,12 +138,12 @@ static void PN_I2C_Init(void)
   g.Alternate = PN_I2C_AF;
   HAL_GPIO_Init(PN_I2C_SCL_PORT, &g);
 
-  /* Reset périphérique I2C avant init (nettoie état résiduel) */
+  /* Reset I2C peripheral before init */
   __HAL_RCC_I2C1_FORCE_RESET();
   HAL_Delay(5);
   __HAL_RCC_I2C1_RELEASE_RESET();
 
-  /* Config HAL */
+  /* HAL configuration */
   hpn_i2c.Instance             = PN_I2C_INSTANCE;
   hpn_i2c.Init.Timing          = PN_I2C_TIMING;
   hpn_i2c.Init.OwnAddress1     = 0;
@@ -176,16 +157,15 @@ static void PN_I2C_Init(void)
           ret == HAL_OK ? "OK" : "FAIL");
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
- * I2C_Scan — diagnostic
- * HAL_I2C_IsDeviceReady avec timeout 5ms → total ~640ms max, pas de reboot WDG.
- * ════════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief Scan I2C bus for devices
+  * @note  5ms timeout per address, total ~640ms max
+  */
 static void I2C_Scan(void)
 {
   APP_LOG(TS_OFF, VLEVEL_M, "I2C scan (7-bit addr, 5ms timeout):\r\n");
   uint8_t n = 0;
   for (uint8_t addr7 = 1; addr7 < 128; addr7++) {
-    /* HAL attend l'adresse 8 bits = addr7 << 1 */
     if (HAL_I2C_IsDeviceReady(&hpn_i2c,
                                (uint16_t)(addr7 << 1),
                                1, 5) == HAL_OK) {
@@ -197,19 +177,12 @@ static void I2C_Scan(void)
   }
   if (n == 0)
     APP_LOG(TS_OFF, VLEVEL_M,
-            "  [WARN] Aucun device -- bus mort ou mauvais pins\r\n");
-  APP_LOG(TS_OFF, VLEVEL_M, "Scan terminé : %d device(s)\r\n", (int)n);
+            "  [WARN] No devices found -- bus dead or wrong pins\r\n");
+  APP_LOG(TS_OFF, VLEVEL_M, "Scan complete: %d device(s)\r\n", (int)n);
 }
 
-/* ── Helpers I2C ─────────────────────────────────────────────────────────── */
+/* I2C Helpers */
 
-/*
- * IMPORTANT : HAL_I2C_Master_Transmit / Receive attendent une adresse
- * 8 bits (bit0 = R/W géré en interne par HAL).
- * devAddr = adresse WRITE 8 bits (ex: 0x32 pour LSM303AGR)
- * Pour la lecture, HAL utilise devAddr | 0x01 automatiquement quand
- * on appelle HAL_I2C_Master_Receive avec devAddr+1.
- */
 static void I2C_WriteReg(uint8_t devAddr, uint8_t reg, uint8_t val)
 {
   uint8_t buf[2] = { reg, val };
@@ -236,19 +209,20 @@ static void I2C_ReadRegs(uint8_t devAddr, uint8_t reg,
                            PN_I2C_TIMEOUT_MS);
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
- * LSM303AGR
- * ════════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief Initialize LSM303AGR accelerometer
+  * @return 1 if successful, 0 if not found
+  */
 static uint8_t ACC_Init_Local(void)
 {
-  /* Test adresse primaire 0x32 (SDO=GND) */
+  /* Test primary address 0x32 (SDO=GND) */
   uint8_t who = I2C_ReadReg(ACC_ADDR_WRITE, ACC_REG_WHO_AM_I);
   APP_LOG(TS_OFF, VLEVEL_M,
           "LSM303AGR WHO_AM_I @0x%02X = 0x%02X (expect 0x33)\r\n",
           (unsigned)ACC_ADDR_WRITE, (unsigned)who);
 
   if (who != 0x33) {
-    /* Essai adresse alternative 0x3A (SDO=VDD : addr7=0x1D → 8bit=0x3A) */
+    /* Try alternative address 0x3A (SDO=VDD) */
     who = I2C_ReadReg(0x3AU, ACC_REG_WHO_AM_I);
     APP_LOG(TS_OFF, VLEVEL_M,
             "LSM303AGR WHO_AM_I @0x3A = 0x%02X (expect 0x33)\r\n",
@@ -266,12 +240,16 @@ static uint8_t ACC_Init_Local(void)
   return 0;
 }
 
+/**
+  * @brief Read LSM303AGR accelerometer data
+  * @note  Call every PN_ACC_READ_PERIOD_MS ms
+  */
 void AccRead(void)
 {
   if (!acc_present) return;
 
   uint8_t status = I2C_ReadReg(ACC_ADDR_WRITE, ACC_STATUS_REG);
-  if (!(status & 0x08U)) return;   /* ZYXDA pas prêt */
+  if (!(status & 0x08U)) return;   /* ZYXDA not ready */
 
   uint8_t raw[6] = {0};
   I2C_ReadRegs(ACC_ADDR_WRITE, ACC_OUT_X_L, raw, 6);
@@ -301,9 +279,9 @@ void AccRead(void)
                               accData.angle_y * accData.angle_y);
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
- * MAX30102
- * ════════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief Read both RED and IR channels from MAX30102 FIFO
+  */
 static void MAX30102_ReadBoth(uint32_t *red, uint32_t *ir)
 {
   uint8_t raw[6] = {0};
@@ -314,9 +292,13 @@ static void MAX30102_ReadBoth(uint32_t *red, uint32_t *ir)
          ((uint32_t)raw[4] << 8) | (uint32_t)raw[5];
 }
 
+/**
+  * @brief Initialize MAX30102 sensor
+  * @return 1 if successful, 0 if not found
+  */
 static uint8_t MAX30102_Init_Local(void)
 {
-  /* Reset software */
+  /* Software reset */
   I2C_WriteReg(MAX30102_ADDR_WRITE, MAX30102_REG_MODE_CONFIG, 0x40U);
   HAL_Delay(100);
 
@@ -343,6 +325,10 @@ static uint8_t MAX30102_Init_Local(void)
   return 0;
 }
 
+/**
+  * @brief Read MAX30102 FIFO and process HR/SpO2 algorithm
+  * @note  Call every PN_HR_READ_PERIOD_MS ms
+  */
 void HrRead(void)
 {
   if (!hr_present) return;
@@ -357,6 +343,7 @@ void HrRead(void)
     float fRed = (float)red;
     float fIr  = (float)ir;
 
+    /* No finger detected */
     if (fIr < 50000.0f) {
       sampleCount = 0;
       hrData.bpm_valid = 0; hrData.spo2_valid = 0;
@@ -367,6 +354,7 @@ void HrRead(void)
     }
     hrData.finger_present = 1;
 
+    /* DC removal */
     if (sampleCount == 0) { irDc = fIr; redDc = fRed; }
     else {
       irDc  = irDc  * (1.0f - PN_DC_FILTER_ALPHA) + fIr  * PN_DC_FILTER_ALPHA;
@@ -380,6 +368,7 @@ void HrRead(void)
     sampleIndex = (sampleIndex + 1U) % PN_MAX_SAMPLES;
     if (sampleCount < PN_MAX_SAMPLES) sampleCount++;
 
+    /* Peak detection for BPM */
     if (sampleCount > 10U) {
       if (irAc > maxVal) maxVal = irAc;
       if (irAc < minVal) minVal = irAc;
@@ -406,10 +395,12 @@ void HrRead(void)
       } else if (beatDetected && irAc < -thr) {
         beatDetected = 0;
       }
+      /* Reset peak tracking every 5 seconds */
       if ((HAL_GetTick() % 5000U) < 10U) { maxVal = 0.0f; minVal = 0.0f; }
     }
   }
 
+  /* SpO2 calculation */
   if (sampleCount >= (uint16_t)PN_SPO2_MIN_SAMPLES && hrData.bpm_valid) {
     uint16_t start = (sampleIndex + PN_MAX_SAMPLES - PN_SPO2_MIN_SAMPLES)
                      % PN_MAX_SAMPLES;
@@ -429,23 +420,24 @@ void HrRead(void)
   }
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
- * SensorsInit
- * ════════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief Initialize all sensors
+  * @note  Order: bus recovery → I2C init → scan → ACC init → HR init
+  */
 void SensorsInit(void)
 {
   APP_LOG(TS_OFF, VLEVEL_M, "\r\n-- SensorsInit --\r\n");
 
-  /* 1. Libérer le bus si bloqué (9 CLK bit-bang) */
+  /* 1. Release bus if locked */
   I2C_BusRecovery();
 
-  /* 2. Init I2C1 sur PB8/PB9 (indépendant BSP) */
+  /* 2. Initialize custom I2C1 on PB8/PB9 */
   PN_I2C_Init();
 
-  /* 3. Scan diagnostic */
+  /* 3. Diagnostic scan */
   I2C_Scan();
 
-  /* 4. Init capteurs */
+  /* 4. Initialize sensors */
   acc_present = ACC_Init_Local();
   hr_present  = MAX30102_Init_Local();
 
@@ -457,9 +449,10 @@ void SensorsInit(void)
           (int)acc_present, (int)hr_present);
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
- * DisplaySensorData
- * ════════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief Display sensor data on serial output
+  * @note  Format: ACC X:xxxx.x Y:xxxx.x Z:xxxx.x mg | HR: N bpm | SpO2: N%
+  */
 void DisplaySensorData(void)
 {
   char line[160];

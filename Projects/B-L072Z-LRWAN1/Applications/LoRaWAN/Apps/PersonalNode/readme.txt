@@ -1,154 +1,147 @@
 /**
-  @page LoRaWAN_End_Node Readme file
+  @page PersonalNode Readme file
 
   @verbatim
-  ******************** (C) COPYRIGHT 2020 STMicroelectronics *******************
-  * @file    Applications/LoRaWAN/LoRaWAN_End_Node/readme.txt
-  * @author  MCD Application Team
-  * @brief   This application is a simple demo application software of a LoRa
-  *          modem connecting to Network server. Data sent can be checked on
-  *          Network server for eg Loriot. Traces are displayed over UART
+  ******************** (C) COPYRIGHT 2023 PersonalNode Project *******************
+  * @file    Applications/LoRaWAN/PersonalNode/readme.txt
+  * @author  Your Name
+  * @brief   Personal safety wearable with fall detection, SOS, HR monitoring
+  *          and raw LoRa transmission to ScannerNode
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2023 Your Name.
   * All rights reserved.</center></h2>
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This project is part of the PFE2 - Mine Safety System.
   *
   ******************************************************************************
   @endverbatim
 
 @par Description
 
-This directory contains a set of source files that implements a simple demo of an end
-device also known as a LoRa Object connecting to a Lora Network. The LoRa Object can be
-   - either a NUCLEO-LXxxxx board and LoRa Radio expansion board, optionnally a sensor board.
-   - or a B-L072Z-LRWAN1 board
-By setting the LoRa Ids in se-identity.h file according to the LoRa Network requirements,
-the end device will send periodically the sensor data to the LoRa network.
-  ******************************************************************************
+This directory contains the implementation of PersonalNode, a wearable personal 
+safety device designed for mine workers. The device monitors vital signs and 
+movement, detects falls and emergencies, and transmits data via raw LoRa to a 
+central scanner node.
+
+The PersonalNode features:
+  - **Fall Detection**: LSM303AGR accelerometer with free-fall + impact algorithm
+  - **Emergency SOS**: Physical button trigger for immediate alert
+  - **Vital Signs Monitoring**: MAX30102 sensor for heart rate (BPM) and SpO2
+  - **Real-time Transmission**: Raw LoRa transmission every 10 seconds
+  - **Low Power Operation**: Optimized for battery-powered wearable use
+  - **Visual Indicators**: SOS LED and Heartbeat LED for status feedback
+
+The device operates as follows:
+  1. Continuously reads accelerometer data at 100Hz
+  2. Reads HR/SpO2 data from MAX30102 at 10ms intervals
+  3. Processes fall detection algorithm (free-fall + impact)
+  4. Monitors SOS button state via external interrupt
+  5. Transmits packet via raw LoRa every 10 seconds
+  6. LED indicators show device status
 
 @par Keywords
 
-Applications, SubGHz_Phy, LoRaWAN, End_Node
+Applications, PersonalNode, LoRa, Raw LoRa, Fall Detection, SOS, Heart Rate, SpO2, MAX30102, LSM303AGR, B-L072Z-LRWAN1
 
 @par Directory contents
 
+### Core/Inc (Header Files)
+  - **app_config.h** - Central configuration (thresholds, pins, intervals)
+  - **main.h** - Header for main.c file
+  - **platform.h** - General HW instances configuration
+  - **sys_app.h** - Function prototypes for sys_app.c
+  - **sys_conf.h** - Applicative configuration (debug, trace, low power)
+  - **sys_debug.h** - Configuration of the debug.c instances
+  - **sys_sensors.h** - Header for sensor application
+  - **stm32l0xx_hal_conf.h** - HAL configuration file
+  - **stm32l0xx_it.h** - Interrupt handlers headers
+  - **stm32_lpm_if.h** - Header for Low Power Manager interface
+  - **utilities_def.h** - Definitions for modules requiring utilities
 
-  - LoRaWAN_End_Node/Core/Inc/adc.h                                             This file contains all the function prototypes for
-                                                                                the adc.c file
-  - LoRaWAN_End_Node/Core/Inc/adc_if.h                                          Header for ADC interface configuration
-  - LoRaWAN_End_Node/Core/Inc/dma.h                                             This file contains all the function prototypes for
-                                                                                the dma.c file
-  - LoRaWAN_End_Node/Core/Inc/main.h                                            Header for main.c file.
-                                                                                This file contains the common defines of the application.
-  - LoRaWAN_End_Node/Core/Inc/platform.h                                        Header for General HW instances configuration
-  - LoRaWAN_End_Node/Core/Inc/rtc.h                                             This file contains all the function prototypes for
-                                                                                the rtc.c file
-  - LoRaWAN_End_Node/Core/Inc/rtc_if.h                                          configuration of the rtc_if.c instances
-  - LoRaWAN_End_Node/Core/Inc/stm32l0xx_hal_conf.h                              HAL configuration file.
-  - LoRaWAN_End_Node/Core/Inc/stm32l0xx_it.h                                    This file contains the headers of the interrupt handlers.
-  - LoRaWAN_End_Node/Core/Inc/stm32_lpm_if.h                                    Header for Low Power Manager interface configuration
-  - LoRaWAN_End_Node/Core/Inc/sys_app.h                                         Function prototypes for sys_app.c file
-  - LoRaWAN_End_Node/Core/Inc/sys_conf.h                                        Applicative configuration, e.g. : debug, trace, low power, sensors
-  - LoRaWAN_End_Node/Core/Inc/sys_debug.h                                       Configuration of the debug.c instances
-  - LoRaWAN_End_Node/Core/Inc/sys_sensors.h                                     Header for sensors application
-  - LoRaWAN_End_Node/Core/Inc/usart.h                                           This file contains all the function prototypes for
-                                                                                the usart.c file
-  - LoRaWAN_End_Node/Core/Inc/usart_if.h                                        Header for USART interface configuration
-  - LoRaWAN_End_Node/Core/Inc/utilities_conf.h                                  Header for configuration file to utilities
-  - LoRaWAN_End_Node/Core/Inc/utilities_def.h                                   Definitions for modules requiring utilities
-  - LoRaWAN_End_Node/LoRaWAN/App/app_lorawan.h                                  Header of application of the LRWAN Middleware
-  - LoRaWAN_End_Node/LoRaWAN/App/CayenneLpp.h                                   Implements the Cayenne Low Power Protocol
-  - LoRaWAN_End_Node/LoRaWAN/App/Commissioning.h                                End-device commissioning parameters
-  - LoRaWAN_End_Node/LoRaWAN/App/lora_app.h                                     Header of application of the LRWAN Middleware
-  - LoRaWAN_End_Node/LoRaWAN/App/lora_app_version.h                             Definition the version of the application
-  - LoRaWAN_End_Node/LoRaWAN/App/lora_info.h                                    To give info to the application about LoRaWAN configuration
-  - LoRaWAN_End_Node/LoRaWAN/App/se-identity.h                                  Secure Element identity and keys
-  - LoRaWAN_End_Node/LoRaWAN/Target/b_l072z_lrwan1_bus.h                        header file for the BSP BUS IO driver
-  - LoRaWAN_End_Node/LoRaWAN/Target/b_l072z_lrwan1_errno.h                      Error Code
-  - LoRaWAN_End_Node/LoRaWAN/Target/cmwx1zzabz_0xx_conf.h                       This file provides code for the configuration
-                                                                                of the shield instances (pin mapping).
-  - LoRaWAN_End_Node/LoRaWAN/Target/iks01a2_conf.h                              This file contains definitions for the MEMS components bus interfaces
-  - LoRaWAN_End_Node/LoRaWAN/Target/iks01a3_conf.h                              This file contains definitions for the MEMS components bus interfaces
-  - LoRaWAN_End_Node/LoRaWAN/Target/lorawan_conf.h                              Header for LoRaWAN middleware instances
-  - LoRaWAN_End_Node/LoRaWAN/Target/mw_log_conf.h                               Configure (enable/disable) traces
-  - LoRaWAN_End_Node/LoRaWAN/Target/radio_board_if.h                            Header for Radio interface configuration
-  - LoRaWAN_End_Node/LoRaWAN/Target/radio_conf.h                                Header of Radio configuration
-  - LoRaWAN_End_Node/LoRaWAN/Target/stm32l0xx_nucleo_conf.h                     Configuration file
-  - LoRaWAN_End_Node/LoRaWAN/Target/systime.h                                   Map middleware systime
-  - LoRaWAN_End_Node/LoRaWAN/Target/timer.h                                     Wrapper to timer server
+### Core/Src (Source Files)
+  - **main.c** - Main application entry point
+  - **sys_app.c** - System initialization (GPIO, LPM, timers, RTC)
+  - **sys_sensors.c** - Sensor drivers (LSM303AGR, MAX30102 with HR/SpO2)
+  - **sys_debug.c** - Debug pins for RealTime debugging
+  - **stm32l0xx_it.c** - Interrupt Service Routines
+  - **stm32_lpm_if.c** - Low power mode functions
+  - **stm32l0xx_hal_msp.c** - MSP Initialization and de-Initialization
+  - **system_stm32l0xx.c** - CMSIS Cortex-M0+ System Source File
 
-  - LoRaWAN_End_Node/Core/Src/adc.c                                             This file provides code for the configuration
-                                                                                of the ADC instances.
-  - LoRaWAN_End_Node/Core/Src/adc_if.c                                          Read status related to the chip (battery level, VREF, chip temperature)
-  - LoRaWAN_End_Node/Core/Src/dma.c                                             This file provides code for the configuration
-                                                                                of all the requested memory to memory DMA transfers.
-  - LoRaWAN_End_Node/Core/Src/main.c                                            Main program body
-  - LoRaWAN_End_Node/Core/Src/rtc.c                                             This file provides code for the configuration
-                                                                                of the RTC instances.
-  - LoRaWAN_End_Node/Core/Src/rtc_if.c                                          Configure RTC Alarm, Tick and Calendar manager
-  - LoRaWAN_End_Node/Core/Src/stm32l0xx_hal_msp.c                               This file provides code for the MSP Initialization
-                                                                                and de-Initialization codes.
-  - LoRaWAN_End_Node/Core/Src/stm32l0xx_it.c                                    Interrupt Service Routines.
-  - LoRaWAN_End_Node/Core/Src/stm32_lpm_if.c                                    Low layer function to enter/exit low power modes (stop, sleep)
-  - LoRaWAN_End_Node/Core/Src/system_stm32l0xx.c                                CMSIS Cortex-M0+ Device Peripheral Access Layer System Source File.
-  - LoRaWAN_End_Node/Core/Src/sys_app.c                                         Initializes HW and SW system entities (not related to the radio)
-  - LoRaWAN_End_Node/Core/Src/sys_debug.c                                       Enables 4 debug pins for internal signals RealTime debugging
-  - LoRaWAN_End_Node/Core/Src/sys_sensors.c                                     Manages the sensors on the application
-  - LoRaWAN_End_Node/Core/Src/usart.c                                           This file provides code for the configuration
-                                                                                of the USART instances.
-  - LoRaWAN_End_Node/Core/Src/usart_if.c                                        Configuration of UART MX driver interface for hyperterminal communication
-  - LoRaWAN_End_Node/LoRaWAN/App/app_lorawan.c                                  Application of the LRWAN Middleware
-  - LoRaWAN_End_Node/LoRaWAN/App/CayenneLpp.c                                   Implements the Cayenne Low Power Protocol
-  - LoRaWAN_End_Node/LoRaWAN/App/lora_app.c                                     Application of the LRWAN Middleware
-  - LoRaWAN_End_Node/LoRaWAN/App/lora_info.c                                    To give info to the application about LoRaWAN configuration
-  - LoRaWAN_End_Node/LoRaWAN/Target/b_l072z_lrwan1_bus.c                        source file for the BSP BUS IO driver
+### LoRaWAN/App (Application Files)
+  - **app_lorawan.c** - LoRaWAN application wrapper
+  - **app_lorawan.h** - Header for app_lorawan.c
+  - **lora_app.c** - Main application logic (timers, tasks, SOS, fall detection)
+  - **lora_app.h** - Application configuration (LoRa parameters, ports)
+  - **CayenneLpp.c** - Cayenne LPP protocol implementation
+  - **CayenneLpp.h** - Header for CayenneLpp.c
 
-@par Hardware and Software environment
+### LoRaWAN/Target (BSP and Radio Drivers)
+  - **b_l072z_lrwan1_bus.c** - BSP BUS IO driver
+  - **b_l072z_lrwan1_bus.h** - Header for BSP BUS IO driver
+  - **radio_board_if.h** - Radio interface configuration
+  - **radio_conf.h** - Radio configuration
+  - **cmwx1zzabz_0xx_conf.h** - Shield configuration (pin mapping)
 
+### STM32CubeIDE
+  - **startup_stm32l072xx.s** - Startup assembly file
+  - **syscalls.c** - System call implementations
 
-  - This example runs on STM32L053R8, STM32L073RZ, STM32L152RE and STM32L476RG devices.
+@par Hardware and Software Environment
 
-  - This application has been tested with STMicroelectronics:
-    NUCLEO-L053R8 RevC
-    NUCLEO-L073RZ RevC
-    NUCLEO-L152RE RevC
-    NUCLEO-L476RG RevC
-    B-L072Z-LRWAN1 RevC
-    boards and can be easily tailored to any other supported device
-    and development board.
+### Hardware Requirements
+  - **MCU**: STM32L072CZ (Cortex-M0+)
+  - **Board**: B-L072Z-LRWAN1 RevC
+  - **Accelerometer**: LSM303AGR (I2C address 0x32)
+  - **Heart Rate/SpO2**: MAX30102 (I2C address 0x57)
+  - **Radio**: SX1276 LoRa module
+  - **SOS Button**: PA0 (external interrupt, falling edge)
+  - **LEDs**: PA5 (SOS LED), PB13 (Heartbeat LED)
 
-  - STM32LXxx-Nucleo Set-up
-    - Connect the Nucleo board to your PC with a USB cable type A to mini-B
-      to ST-LINK connector (CN1 / CN7 on B-L072Z-LRWAN1).
-    - Please ensure that the ST-LINK connector CN2 (CN8 on B-L072Z-LRWAN1) jumpers are fitted.
+### Pin Mapping
+  | Pin | Function | Description |
+  |-----|----------|-------------|
+  | PA0 | SOS_BUTTON | External interrupt (falling edge) with pull-up |
+  | PA5 | LED_SOS | SOS alert indicator |
+  | PB13 | LED_HEARTBEAT | Heartbeat indicator |
+  | PB8 | I2C1_SCL | I2C clock for sensors |
+  | PB9 | I2C1_SDA | I2C data for sensors |
 
-  - Configure the software via the configuration files:
-    - sys_conf.h, radio_conf.h, lorawan_conf.h, lora_app.h, se-identity.h, mw_log_conf.h, radio_board_if.h, main.h, etc
-    - Careful:
-        - the region and class chosen on LoRaWAN/App/lora_app.h shall be compatible with LoRaWAN/Target/lorawan_conf.h list
+### Software Requirements
+  - ARM GCC Toolchain (arm-none-eabi)
+  - CMake 3.20+ with Ninja build system
+  - STM32CubeMX 6.0+ (for configuration)
 
-  -Set Up:
+### Setup Instructions
+  1. Connect the B-L072Z-LRWAN1 board to your PC via USB
+  2. Ensure ST-LINK jumpers (CN8) are fitted
+  3. Connect MAX30102 module to I2C bus (PB8/PB9)
+  4. Connect LSM303AGR module to I2C bus (PB8/PB9)
+  5. Verify SOS button connection to PA0
+  6. Open terminal (115200 baud, 8N1)
 
-             --------------------------  V    V  --------------------------
-             |      LoRa Object       |  |    |  |      LoRa Network      |
-             |                        |  |    |  |                        |
-   ComPort<--|                        |--|    |--|                        |-->Web Server
-             |                        |          |                        |
-             --------------------------          --------------------------
+@par Configuration Files
 
-@par How to use it ?
-In order to make the program work, you must do the following :
-  - Open your preferred toolchain
-  - Rebuild all files and load your image into target memory
-  - Run the example
-  - Open a Terminal, connected the LoRa Object
-  - UART Config = 115200, 8b, 1 stopbit, no parity, no flow control
+### app_config.h - Key Parameters
+  ```c
+  // Accelerometer
+  #define ACC_SENSITIVITY_MG          0.98f     // mg/LSB @ ±8g
+  #define ACC_CTRL1_VAL               0x57U     // ODR=100Hz, XYZ enabled
+  #define ACC_CTRL4_VAL               0x88U     // BDU=1, FS=±8g, HR=1
 
-  * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
-  */
+  // Fall Detection
+  #define PN_FREE_FALL_THRESHOLD_MG   500.0f    // Free-fall threshold
+  #define PN_IMPACT_THRESHOLD_MG      2500.0f   // Impact threshold
+  #define PN_FALL_WINDOW_MS           500U      // Detection window (ms)
+
+  // HR/SpO2
+  #define PN_MAX_SAMPLES              100       // Sample buffer size
+  #define PN_BPM_BUFFER_SIZE          5         // BPM averaging window
+  #define PN_SPO2_MIN_SAMPLES         30        // Minimum samples for SpO2
+
+  // LoRa
+  #define PN_RF_FREQUENCY             868000000 // EU868 band (Hz)
+  #define PN_SPREADING_FACTOR         7         // SF7 for fast transmission
+  #define PN_TX_PERIOD_MS             10000     // Transmit interval (10s)

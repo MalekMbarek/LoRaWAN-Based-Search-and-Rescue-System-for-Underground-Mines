@@ -1,11 +1,10 @@
 /*!
   * @file      CayenneLpp.c
+  * @brief     Implements the Cayenne Low Power Payload (LPP) protocol
   *
-  * @brief     Implements the Cayenne Low Power Protocol
+  * @copyright Revised BSD License, see section \ref LICENSE.
   *
-  * \copyright Revised BSD License, see section \ref LICENSE.
-  *
-  * \code
+  * @code
   *                ______                              _
   *               / _____)             _              | |
   *              ( (____  _____ ____ _| |_ _____  ____| |__
@@ -13,10 +12,9 @@
   *               _____) ) ____| | | || |_| ____( (___| | | |
   *              (______/|_____)_|_|_| \__)_____)\____)_| |_|
   *              (C)2013-2018 Semtech
+  * @endcode
   *
-  * \endcode
-  *
-  * \author    Miguel Luis ( Semtech )
+  * @author    Miguel Luis ( Semtech )
   */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32_mem.h"
@@ -81,12 +79,15 @@ static uint8_t CayenneLppCursor = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Exported functions --------------------------------------------------------*/
+
+/**
+  * @brief Initialize Cayenne LPP buffer
+  */
 void CayenneLppInit(void)
 {
   CayenneLppCursor = 0;
@@ -95,6 +96,9 @@ void CayenneLppInit(void)
   /* USER CODE END CayenneLppCursor */
 }
 
+/**
+  * @brief Reset Cayenne LPP buffer
+  */
 void CayenneLppReset(void)
 {
   CayenneLppCursor = 0;
@@ -103,6 +107,10 @@ void CayenneLppReset(void)
   /* USER CODE END CayenneLppReset */
 }
 
+/**
+  * @brief Get current buffer size
+  * @return Number of bytes in buffer
+  */
 uint8_t CayenneLppGetSize(void)
 {
   /* USER CODE BEGIN CayenneLppGetSize */
@@ -111,6 +119,10 @@ uint8_t CayenneLppGetSize(void)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Get pointer to buffer
+  * @return Pointer to internal buffer
+  */
 uint8_t *CayenneLppGetBuffer(void)
 {
   /* USER CODE BEGIN CayenneLppGetBuffer */
@@ -119,6 +131,11 @@ uint8_t *CayenneLppGetBuffer(void)
   return CayenneLppBuffer;
 }
 
+/**
+  * @brief Copy buffer contents to destination
+  * @param dst Destination buffer
+  * @return Number of bytes copied
+  */
 uint8_t CayenneLppCopy(uint8_t *dst)
 {
   /* USER CODE BEGIN CayenneLppCopy_1 */
@@ -131,6 +148,12 @@ uint8_t CayenneLppCopy(uint8_t *dst)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add digital input value to buffer
+  * @param channel Channel number
+  * @param value Digital input value
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddDigitalInput(uint8_t channel, uint8_t value)
 {
   /* USER CODE BEGIN CayenneLppAddDigitalInput_1 */
@@ -149,6 +172,12 @@ uint8_t CayenneLppAddDigitalInput(uint8_t channel, uint8_t value)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add digital output value to buffer
+  * @param channel Channel number
+  * @param value Digital output value
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddDigitalOutput(uint8_t channel, uint8_t value)
 {
   /* USER CODE BEGIN CayenneLppAddDigitalOutput_1 */
@@ -167,6 +196,12 @@ uint8_t CayenneLppAddDigitalOutput(uint8_t channel, uint8_t value)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add analog input value to buffer
+  * @param channel Channel number
+  * @param value Analog input value (scaled by 0.01)
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddAnalogInput(uint8_t channel, uint16_t value)
 {
   /* USER CODE BEGIN CayenneLppAddAnalogInput_1 */
@@ -188,6 +223,12 @@ uint8_t CayenneLppAddAnalogInput(uint8_t channel, uint16_t value)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add analog output value to buffer
+  * @param channel Channel number
+  * @param value Analog output value (scaled by 0.01)
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddAnalogOutput(uint8_t channel, uint16_t value)
 {
   /* USER CODE BEGIN CayenneLppAddAnalogOutput_1 */
@@ -208,6 +249,12 @@ uint8_t CayenneLppAddAnalogOutput(uint8_t channel, uint16_t value)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add luminosity value to buffer
+  * @param channel Channel number
+  * @param lux Luminosity in lux
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddLuminosity(uint8_t channel, uint16_t lux)
 {
   /* USER CODE BEGIN CayenneLppAddLuminosity_1 */
@@ -227,6 +274,12 @@ uint8_t CayenneLppAddLuminosity(uint8_t channel, uint16_t lux)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add presence detection value to buffer
+  * @param channel Channel number
+  * @param value Presence value (1 = present)
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddPresence(uint8_t channel, uint8_t value)
 {
   /* USER CODE BEGIN CayenneLppAddPresence_1 */
@@ -245,6 +298,12 @@ uint8_t CayenneLppAddPresence(uint8_t channel, uint8_t value)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add temperature value to buffer
+  * @param channel Channel number
+  * @param celsius Temperature in Celsius degrees (scaled by 0.1)
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddTemperature(uint8_t channel, int16_t celsius)
 {
   /* USER CODE BEGIN CayenneLppAddTemperature_1 */
@@ -265,6 +324,12 @@ uint8_t CayenneLppAddTemperature(uint8_t channel, int16_t celsius)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add relative humidity value to buffer
+  * @param channel Channel number
+  * @param rh Relative humidity in % (scaled by 0.5)
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddRelativeHumidity(uint8_t channel, uint16_t rh)
 {
   /* USER CODE BEGIN CayenneLppAddRelativeHumidity_1 */
@@ -283,6 +348,14 @@ uint8_t CayenneLppAddRelativeHumidity(uint8_t channel, uint16_t rh)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add accelerometer values to buffer
+  * @param channel Channel number
+  * @param x X-axis acceleration (scaled by 0.001G)
+  * @param y Y-axis acceleration (scaled by 0.001G)
+  * @param z Z-axis acceleration (scaled by 0.001G)
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddAccelerometer(uint8_t channel, int16_t x, int16_t y, int16_t z)
 {
   /* USER CODE BEGIN CayenneLppAddAccelerometer_1 */
@@ -310,6 +383,12 @@ uint8_t CayenneLppAddAccelerometer(uint8_t channel, int16_t x, int16_t y, int16_
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add barometric pressure value to buffer
+  * @param channel Channel number
+  * @param hpa Pressure in hPa (scaled by 0.1)
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddBarometricPressure(uint8_t channel, uint16_t hpa)
 {
   /* USER CODE BEGIN CayenneLppAddBarometricPressure_1 */
@@ -331,6 +410,14 @@ uint8_t CayenneLppAddBarometricPressure(uint8_t channel, uint16_t hpa)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add gyrometer values to buffer
+  * @param channel Channel number
+  * @param x X-axis angular rate (scaled by 0.01 degrees/s)
+  * @param y Y-axis angular rate (scaled by 0.01 degrees/s)
+  * @param z Z-axis angular rate (scaled by 0.01 degrees/s)
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddGyrometer(uint8_t channel, int16_t x, int16_t y, int16_t z)
 {
   /* USER CODE BEGIN CayenneLppAddGyrometer_1 */
@@ -358,6 +445,14 @@ uint8_t CayenneLppAddGyrometer(uint8_t channel, int16_t x, int16_t y, int16_t z)
   return CayenneLppCursor;
 }
 
+/**
+  * @brief Add GPS data to buffer
+  * @param channel Channel number
+  * @param latitude Latitude (scaled by 0.0001 degrees)
+  * @param longitude Longitude (scaled by 0.0001 degrees)
+  * @param meters Altitude in meters (scaled by 0.01m)
+  * @return Current buffer cursor position (0 if full)
+  */
 uint8_t CayenneLppAddGps(uint8_t channel, int32_t latitude, int32_t longitude, int32_t meters)
 {
   /* USER CODE BEGIN CayenneLppAddGps_1 */

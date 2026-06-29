@@ -1,56 +1,50 @@
 # ============================================================
 # CMakeLists.txt — PersonalNode
-# Architecture identique au nœud statique (doc 14)
-# LoRa raw TX : Fall detection + SOS + HR (MAX30102) + SpO2
+# Personal node with fall detection, SOS, HR (MAX30102) and SpO2
+# Transmits via Raw LoRa to ScannerNode
 # ============================================================
 cmake_minimum_required(VERSION 3.20)
 project(PersonalNode)
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-# PFE2_ROOT pointe vers la racine du dépôt PFEv3
-# (6 niveaux au-dessus de Apps/PersonalNode/ selon la structure du nœud statique)
 get_filename_component(PFE2_ROOT
-    ${CMAKE_CURRENT_LIST_DIR}/../../../../../../
+    ${CMAKE_CURRENT_LIST_DIR}/../../../../../..
     ABSOLUTE
 )
 
+set(DRIVERS       ${PFE2_ROOT}/Drivers)
+set(MIDDLEWARES   ${PFE2_ROOT}/Middlewares)
+set(UTILITIES     ${PFE2_ROOT}/Utilities)
 
-set(COMMON ${CMAKE_CURRENT_SOURCE_DIR}/../../common)
-
-set(DRIVERS     ${PFE2_ROOT}/Drivers)
-set(MIDDLEWARES ${PFE2_ROOT}/Middlewares)
-set(UTILITIES   ${PFE2_ROOT}/Utilities)
-
-
-# ── Tools ─────────────────────────────────────────────────────────────────────
-
-#balkis
-# set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10")
-# set(CMAKE_OBJCOPY "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-objcopy.exe")
-# set(CMAKE_SIZE    "${TOOLCHAIN_PREFIX}/bin/arm-none-eabi-size.exe")
-#malek
-set(TOOLCHAIN_PREFIX "C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi")
+# ── Toolchain ─────────────────────────────────────────────────────────────────
+# Toolchain prefix is passed via -DTOOLCHAIN_PREFIX or found in PATH
 find_program(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 find_program(CMAKE_SIZE    arm-none-eabi-size)
 
-# ── MCU flags ─────────────────────────────────────────────────────────────────
+# ── MCU Flags ─────────────────────────────────────────────────────────────────
 set(MCU_FLAGS -mcpu=cortex-m0plus -mthumb -mfloat-abi=soft)
-add_compile_options(${MCU_FLAGS} -Wall -fdata-sections -ffunction-sections -Os)
+add_compile_options(
+    ${MCU_FLAGS}
+    -Wall
+    -fdata-sections
+    -ffunction-sections
+    -Os
+)
 
-# ── Compiler definitions ──────────────────────────────────────────────────────
+# ── Compiler Definitions ──────────────────────────────────────────────────────
 add_compile_definitions(
     USE_HAL_DRIVER
     STM32L072xx
     USE_B_L072Z_LRWAN1
     CMWX1ZZABZ0XX
     LORAWAN_KMS=0
-    PERSONAL_NODE           # permet #ifdef PERSONAL_NODE si besoin
-    REGION_EU868            # EU868 uniquement pour le nœud personnel
+    PERSONAL_NODE           # Enables #ifdef PERSONAL_NODE sections
+    REGION_EU868            # EU868 region for personal node
 )
 
-# ── Include paths ─────────────────────────────────────────────────────────────
+# ── Include Paths ─────────────────────────────────────────────────────────────
 include_directories(
-    # App-specific
+    # Application-specific
     LoRaWAN/App
     LoRaWAN/Target
     Core/Inc
@@ -67,13 +61,13 @@ include_directories(
     ${DRIVERS}/BSP/B-L072Z-LRWAN1
     ${DRIVERS}/BSP/CMWX1ZZABZ_0xx
     ${DRIVERS}/BSP/Components/Common
-    ${DRIVERS}/BSP/Components/lsm303agr   # AccéléromètreLSM303AGR
+    ${DRIVERS}/BSP/Components/lsm303agr   # LSM303AGR accelerometer
 
-    # SubGHz Phy (SX1276 LoRa raw -- pas la stack LoRaWAN complète)
+    # SubGHz Phy (SX1276 LoRa raw - not the full LoRaWAN stack)
     ${MIDDLEWARES}/Third_Party/SubGHz_Phy
     ${MIDDLEWARES}/Third_Party/SubGHz_Phy/sx1276
 
-    # Utilities ST
+    # Utilities
     ${UTILITIES}/lpm/tiny_lpm
     ${UTILITIES}/sequencer
     ${UTILITIES}/timer
@@ -83,7 +77,7 @@ include_directories(
 
 # ── Sources ───────────────────────────────────────────────────────────────────
 file(GLOB_RECURSE SOURCES
-    # Application (nos fichiers)
+    # Application-specific
     "LoRaWAN/App/app_lorawan.c"
     "LoRaWAN/App/lora_app.c"
     "LoRaWAN/Target/*.c"
@@ -94,18 +88,18 @@ file(GLOB_RECURSE SOURCES
     # HAL
     "${DRIVERS}/STM32L0xx_HAL_Driver/Src/*.c"
 
-    # BSP board + radio module
+    # BSP Board + Radio Module
     "${DRIVERS}/BSP/B-L072Z-LRWAN1/*.c"
     "${DRIVERS}/BSP/CMWX1ZZABZ_0xx/*.c"
 
-    # BSP capteur ACC (pas hts221/lps22hb/mq2 -- nœud personnel)
+    # BSP Accelerometer (LSM303AGR)
     "${DRIVERS}/BSP/Components/lsm303agr/lsm303agr.c"
     "${DRIVERS}/BSP/Components/lsm303agr/lsm303agr_reg.c"
 
-    # SubGHz Phy (SX1276 driver LoRa raw)
+    # SubGHz Phy (SX1276 LoRa raw driver)
     "${MIDDLEWARES}/Third_Party/SubGHz_Phy/sx1276/*.c"
 
-    # Utilities ST
+    # Utilities
     "${UTILITIES}/lpm/tiny_lpm/*.c"
     "${UTILITIES}/sequencer/*.c"
     "${UTILITIES}/timer/*.c"
@@ -113,21 +107,23 @@ file(GLOB_RECURSE SOURCES
     "${UTILITIES}/trace/adv_trace/*.c"
 )
 
-# Exclure les fichiers template générés
+# Exclude template files
 list(FILTER SOURCES EXCLUDE REGEX ".*_template\\.c$")
 
-# ── Linker script ─────────────────────────────────────────────────────────────
-set(LINKER_SCRIPT
-    ${CMAKE_CURRENT_LIST_DIR}/STM32CubeIDE/cmwx1zzabz_0xx/STM32L072CZTx_FLASH.ld)
+# ── Linker Script ─────────────────────────────────────────────────────────────
+set(LINKER_SCRIPT 
+    ${CMAKE_CURRENT_LIST_DIR}/STM32CubeIDE/cmwx1zzabz_0xx/STM32L072CZTx_FLASH.ld
+)
 
-# ── ELF target ────────────────────────────────────────────────────────────────
+# ── ELF Target ────────────────────────────────────────────────────────────────
 add_executable(${PROJECT_NAME}.elf ${SOURCES})
 
 target_link_options(${PROJECT_NAME}.elf PRIVATE
     ${MCU_FLAGS}
     -T${LINKER_SCRIPT}
     -specs=nano.specs
-    -lc -lm
+    -lc
+    -lm
     -Wl,--gc-sections
     -Wl,-Map=${PROJECT_NAME}.map,--cref
 )
@@ -140,5 +136,13 @@ add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
             $<TARGET_FILE:${PROJECT_NAME}.elf>
             ${PROJECT_NAME}.bin
     COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${PROJECT_NAME}.elf>
-    COMMENT "Generating ${PROJECT_NAME}.bin and printing size"
+    COMMENT "Generating .bin and printing size"
 )
+
+# ── Print build info ──────────────────────────────────────────────────────────
+message(STATUS "PersonalNode Configuration:")
+message(STATUS "  PFE2 Root:    ${PFE2_ROOT}")
+message(STATUS "  Drivers:      ${DRIVERS}")
+message(STATUS "  Middlewares:  ${MIDDLEWARES}")
+message(STATUS "  Utilities:    ${UTILITIES}")
+message(STATUS "  Linker:       ${LINKER_SCRIPT}")

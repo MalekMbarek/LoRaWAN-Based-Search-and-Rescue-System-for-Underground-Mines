@@ -2,18 +2,11 @@
 /**
   ******************************************************************************
   * @file           : main.c — PersonalNode
+  * @brief          : Main application entry point
   *
-  * FIX affichage série :
-  *   La boucle while(1) contient HAL_GetTick() pour les timings.
-  *   Or MX_LoRaWAN_Process() → UTIL_SEQ_Run() → stop mode LPM
-  *   → HAL_GetTick() ne s'incrémente plus → conditions jamais vraies
-  *   → plus d'affichage, plus de lecture capteurs.
-  *
-  *   Solution : AccRead / HrRead / DisplaySensorData / Fall_Update
-  *   sont maintenant gérés par des UTIL_TIMER_PERIODIC dans lora_app.c.
-  *   main.c gère uniquement : SOS + chute + TX périodique.
-  *   Ces 3 actions sont aussi pilotées par timer dans lora_app.c.
-  *   La boucle while(1) est VIDE côté USER CODE.
+  * @note           : All sensor reading, display, and periodic tasks are handled
+  *                   by UTIL_TIMER_PERIODIC callbacks in lora_app.c.
+  *                   main.c only initializes the system and runs the sequencer.
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -70,10 +63,10 @@ int main(void)
   /* USER CODE END SysInit */
 
   /*
-   * MX_LoRaWAN_Init() :
-   *   → SystemApp_Init() (log UART, LPM, sequencer, RTC)
-   *   → GPIO_PersonalNode_Init() (PA0 SOS, PA5 LED, PB13 LED)
-   *   → LoRaWAN_Init() (Radio.Init, SensorsInit, PERIODIC timers)
+   * MX_LoRaWAN_Init() performs:
+   *   - SystemApp_Init() : UART logging, LPM, sequencer, RTC
+   *   - GPIO_PersonalNode_Init() : PA0 (SOS), PA5 & PB13 (LEDs)
+   *   - LoRaWAN_Init() : Radio init, SensorsInit, periodic timers
    */
   MX_LoRaWAN_Init();
 
@@ -86,14 +79,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /*
-     * MX_LoRaWAN_Process() → UTIL_SEQ_Run(~0U)
-     * Exécute les tâches enregistrées par les timers PERIODIC :
-     *   - AccTask     : AccRead + Fall_Update (50ms)
-     *   - HrTask      : HrRead (10ms)
-     *   - DisplayTask : DisplaySensorData (3s)
-     *   - TxTask      : LoRa_Send périodique (10s)
-     * Met le MCU en stop mode entre les tâches (LPM).
-     * Le RTC réveille le MCU à chaque expiration de timer.
+     * MX_LoRaWAN_Process() calls UTIL_SEQ_Run(~0U) which executes:
+     *   - AccTask     : AccRead + Fall_Update (every 50ms)
+     *   - HrTask      : HrRead (every 10ms)
+     *   - DisplayTask : DisplaySensorData (every 3s)
+     *   - TxTask      : Periodic LoRa transmission (every 10s)
+     *
+     * The MCU enters stop mode (LPM) between tasks.
+     * RTC wakes the MCU on each timer expiration.
      */
     MX_LoRaWAN_Process();
    
@@ -132,19 +125,18 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-
-/* Bouton SOS — EXTI callback */
-/*void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+/* SOS Button — EXTI callback (commented out, handled by timer tasks) */
+/*
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if (GPIO_Pin == SOS_BUTTON_PIN) {
-    /* Clignotement rapide de la LED SOS : preuve que l’interruption a eu lieu */
-    /*HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_SET);
-    for (volatile int i = 0; i < 200000; i++);  // petit délai non bloquant (~50 ms à 32 MHz)
+    HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_SET);
+    for (volatile int i = 0; i < 200000; i++);
     HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_RESET);
-    
     PN_SOS_Trigger();
   }
-}*/
+}
+*/
 
 /* USER CODE END 4 */
 

@@ -2,6 +2,8 @@
 /**
   ******************************************************************************
   * @file    lora_app.c — PersonalNode
+  * @brief   LoRaWAN application layer with sensor reading, SOS, fall detection,
+  *          and periodic transmission
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -58,11 +60,13 @@ static UTIL_TIMER_Object_t TxTimer;
 static uint8_t          inFreefall   = 0;
 static uint32_t         freefallTick = 0;
 static uint8_t          fallPending  = 0;
- volatile uint8_t sosPending   = 0;
-static uint8_t sosReady = 0;
-/* ════════════════════════════════════════════════════════════════════════════
- * LoRaWAN_Init
- * ════════════════════════════════════════════════════════════════════════════ */
+volatile uint8_t        sosPending   = 0;
+static uint8_t          sosReady     = 0;
+
+/**
+  * @brief Initialize LoRaWAN application
+  * @note  Configures radio, sensors, GPIO (SOS button), and periodic timers
+  */
 void LoRaWAN_Init(void)
 {
   /* USER CODE BEGIN LoRaWAN_Init_1 */
@@ -74,7 +78,7 @@ void LoRaWAN_Init(void)
           (unsigned int)(PN_RF_FREQUENCY / 1000000UL),
           (int)PN_SPREADING_FACTOR);
 
-  /* Radio */
+  /* Radio events */
   RadioEvents.TxDone    = OnTxDone;
   RadioEvents.TxTimeout = OnTxTimeout;
   RadioEvents.RxDone    = OnRxDone;
@@ -89,50 +93,39 @@ void LoRaWAN_Init(void)
                     PN_TX_TIMEOUT_MS);
   APP_LOG(TS_OFF, VLEVEL_M, "SX1276 ready\r\n");
 
-  /* Désactiver stop mode LPM pendant SensorsInit */
+  /* Disable stop mode during sensor initialization */
   UTIL_LPM_SetStopMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_DISABLE);
 
   SensorsInit();
 
-  /* Réactiver le stop mode après init complète */
-  //UTIL_LPM_SetStopMode((1 << CFG_LPM_APPLI_Id), UTIL_LPM_ENABLE);
+  /* SOS Button PB2 — configured after all other GPIO initializations */
+  {
+    GPIO_InitTypeDef g = {0};
+    __HAL_RCC_GPIOA_CLK_ENABLE();
 
-  /* ── Config bouton SOS PB2 — APRÈS tout le reste ─────────────────────
-   * Fait ici en dernier pour éviter que Gpio_PreInit / Sx_Board_IoInit
-   * n'écrasent la config EXTI.
-   * ──────────────────────────────────────────────────────────────────── */
-/* Config bouton SOS PB2 avec EXTI handle — comme BSP radio */
-/* Config bouton SOS PA0 */
-{
-  GPIO_InitTypeDef g = {0};
+    g.Pin  = SOS_BUTTON_PIN;
+    g.Mode = GPIO_MODE_IT_FALLING;
+    g.Pull = GPIO_PULLUP;
 
-  __HAL_RCC_GPIOA_CLK_ENABLE();
+    HAL_GPIO_Init(SOS_BUTTON_PORT, &g);
 
-  g.Pin  = SOS_BUTTON_PIN;
-  g.Mode = GPIO_MODE_IT_FALLING;
-  g.Pull = GPIO_PULLUP;
+    HAL_NVIC_DisableIRQ(SOS_BUTTON_IRQn);
+    __HAL_GPIO_EXTI_CLEAR_IT(SOS_BUTTON_PIN);
+    HAL_NVIC_SetPriority(SOS_BUTTON_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(SOS_BUTTON_IRQn);
+  }
 
-  HAL_GPIO_Init(SOS_BUTTON_PORT, &g);
-
-  HAL_NVIC_DisableIRQ(SOS_BUTTON_IRQn);
-
-__HAL_GPIO_EXTI_CLEAR_IT(SOS_BUTTON_PIN);
-
-HAL_NVIC_SetPriority(SOS_BUTTON_IRQn, 2, 0);
-HAL_NVIC_EnableIRQ(SOS_BUTTON_IRQn);
-}
-
-  /* Lecture + affichage immédiats */
+  /* Initial sensor reading and display */
   AccRead();
   HrRead();
   DisplaySensorData();
 
-  /* Tâches UTIL_SEQ */
+  /* Register sequencer tasks */
   UTIL_SEQ_RegTask(1 << CFG_SEQ_Task_SOS,  UTIL_SEQ_RFU, SosTask);
   UTIL_SEQ_RegTask(1 << CFG_SEQ_Task_FALL, UTIL_SEQ_RFU, FallTask);
   UTIL_SEQ_RegTask(1 << CFG_SEQ_Task_TX,   UTIL_SEQ_RFU, TxTask);
 
-  /* Timers PERIODIC */
+  /* Create periodic timers */
   UTIL_TIMER_Create(&AccTimer, 0xFFFFFFFFU, UTIL_TIMER_PERIODIC, OnAccTimer, NULL);
   UTIL_TIMER_SetPeriod(&AccTimer, PN_ACC_READ_PERIOD_MS);
   UTIL_TIMER_Start(&AccTimer);
@@ -154,15 +147,17 @@ HAL_NVIC_EnableIRQ(SOS_BUTTON_IRQn);
           (int)(PN_TX_PERIOD_MS / 1000),
           (int)(PN_PRINT_PERIOD_MS / 1000));
 
-  /* Premier TX immédiat */
+  /* First transmission immediately */
   UTIL_SEQ_SetTask(1 << CFG_SEQ_Task_TX, CFG_SEQ_Prio_0);
-HAL_Delay(1000);
-sosReady = 1;
+  HAL_Delay(1000);
+  sosReady = 1;
+
   /* USER CODE END LoRaWAN_Init_1 */
 }
 
 /* USER CODE BEGIN PrFD */
 
+/* Radio callbacks */
 static void OnTxDone(void)    { Radio.Sleep(); radioState = PN_RADIO_TX_DONE;    }
 static void OnTxTimeout(void) { Radio.Sleep(); radioState = PN_RADIO_TX_TIMEOUT; }
 static void OnRxDone(uint8_t *p, uint16_t s, int16_t r, int8_t n)
@@ -170,6 +165,10 @@ static void OnRxDone(uint8_t *p, uint16_t s, int16_t r, int8_t n)
 static void OnRxTimeout(void) {}
 static void OnRxError  (void) {}
 
+/**
+  * @brief Periodic accelerometer timer callback
+  * @note  Reads accelerometer, updates fall detection, triggers fall task if detected
+  */
 static void OnAccTimer(void *context)
 {
   (void)context;
@@ -182,6 +181,10 @@ static void OnAccTimer(void *context)
   }
 }
 
+/**
+  * @brief Periodic heart rate timer callback
+  * @note  Reads MAX30102 HR and SpO2 data
+  */
 static void OnHrTimer(void *context)
 {
   (void)context;
@@ -189,27 +192,31 @@ static void OnHrTimer(void *context)
   HrRead();
 }
 
+/**
+  * @brief Periodic display timer callback
+  * @note  Toggles heartbeat LED and displays sensor data
+  */
 static void OnDisplayTimer(void *context)
 {
   (void)context;
-
- /*/* GPIO_PinState s =
-      HAL_GPIO_ReadPin(SOS_BUTTON_PORT, SOS_BUTTON_PIN);
-
-  APP_LOG(TS_OFF, VLEVEL_M,
-          "BTN=%d\r\n", s);*/
-
   HAL_GPIO_TogglePin(LED_HEARTBEAT_PORT, LED_HEARTBEAT_PIN);
-
   DisplaySensorData();
 }
 
+/**
+  * @brief Periodic transmission timer callback
+  * @note  Triggers TX task
+  */
 static void OnTxTimer(void *context)
 {
   (void)context;
   UTIL_SEQ_SetTask(1 << CFG_SEQ_Task_TX, CFG_SEQ_Prio_0);
 }
 
+/**
+  * @brief SOS task handler
+  * @note  Called when SOS button is pressed
+  */
 static void SosTask(void)
 {
   if (sosPending)
@@ -227,6 +234,10 @@ static void SosTask(void)
   }
 }
 
+/**
+  * @brief Fall detection task handler
+  * @note  Called when a fall is detected
+  */
 static void FallTask(void)
 {
   APP_LOG(TS_OFF, VLEVEL_M, "!!! FALL DETECTED !!!\r\n");
@@ -235,8 +246,17 @@ static void FallTask(void)
   LoRa_Send(STATUS_FALL);
 }
 
+/**
+  * @brief Periodic transmission task
+  */
 static void TxTask(void) { LoRa_Send(STATUS_OK); }
 
+/**
+  * @brief Update fall detection state
+  * @param ax X-axis acceleration in mg
+  * @param ay Y-axis acceleration in mg
+  * @param az Z-axis acceleration in mg
+  */
 static void Fall_Update(float ax, float ay, float az)
 {
   float tvm2 = ax*ax + ay*ay + az*az;
@@ -254,6 +274,13 @@ static void Fall_Update(float ax, float ay, float az)
   }
 }
 
+/**
+  * @brief Blink an LED
+  * @param port GPIO port
+  * @param pin GPIO pin
+  * @param count Number of blinks
+  * @param ms On/off duration in milliseconds
+  */
 static void LED_Blink(GPIO_TypeDef *port, uint16_t pin, uint8_t count, uint32_t ms)
 {
   for (uint8_t i = 0; i < count; i++) {
@@ -262,6 +289,10 @@ static void LED_Blink(GPIO_TypeDef *port, uint16_t pin, uint8_t count, uint32_t 
   HAL_GPIO_WritePin(port, pin, GPIO_PIN_RESET);
 }
 
+/**
+  * @brief Send LoRa packet with sensor data
+  * @param status Packet status (OK, FALL, SOS)
+  */
 void LoRa_Send(uint8_t status)
 {
   uint8_t payload[PKT_SIZE];
@@ -303,35 +334,22 @@ void LoRa_Send(uint8_t status)
   }
 }
 
+/**
+  * @brief Get status of last transmission
+  * @return 1 if last TX succeeded, 0 if failed
+  */
 uint8_t LoRa_LastTxOk(void) { return lastTxOk; }
 
+/**
+  * @brief GPIO EXTI interrupt callback for SOS button
+  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if (GPIO_Pin == SOS_BUTTON_PIN && sosReady)
   {
-    //APP_LOG(TS_OFF, VLEVEL_M, "!!! SOS IRQ !!!\r\n");
-
     sosPending = 1;
-
     UTIL_SEQ_SetTask(1 << CFG_SEQ_Task_SOS, CFG_SEQ_Prio_0);
   }
 }
 
-
-
-
-
-
-/*void PN_SOS_Trigger(void)
-{
-  sosPending = 1;
-  UTIL_SEQ_SetTask(1 << CFG_SEQ_Task_SOS, CFG_SEQ_Prio_0);
-}
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if (GPIO_Pin == SOS_BUTTON_PIN)
-  {
-    sosPending = 1;
-  }
-}
 /* USER CODE END PrFD */
