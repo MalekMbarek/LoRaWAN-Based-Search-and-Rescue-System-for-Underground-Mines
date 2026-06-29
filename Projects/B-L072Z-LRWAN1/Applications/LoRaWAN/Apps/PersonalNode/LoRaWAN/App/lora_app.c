@@ -268,8 +268,7 @@ void LoRa_Send(uint8_t status)
   payload[PKT_I_TYPE]   = PKT_TYPE_FULL;
   payload[PKT_I_ID]     = (uint8_t)MY_NODE_ID;
   payload[PKT_I_STATUS] = status;
-  payload[PKT_I_BPM]    = !hr_present      ? 255U :
-                           hrData.bpm_valid ? hrData.bpm : 0U;
+  payload[PKT_I_BPM]    = !hr_present      ? 255U : hrData.bpm_valid ? hrData.bpm : 0U;
   payload[PKT_I_AX_H]   = (uint8_t)((uint16_t)accData.raw_x >> 8);
   payload[PKT_I_AX_L]   = (uint8_t)(accData.raw_x & 0xFF);
   payload[PKT_I_AY_H]   = (uint8_t)((uint16_t)accData.raw_y >> 8);

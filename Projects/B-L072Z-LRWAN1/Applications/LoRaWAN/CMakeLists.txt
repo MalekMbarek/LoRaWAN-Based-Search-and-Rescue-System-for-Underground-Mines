@@ -13,6 +13,7 @@ set(AVAILABLE_APPLICATIONS
     PersonalNode
     static2
     scanner
+    scanner1
 
 )
 

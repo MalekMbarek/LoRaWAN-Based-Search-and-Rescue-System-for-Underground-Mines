@@ -312,28 +312,13 @@ static void SendTxData(void)
 #ifdef CAYENNE_LPP
   CayenneLppReset();
 
-  /* ── Canaux 0-2 : environnement ───────────────────────────────────────────
    * envData stocke des entiers ×10 (ex: temperature=247 → 24.7°C)
    * CayenneLPP attend des valeurs réelles → on divise par 10              */
   CayenneLppAddBarometricPressure(0, (float)envData.pressure    / 10.0f);
   CayenneLppAddTemperature       (1, (float)envData.temperature / 10.0f);
   CayenneLppAddRelativeHumidity  (2, (float)envData.humidity    / 10.0f);
 
-  /* ── Canaux 3-5 : mouvement ─────────────────────────────────────────────── */
-  //CayenneLppAddAccelerometer(3,
-     // (motionData.acc_x / 1.0f),
-    // (motionData.acc_y / 1.0f),
-     // (motionData.acc_z / 1.0f));
-
-  /* Vibration : mg → CayenneLPP AnalogInput (×100 côté décodeur)
-   * On envoie vibration/100 pour rester dans la plage float 0-327.67      */
-  //CayenneLppAddAnalogInput(4, motionData.vibration / 100.0f);
-
-  /* Inclinaison totale en degrés */
-  //CayenneLppAddAnalogInput(5, motionData.angle_total > 0.0f
-                             // ? motionData.angle_total / 100.0f : 0.0f);
-
-  /* ── Canal 6 : alertes mouvement (bitmask) ──────────────────────────────── */
+  
   uint8_t alert_motion =
       (motionData.alert_vibration      ? 0x01 : 0) |
       (motionData.alert_tilt           ? 0x02 : 0) |
@@ -341,10 +326,8 @@ static void SendTxData(void)
       (motionData.alert_tilt_crit      ? 0x08 : 0);
   CayenneLppAddDigitalInput(3, alert_motion);
 
-  /* ── Canal 7 : gaz (ADC brut / 100 pour AnalogInput) ───────────────────── */
   CayenneLppAddAnalogInput(1, gasData.ppm);
 
-  /* ── Canal 8 : alertes gaz (bitmask) ────────────────────────────────────── */
   uint8_t alert_gas =
       (gasData.alert_gas       ? 0x01 : 0) |
       (gasData.alert_critical  ? 0x02 : 0) |
@@ -352,24 +335,6 @@ static void SendTxData(void)
   CayenneLppAddDigitalInput(4, alert_gas);
   
 
-  /* ── Canal 9-10 : batterie + LED ────────────────────────────────────────── */
-  //CayenneLppAddDigitalInput (9,  GetBatteryLevel());
-  //CayenneLppAddDigitalOutput(10, AppLedStateOn);
-
-  /* ── Canaux 9+ : nœuds personnels ─────────────────────────────────────────
-   * Structure DualMode : 6 canaux par nœud
-   *   baseChannel+0  DigitalOutput  status
-   *   baseChannel+1  AnalogInput    heartRate / 10
-   *   baseChannel+2  AnalogInput    accX / 100
-   *   baseChannel+3  AnalogInput    accY / 100
-   *   baseChannel+4  AnalogInput    accZ / 100
-   *   baseChannel+5  DigitalOutput  hasAlert
-   *
-   * AJOUT SpO2 :
-   *   baseChannel+6  DigitalInput   spo2 (%)   ← NOUVEAU
-   *
-   * Note : si DualMode ne fournit pas encore spo2, mettre 0.
-   * Déclarer le champ spo2 dans StoredPersonalNode_t dans dual_mode.h     */
   StoredPersonalNode_t activeNodes[MAX_PERSONAL_NODES];
   uint8_t activeCount = 0;
   DualMode_GetAllActiveNodes(activeNodes, &activeCount);
@@ -385,7 +350,6 @@ static const char* statusStr[] = {"OK", "FALL", "SOS"};
     uint8_t hr     = n->heartRate;
     uint8_t spo2   = n->spo2;
     uint8_t alert  = n->hasAlert;
-  //  float distance = n->distance;
 float distance = n->distance;
   
     uint8_t baseChannel = 5 + (nodeId - 1) * 5 ;
