@@ -65,7 +65,7 @@ int main(void)
   /*
    * MX_LoRaWAN_Init() performs:
    *   - SystemApp_Init() : UART logging, LPM, sequencer, RTC
-   *   - GPIO_PersonalNode_Init() : PA0 (SOS), PA5 & PB13 (LEDs)
+   *   - GPIO_PersonalNode_Init() : PA0 (SOS), PA5 & PB6 (LED)
    *   - LoRaWAN_Init() : Radio init, SensorsInit, periodic timers
    */
   MX_LoRaWAN_Init();
@@ -123,22 +123,6 @@ void SystemClock_Config(void)
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK) { Error_Handler(); }
 }
 
-/* USER CODE BEGIN 4 */
-
-/* SOS Button — EXTI callback (commented out, handled by timer tasks) */
-/*
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if (GPIO_Pin == SOS_BUTTON_PIN) {
-    HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_SET);
-    for (volatile int i = 0; i < 200000; i++);
-    HAL_GPIO_WritePin(LED_SOS_PORT, LED_SOS_PIN, GPIO_PIN_RESET);
-    PN_SOS_Trigger();
-  }
-}
-*/
-
-/* USER CODE END 4 */
 
 void Error_Handler(void)
 {

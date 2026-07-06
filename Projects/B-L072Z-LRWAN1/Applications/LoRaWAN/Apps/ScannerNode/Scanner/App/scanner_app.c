@@ -624,7 +624,15 @@ void Scanner_Process(void)
         }
         else if (stickFired && dir == DIR_LEFT)
         {
-            detailPage = (detailPage == 0) ? 1 : 0;
+            detailPage = (detailPage + 1) % 2;
+        }
+                else if (stickFired && dir == DIR_DOWN)
+        {
+            detailPage = (detailPage + 1) % 2;
+        }
+                       else if (stickFired && dir == DIR_UP)
+        {
+            detailPage = (detailPage + 1) % 2;
         }
         else if (btnEdge)
         {
